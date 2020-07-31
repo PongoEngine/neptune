@@ -36,108 +36,22 @@ class NeptuneMacro
 {
   macro static public function fromInterface():Array<Field> 
   {
-    var fields = Context.getBuildFields();
     var deps = new Deps();
-    var results = fields.map(mapFunc.bind(deps));
+    var fields = Context.getBuildFields()
+      .map(transformFieldKind.bind(deps));
 
-    for(fName in deps.keyValueIterator()) {
-      for(tl in fName.value.topLevel) {
-        results.push({
-          pos: Context.currentPos(),
-          name: tl.name,
-          access: [Access.APublic],
-          kind: FVar(macro:Dynamic, null)
-        });
-      }
-    }
+    fields = fields.concat(deps.createConstructorFields());
+    fields.push(deps.createConstructor());
 
-    var ft = appendConstructor(deps);
-    var field :Field = {
-      name: "new",
-      kind: ft,
-      access: [APublic],
-      pos: Context.currentPos()
-    }
-    results.push(field);
-    
-    for(nField in addSetters(deps, results)) {
-      results.push(nField);
-    }
+    //create setter functions
+    fields = fields.concat(deps.createDependentSetters(fields));
+    //wrap dependent fields with setters
+    fields = deps.transformDependentFields(fields);
 
-    return results;
-  }
-
-  static function appendConstructor(deps :Deps) : FieldType
-  {
-    var nExprs = [];
-    for(fName in deps.keyValueIterator()) {
-      for(tl in fName.value.topLevel) {
-        nExprs.push(Binop.OpAssign.createBinop(tl.name.createExprIdent(), tl.expr));
-      }
-    }
-    return FFun({
-      args: [],
-      ret: null,
-      expr: nExprs.createBlock(),
-      params: null
-    });
-  }
-
-  static function addSetters(deps :Deps, results:Array<Field>) : Array<Field>
-  {
-    var newFields :Array<Field> = [];
-
-    for(keyVal in deps.keyValueIterator()) {
-      var item = keyVal.key;
-      for(result in results) {
-        if(result.name == item) {
-          result.kind = switch result.kind {
-            case FVar(t, e): {
-              newFields.push(createSetter(result, keyVal.value.setterFns, e.pos));
-              FProp("default", "set", t, e);
-            }
-            case FProp(get, set, t, e):
-              throw "Not implemented yet";
-            case FFun(f):
-              throw "Not implemented yet";
-          }
-        }
-      }
-    }
-
-    return newFields;
-  }
-
-  static function createSetter(field :Field, exprs :Array<Expr>, position :Position) : Field
-  {
-    return {
-      pos: Context.currentPos(),
-      name: 'set_${field.name}',
-      access: [APublic],
-      kind: FFun({
-        args: [{name:"val", type: null}],
-        ret: null,
-        expr: {
-          pos: position,
-          expr: EBlock([
-            OpAssign.createBinop(field.name.createExprIdent(), "val".createExprIdent()),
-            updateIdent(field, exprs),
-            Utils.createReturn("val".createExprIdent())
-          ])
-        }
-      })
-    };
-  }
-
-  //call updateIndent function
-  static function updateIdent(field :Field, exprs :Array<Expr>) : Expr
-  {
-    var arraCbs :Expr = {pos:Context.currentPos(), expr: EArrayDecl(exprs)};
-    return [field.name.createExprIdent(), arraCbs]
-      .createCall("updateIdent");
+    return fields;
   }
   
-  static function mapFunc(deps :Deps, field :Field) : Field
+  static function transformFieldKind(deps :Deps, field :Field) : Field
   {
     return switch field.kind {
       case FFun(f): {
@@ -148,7 +62,7 @@ class NeptuneMacro
           kind: FFun({
             args: f.args,
             ret: f.ret,
-            expr: fieldMeta(deps, f.expr),
+            expr: transformMarkup(deps, f.expr),
             params: f.params
           })
         };
@@ -157,34 +71,34 @@ class NeptuneMacro
     }
   }
 
-  static function fieldMeta(deps :Deps, expr :Expr) : Expr
+  static function transformMarkup(deps :Deps, expr :Expr) : Expr
   {
     return switch expr.expr {
       case EMeta(s, e):
-        transformString(deps, e);
+        compileMarkup(deps, e);
       case EBlock(exprs):
         {
           pos: Context.currentPos(),
-          expr: EBlock(exprs.map(fieldMeta.bind(deps)))
+          expr: EBlock(exprs.map(transformMarkup.bind(deps)))
         }
       case EReturn(e):
         {
           pos: Context.currentPos(),
-          expr: EReturn(fieldMeta(deps, e))
+          expr: EReturn(transformMarkup(deps, e))
         }
       case _:
         expr;
     }
   }
   
-  static function transformString(deps :Deps, e :Expr) : Expr
+  static function compileMarkup(deps :Deps, e :Expr) : Expr
   {
     var xml = switch e.expr {
       case EConst(c): switch c {
         case CString(s, _): s;
-        case _: "";
+        case _: throw "err";
       }
-      case _: "";
+      case _: throw "err";
     }
     var start = Context.getPosInfos(e.pos).min;
     var filename = Context.getPosInfos(Context.currentPos()).file;

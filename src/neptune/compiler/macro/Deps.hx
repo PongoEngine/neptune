@@ -22,8 +22,10 @@ package neptune.compiler.macro;
  */
 
 import haxe.macro.Expr;
+import haxe.macro.Context;
 using neptune.compiler.Utils;
 
+#if macro
 class Deps
 {
     public function new() : Void
@@ -39,13 +41,116 @@ class Deps
         return _deps.get(name);
     }
 
-    public inline function keyValueIterator() : KeyValueIterator<String, Dep>
+    public function transformDependentFields(fields :Array<Field>) : Array<Field>
     {
-        return _deps.keyValueIterator();
+        return fields.map(field -> {
+            if(_deps.exists(field.name)) {
+                return switch field.kind {
+                    case FVar(t, e):
+                        {
+                            name:field.name,
+                            doc:field.doc,
+                            access: field.access,
+                            kind: FProp("default", "set", t, e),
+                            pos: field.pos,
+                            meta: field.meta,
+                        }
+                    case _:
+                        throw "not implemented"; 
+                }
+            }
+            else {
+                return field;
+            }
+        });
+    }
+
+    public function createDependentSetters(fields :Array<Field>) : Array<Field>
+    {
+        var dependentSetters = [];
+        for(field in fields) {
+            if(_deps.exists(field.name)) {
+                switch field.kind {
+                    case FVar(t, e):
+                        dependentSetters.push(createSetter(field.name, e.pos));
+                    case _:
+                        throw "not implemented";
+                }
+            }
+        }
+        return dependentSetters;
+    }
+
+    public function createConstructorFields() :Array<Field>
+    {
+        var fields = [];
+        for(value in _deps) {
+            for(tl in value.topLevel) {
+                fields.push({
+                    pos: Context.currentPos(),
+                    name: tl.name,
+                    access: [Access.APublic],
+                    kind: FVar(macro:Dynamic, null)
+                });
+            }
+        }
+        return fields;
+    }
+
+    public function createConstructor() : Field
+    {
+        var nExprs = [];
+        for(value in _deps) {
+            for(tl in value.topLevel) {
+                nExprs.push(Binop.OpAssign.createBinop(tl.name.createExprIdent(), tl.expr));
+            }
+        }
+
+        return {
+            name: "new",
+            kind: FFun({
+                args: [],
+                ret: null,
+                expr: nExprs.createBlock(),
+                params: null
+            }),
+            access: [APublic],
+            pos: Context.currentPos()
+        }
+    }
+
+    private function createSetter(fieldName :String, position :Position) : Field
+    {
+        return {
+            pos: Context.currentPos(),
+            name: 'set_${fieldName}',
+            access: [APublic],
+            kind: FFun({
+                args: [{name:"val", type: null}],
+                ret: null,
+                expr: {
+                    pos: position,
+                    expr: EBlock([
+                        OpAssign.createBinop(fieldName.createExprIdent(), "val".createExprIdent()),
+                        createDependentUpdate(fieldName),
+                        Utils.createReturn("val".createExprIdent())
+                    ])
+                }
+            })
+        };
+    }
+
+    private function createDependentUpdate(fieldName :String) : Expr
+    {
+        var exprs = _deps.get(fieldName).setterFns;
+        var arraCbs :Expr = {pos:Context.currentPos(), expr: EArrayDecl(exprs)};
+        return [fieldName.createExprIdent(), arraCbs]
+            .createCall("updateDependencies");
     }
 
     private var _deps :Map<String, Dep>;
 }
+#end
 
 class Dep
 {

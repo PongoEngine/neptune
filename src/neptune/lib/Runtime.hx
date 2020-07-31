@@ -38,7 +38,7 @@ class Runtime
       return document.createTextNode(text);
     }
 
-    public static function updateIdent(identifer :Dynamic, cbs :Array<Dynamic -> Void>) : Void
+    public static function updateDependencies<T>(identifer :T, cbs :Array<T -> Void>) : Void
     {
       for(cb in cbs) {
         cb(identifer);

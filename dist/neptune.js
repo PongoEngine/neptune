@@ -31,7 +31,7 @@ class HelloWorld {
 	}
 	set_numba(val) {
 		this.numba = val;
-		neptune_lib_Runtime.updateIdent(this.numba,[neptune_lib_Runtime.updateTextNode(this.var_0)]);
+		neptune_lib_Runtime.updateDependencies(this.numba,[neptune_lib_Runtime.updateTextNode(this.var_0)]);
 		return val;
 	}
 }
@@ -54,7 +54,7 @@ class haxe_iterators_ArrayIterator {
 	}
 }
 class neptune_lib_Runtime {
-	static updateIdent(identifer,cbs) {
+	static updateDependencies(identifer,cbs) {
 		let _g = 0;
 		while(_g < cbs.length) cbs[_g++](identifer);
 	}
