@@ -46,7 +46,7 @@
 }, {
 	access: [APublic]
 	doc: null
-	kind: FVar(null, {
+	kind: FProp(default, set, null, {
 		expr: EConst(CIdent(false))
 		pos: #pos
 	})
@@ -92,6 +92,24 @@
 					pos: #pos
 				})
 				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EField({
+						expr: EConst(CIdent(this))
+						pos: #pos
+					}, isCool)
+					pos: #pos
+				}, {
+					expr: EUnop(OpNot, false, {
+						expr: EField({
+							expr: EConst(CIdent(this))
+							pos: #pos
+						}, isCool)
+						pos: #pos
+					})
+					pos: #pos
+				})
+				pos: #pos
 			}])
 			pos: #pos
 		}
@@ -108,6 +126,12 @@
 		args: []
 		expr: {
 			expr: EBlock([{
+				expr: null <- expected value
+				pos: null <- expected value
+			}, {
+				expr: null <- expected value
+				pos: null <- expected value
+			}, {
 				expr: EReturn({
 					expr: EBlock([{
 						expr: EVars([{
@@ -124,6 +148,74 @@
 							isFinal: null
 							name: div
 							type: null
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(addChild))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(div))
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(createText))
+								pos: #pos
+							}, [{
+								expr: EConst(CString( , null))
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(addChild))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(div))
+							pos: #pos
+						}, {
+							expr: EBlock([{
+								expr: EVars([{
+									expr: {
+										expr: ECall({
+											expr: EConst(CIdent(createElement))
+											pos: #pos
+										}, [{
+											expr: EConst(CString(h6, null))
+											pos: #pos
+										}])
+										pos: #pos
+									}
+									isFinal: null
+									name: h6
+									type: null
+								}])
+								pos: #pos
+							}, {
+								expr: ECall({
+									expr: EConst(CIdent(addChild))
+									pos: #pos
+								}, [{
+									expr: EConst(CIdent(h6))
+									pos: #pos
+								}, {
+									expr: ECall({
+										expr: EConst(CIdent(createText))
+										pos: #pos
+									}, [{
+										expr: EConst(CString(This is some good stuff, null))
+										pos: #pos
+									}])
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(h6))
+								pos: #pos
+							}])
+							pos: #pos
 						}])
 						pos: #pos
 					}, {
@@ -177,7 +269,7 @@
 									expr: EConst(CIdent(h2))
 									pos: #pos
 								}, {
-									expr: EConst(CIdent(var_0))
+									expr: EConst(CIdent(var_1))
 									pos: #pos
 								}])
 								pos: #pos
@@ -207,7 +299,7 @@
 									expr: EConst(CIdent(h2))
 									pos: #pos
 								}, {
-									expr: EConst(CIdent(var_1))
+									expr: EConst(CIdent(var_2))
 									pos: #pos
 								}])
 								pos: #pos
@@ -269,12 +361,80 @@
 									expr: EConst(CIdent(h3))
 									pos: #pos
 								}, {
-									expr: null <- expected value
-									pos: null <- expected value
+									expr: EConst(CIdent(var_3))
+									pos: #pos
 								}])
 								pos: #pos
 							}, {
 								expr: EConst(CIdent(h3))
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(addChild))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(div))
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(createText))
+								pos: #pos
+							}, [{
+								expr: EConst(CString( , null))
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(addChild))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(div))
+							pos: #pos
+						}, {
+							expr: EBlock([{
+								expr: EVars([{
+									expr: {
+										expr: ECall({
+											expr: EConst(CIdent(createElement))
+											pos: #pos
+										}, [{
+											expr: EConst(CString(h4, null))
+											pos: #pos
+										}])
+										pos: #pos
+									}
+									isFinal: null
+									name: h4
+									type: null
+								}])
+								pos: #pos
+							}, {
+								expr: ECall({
+									expr: EConst(CIdent(addChild))
+									pos: #pos
+								}, [{
+									expr: EConst(CIdent(h4))
+									pos: #pos
+								}, {
+									expr: ECall({
+										expr: EField({
+											expr: EConst(CIdent(s))
+											pos: #pos
+										}, template)
+										pos: #pos
+									}, [])
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(h4))
 								pos: #pos
 							}])
 							pos: #pos
@@ -510,7 +670,7 @@
 		sub: null
 	}), null)
 	meta: null
-	name: var_0
+	name: var_1
 	pos: #pos
 }, {
 	access: [APublic]
@@ -522,7 +682,19 @@
 		sub: null
 	}), null)
 	meta: null
-	name: var_1
+	name: var_2
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Dynamic
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: null
+	name: var_3
 	pos: #pos
 }, {
 	access: [APublic]
@@ -532,7 +704,7 @@
 		expr: {
 			expr: EBlock([{
 				expr: EBinop(OpAssign, {
-					expr: EConst(CIdent(var_0))
+					expr: EConst(CIdent(var_1))
 					pos: #pos
 				}, {
 					expr: ECall({
@@ -562,7 +734,7 @@
 				pos: #pos
 			}, {
 				expr: EBinop(OpAssign, {
-					expr: EConst(CIdent(var_1))
+					expr: EConst(CIdent(var_2))
 					pos: #pos
 				}, {
 					expr: ECall({
@@ -570,6 +742,30 @@
 						pos: #pos
 					}, [{
 						expr: EConst(CIdent(hai))
+						pos: #pos
+					}])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(var_3))
+					pos: #pos
+				}, {
+					expr: ECall({
+						expr: EConst(CIdent(createText))
+						pos: #pos
+					}, [{
+						expr: ETernary({
+							expr: EConst(CIdent(isCool))
+							pos: #pos
+						}, {
+							expr: EConst(CString(sausage, DoubleQuotes))
+							pos: #pos
+						}, {
+							expr: EConst(CString(turkey, DoubleQuotes))
+							pos: #pos
+						})
 						pos: #pos
 					}])
 					pos: #pos
@@ -615,7 +811,7 @@
 							expr: EConst(CIdent(updateTextNode))
 							pos: #pos
 						}, [{
-							expr: EConst(CIdent(var_0))
+							expr: EConst(CIdent(var_1))
 							pos: #pos
 						}, {
 							expr: EBinop(OpMult, {
@@ -687,7 +883,7 @@
 							expr: EConst(CIdent(updateTextNode))
 							pos: #pos
 						}, [{
-							expr: EConst(CIdent(var_0))
+							expr: EConst(CIdent(var_1))
 							pos: #pos
 						}, {
 							expr: EBinop(OpMult, {
@@ -759,7 +955,7 @@
 							expr: EConst(CIdent(updateTextNode))
 							pos: #pos
 						}, [{
-							expr: EConst(CIdent(var_1))
+							expr: EConst(CIdent(var_2))
 							pos: #pos
 						}, {
 							expr: EConst(CIdent(hai))
@@ -785,6 +981,74 @@
 	meta: null
 	name: set_hai
 	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FFun({
+		args: [{
+			meta: null
+			name: val
+			opt: null
+			type: null
+			value: null
+		}]
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(isCool))
+					pos: #pos
+				}, {
+					expr: EConst(CIdent(val))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: ECall({
+					expr: EConst(CIdent(updateDependencies))
+					pos: #pos
+				}, [{
+					expr: EArrayDecl([{
+						expr: ECall({
+							expr: EConst(CIdent(updateTextNode))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(var_3))
+							pos: #pos
+						}, {
+							expr: ETernary({
+								expr: EConst(CIdent(isCool))
+								pos: #pos
+							}, {
+								expr: EConst(CString(sausage, DoubleQuotes))
+								pos: #pos
+							}, {
+								expr: EConst(CString(turkey, DoubleQuotes))
+								pos: #pos
+							})
+							pos: #pos
+						}])
+						pos: #pos
+					}])
+					pos: #pos
+				}])
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: EConst(CIdent(val))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: null
+		ret: null
+	})
+	meta: null
+	name: set_isCool
+	pos: #pos
 }]
-line 272: expected value
-line 273: expected value
+line 129: expected value
+line 130: expected value
+line 132: expected value
+line 133: expected value

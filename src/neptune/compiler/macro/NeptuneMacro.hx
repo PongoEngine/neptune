@@ -53,22 +53,23 @@ class NeptuneMacro
   
   static function transformFieldKind(deps :Deps, field :Field) : Field
   {
-    return switch field.kind {
-      case FFun(f): {
-        {
-          pos: field.pos,
-          name: field.name,
-          access: [APublic],
-          kind: FFun({
-            args: f.args,
-            ret: f.ret,
-            expr: transformMarkup(deps, f.expr),
-            params: f.params
-          })
-        };
+      return switch field.kind {
+        case FFun(f): {
+          {
+            pos: field.pos,
+            name: field.name,
+            access: [APublic],
+            kind: FFun({
+              args: f.args,
+              ret: f.ret,
+              expr: transformMarkup(deps, f.expr),
+              params: f.params
+            })
+          };
+        }
+        case _: 
+          field;
       }
-      case _: field;
-    }
   }
 
   static function transformMarkup(deps :Deps, expr :Expr) : Expr
@@ -78,13 +79,23 @@ class NeptuneMacro
         compileMarkup(deps, e);
       case EBlock(exprs):
         {
-          pos: Context.currentPos(),
+          pos: expr.pos,
           expr: EBlock(exprs.map(transformMarkup.bind(deps)))
         }
       case EReturn(e):
         {
-          pos: Context.currentPos(),
+          pos: expr.pos,
           expr: EReturn(transformMarkup(deps, e))
+        }
+      case EVars(vars):
+        {
+          pos: expr.pos,
+          expr: EVars(vars.map(v -> {
+            name: v.name,
+            type: v.type,
+            expr: transformMarkup(deps, v.expr),
+            isFinal: v.isFinal
+          }))
         }
       case _:
         expr;

@@ -22,6 +22,7 @@ class HelloWorld {
 		this.set_isCool(!this.isCool);
 	}
 	template() {
+		window.document.createElement("h1").appendChild(window.document.createTextNode("Hello"));
 		let s = new Sage();
 		let div = window.document.createElement("div");
 		div.appendChild(window.document.createTextNode(" "));
