@@ -23,7 +23,7 @@ package neptune.compiler.macro;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
-using neptune.compiler.Utils;
+using neptune.compiler.macro.Utils;
 
 #if macro
 class Deps

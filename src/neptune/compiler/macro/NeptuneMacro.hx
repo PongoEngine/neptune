@@ -27,7 +27,7 @@ import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.Compiler;
 import neptune.compiler.macro.Deps;
-using neptune.compiler.Utils;
+using neptune.compiler.macro.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
 

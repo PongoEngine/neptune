@@ -25,7 +25,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Parser.DomAST;
 import neptune.compiler.dom.Parser.Attr;
-using neptune.compiler.Utils;
+using neptune.compiler.macro.Utils;
 
 #if macro
 class Compiler

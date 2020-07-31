@@ -1,4 +1,4 @@
-package neptune.compiler;
+package neptune.compiler.macro;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
