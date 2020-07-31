@@ -73,7 +73,7 @@ class Parser
         assertToken(scanner.next(), Token.FORWARD_SLASH);
         assertThat(parseTagname(scanner) == tagname);
         assertToken(scanner.next(), Token.ELEMENT_CLOSED);
-        return Element(tagname,attrs,children);
+        return DomElement(tagname,attrs,children);
     }
 
     static function parseText(scanner :Scanner) : DomAST
@@ -91,10 +91,10 @@ class Parser
                     var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
                     var expr = Context.parse(exprStr, pos);
                     assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
-                    return NExpr(expr);
+                    return DomTextExpr(expr);
                 }
                 case _: {
-                    return Text(scanner.consumeWhile((str) -> {
+                    return DomText(scanner.consumeWhile((str) -> {
                         scanner.hasNext() && str != Token.ELEMENT_OPENED && str != Token.CURLY_BRACE_OPENED;
                     }));
                 }
@@ -146,7 +146,7 @@ class Parser
             return scanner.hasNext() && !(str == '"' || str == "}");
         });
         assertToken(scanner.next(), Token.DBL_QUOTE);
-        return Text(attrValue);
+        return AttrText(attrValue);
     }
 
     static function parseAttrValueLogic(scanner :Scanner) : DomAttr
@@ -160,7 +160,7 @@ class Parser
         assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
         var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
         var expr = Context.parse(attrValue, pos);
-        return NExpr(expr);
+        return AttrExpr(expr);
     }
 
     static function assertToken(value :String, token :Token) : Dynamic
@@ -175,15 +175,15 @@ class Parser
 
 enum DomAttr
 {
-    Text(string :String);
-    NExpr(expr :haxe.macro.Expr);
+    AttrText(string :String);
+    AttrExpr(expr :haxe.macro.Expr);
 }
 
 typedef Attr = {name :String, value :DomAttr};
 
 enum DomAST
 {
-    Text(string :String);
-    NExpr(expr :haxe.macro.Expr);
-    Element(tag:String, attrs:Array<Attr>, children :Array<DomAST>);
+    DomText(string :String);
+    DomTextExpr(expr :haxe.macro.Expr);
+    DomElement(tag:String, attrs:Array<Attr>, children :Array<DomAST>);
 }

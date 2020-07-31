@@ -2,7 +2,7 @@
 (function ($global) { "use strict";
 class HelloWorld {
 	constructor() {
-		this.hai = "Hi";
+		this.hai = "Hai";
 		this.numba = 1;
 		let text = this.numba;
 		this.var_0 = window.document.createTextNode(text);

@@ -6,7 +6,7 @@ class HelloWorld implements Neptune
 {
     public var numba :Int = 1;
     public var ten :Int = 10;
-    public var hai :String = "Hi";
+    public var hai :String = "Hai";
     
     public function handleClick() 
     {

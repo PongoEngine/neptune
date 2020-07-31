@@ -1,4 +1,4 @@
-package neptune.compiler;
+package neptune.compiler.macro;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -25,8 +25,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
-import neptune.compiler.Compiler;
-import neptune.compiler.Compiler.NewFields;
+import neptune.compiler.macro.Compiler;
+import neptune.compiler.macro.Compiler.NewFields;
 using neptune.compiler.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
@@ -189,7 +189,7 @@ class NeptuneMacro
     var start = Context.getPosInfos(e.pos).min;
     var filename = Context.getPosInfos(Context.currentPos()).file;
     var result = Parser.parse(new Scanner(filename, xml, start));
-    return Compiler.compile(fnames, null, result);
+    return Compiler.compile(fnames, result);
   }
 }
 #end

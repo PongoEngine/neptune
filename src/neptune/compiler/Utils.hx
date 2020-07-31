@@ -12,6 +12,12 @@ class Utils
         return reg.replace(str, " ");
     }
 
+    private static var _fieldIndex = 0;
+    public static function createFieldName() : String
+    {
+        return 'var_${_fieldIndex++}';
+    }
+
     public static function createVar(e :Expr, name :String) : Expr 
     {
         return {

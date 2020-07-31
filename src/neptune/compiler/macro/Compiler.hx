@@ -1,4 +1,4 @@
-package neptune.compiler;
+package neptune.compiler.macro;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -42,21 +42,17 @@ class NewFields
 #if macro
 class Compiler
 {
-    private static var _fieldIndex = 0;
 
-    private static function createFieldName() : String
-    {
-        return 'var_${_fieldIndex++}';
-    }
+    
 
-    public static function compile(fields :Map<String, NewFields>, parentIdent :Null<Expr>, child :DomAST) : Expr
+    public static function compile(fields :Map<String, NewFields>, child :DomAST) : Expr
     {
         return switch child {
-            case Text(text):
+            case DomText(text):
                 return compileText(text);
-            case NExpr(expr):
-                return compileExpr(fields, parentIdent, expr);
-            case Element(tag, attrs, children):
+            case DomTextExpr(expr):
+                return compileTextExpr(fields, expr);
+            case DomElement(tag, attrs, children):
                 return compileElement(fields, tag, attrs, children);
         }
     }
@@ -69,17 +65,39 @@ class Compiler
         return fields.get(ident);
     }
 
-    static function compileExpr(fields :Map<String, NewFields>, parentIdent :Null<Expr>, expr :Expr) : Expr
+    static function createDep(fields :Map<String, NewFields>, expr :Expr) : String
     {
         return switch expr.expr {
             case EConst(c): switch c {
                 case CIdent(s):
                     var fields = getFieldsArray(s, fields);
+                    var fieldName = Utils.createFieldName();
+                    return fieldName;
+                case _: 
+                    throw "not implemented yet!";
+            }
+            case EField(_): 
+                throw "not implemented yet!";
+            case ECall(e, params):
+                throw "not implemented yet!";
+            case EBinop(op, e1, e2):
+                throw "not implemented yet!";
+            case _:
+                throw "not implemented yet!";
+        }
+    }
+
+    static function compileTextExpr(fields :Map<String, NewFields>, expr :Expr) : Expr
+    {
+        return switch expr.expr {
+            case EConst(c): switch c {
+                case CIdent(s):
+                    var fieldName = createDep(fields, expr);
+                    var fields = getFieldsArray(s, fields);
 
                     var func = [expr]
                         .createCall("createText");
 
-                    var fieldName = createFieldName();
                     fields.topLevel.push({name:fieldName,expr:func});
                     fields.setterFns.push([fieldName.createExprIdent()].createCall("updateTextNode"));
                     fieldName.createExprIdent();
@@ -89,6 +107,12 @@ class Compiler
             case EField(_): 
                 expr;
             case ECall(e, params):
+                expr;
+            case EBinop(op, e1, e2):
+                var fieldName1 = createDep(fields, e1);
+                var fieldName2 = createDep(fields, e2);
+                trace(fieldName1, fieldName2);
+                // throw "not supported";
                 expr;
             case _:
                 throw "not supported";
@@ -136,8 +160,8 @@ class Compiler
                 attr.name.createExprString(),
                 {
                     expr: switch attr.value {
-                        case Text(string): EConst(CString(string));
-                        case NExpr(expr): expr.expr;
+                        case AttrText(string): EConst(CString(string));
+                        case AttrExpr(expr): expr.expr;
                     },
                     pos: Context.currentPos()
                 }
@@ -148,7 +172,7 @@ class Compiler
 
     static function createChild(fields :Map<String, NewFields>, tag :String, child :DomAST) : Expr
     {
-        var cexpr = compile(fields, tag.createExprIdent(), child);
+        var cexpr = compile(fields, child);
         return [tag.createExprIdent(), cexpr].createCall("addChild");
     }
 }
