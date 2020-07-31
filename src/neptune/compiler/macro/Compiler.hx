@@ -42,57 +42,82 @@ class Compiler
         }
     }
 
-    static function createDep(deps :Deps, expr :Expr) : String
+    static function getIdentifier(expr :Expr) : String
     {
         return switch expr.expr {
             case EConst(c): switch c {
-                case CIdent(s):
-                    var fields = deps.getDep(s);
-                    var fieldName = Utils.createFieldName();
-                    return fieldName;
-                case _: 
-                    throw "not implemented yet!";
+                case CIdent(ident): ident;
+                case _: null;
             }
-            case EField(_): 
-                throw "not implemented yet!";
-            case ECall(e, params):
-                throw "not implemented yet!";
-            case EBinop(op, e1, e2):
-                throw "not implemented yet!";
-            case _:
-                throw "not implemented yet!";
+            case _: null;
         }
     }
 
     static function compileTextExpr(deps :Deps, expr :Expr) : Expr
     {
         return switch expr.expr {
-            case EConst(c): switch c {
-                case CIdent(s):
-                    var fieldName = createDep(deps, expr);
-                    var fields = deps.getDep(s);
-
-                    var func = [expr]
-                        .createCall("createText");
-
-                    fields.topLevel.push({name:fieldName,expr:func});
-                    fields.setterFns.push([fieldName.createExprIdent()].createCall("updateTextNode"));
-                    fieldName.createExprIdent();
-                case _: 
-                    throw "not implemented";
-            }
+            case EConst(c):
+                var fieldName = Utils.createFieldName();
+                var setterFn = [fieldName.createExprIdent(), expr].createCall("updateTextNode");
+                deps.pushTopLevel(fieldName, [expr].createCall("createText"));
+                saveDependency(deps, expr, setterFn);
+                fieldName.createExprIdent();
             case EField(_): 
-                expr;
+                throw "not implemented";
             case ECall(e, params):
                 expr;
             case EBinop(op, e1, e2):
-                var fieldName1 = createDep(deps, e1);
-                var fieldName2 = createDep(deps, e2);
-                trace(fieldName1, fieldName2);
-                // throw "not supported";
-                expr;
+                var fieldName = Utils.createFieldName();
+                var setterFn = [fieldName.createExprIdent(), expr].createCall("updateTextNode");
+                deps.pushTopLevel(fieldName, [expr].createCall("createText"));
+                saveDependency(deps, expr, setterFn);
+                fieldName.createExprIdent();
+            case EParenthesis(e):
+                var fieldName = Utils.createFieldName();
+                var setterFn = [fieldName.createExprIdent(), expr].createCall("updateTextNode");
+                deps.pushTopLevel(fieldName, [expr].createCall("createText"));
+                saveDependency(deps, expr, setterFn);
+                fieldName.createExprIdent();
+            case ETernary(econd, eif, eelse):
+                var fieldName = Utils.createFieldName();
+                var setterFn = [fieldName.createExprIdent(), expr].createCall("updateTextNode");
+                deps.pushTopLevel(fieldName, [expr].createCall("createText"));
+                saveDependency(deps, expr, setterFn);
+                fieldName.createExprIdent();
+            case EMeta(s, e):
+                NeptuneMacro.compileMarkup(deps, e);
             case _:
+                // trace(expr.expr);
+                // NeptuneMacro.compileMarkup(deps, )
                 throw "not supported";
+        }
+    }
+
+    static function saveDependency(deps :Deps, expr :Expr, setterFn :Expr) : Void
+    {
+        return switch expr.expr {
+            case EConst(c): switch c {
+                case CIdent(ident):
+                    deps.pushSetter(ident, setterFn);
+                case _:
+                    //real constant
+            }
+            case EField(e, field): 
+                saveDependency(deps, e, setterFn);
+            case ECall(e, params):
+                // throw "not implemented";
+                saveDependency(deps, e, setterFn);
+            case EBinop(op, e1, e2):
+                saveDependency(deps, e1, setterFn);
+                saveDependency(deps, e2, setterFn);
+            case EParenthesis(e):
+                saveDependency(deps, e, setterFn);
+            case ETernary(econd, eif, eelse):
+                saveDependency(deps, econd, setterFn);
+                saveDependency(deps, eif, setterFn);
+                saveDependency(deps, eelse, setterFn);
+            case _:
+                throw "not implemented";
         }
     }
 

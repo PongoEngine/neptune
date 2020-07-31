@@ -31,14 +31,17 @@ class Deps
     public function new() : Void
     {
         _deps = new Map<String, Dep>();
+        _topLevel = [];
     }
 
-    public function getDep(name :String) : Dep
+    public function pushTopLevel(fieldName :String, expr :Expr) : Void
     {
-        if(!_deps.exists(name)) {
-            _deps.set(name, new Dep());
-        }
-        return _deps.get(name);
+        _topLevel.push({fieldname:fieldName, expr: expr});
+    }
+
+    public function pushSetter(depIdent :String, expr :Expr) : Void
+    {
+        this.getDep(depIdent).setterFns.push(expr);
     }
 
     public function transformDependentFields(fields :Array<Field>) : Array<Field>
@@ -84,15 +87,13 @@ class Deps
     public function createConstructorFields() :Array<Field>
     {
         var fields = [];
-        for(value in _deps) {
-            for(tl in value.topLevel) {
-                fields.push({
-                    pos: Context.currentPos(),
-                    name: tl.name,
-                    access: [Access.APublic],
-                    kind: FVar(macro:Dynamic, null)
-                });
-            }
+        for(tl in _topLevel) {
+            fields.push({
+                pos: Context.currentPos(),
+                name: tl.fieldname,
+                access: [Access.APublic],
+                kind: FVar(macro:Dynamic, null)
+            });
         }
         return fields;
     }
@@ -100,10 +101,8 @@ class Deps
     public function createConstructor() : Field
     {
         var nExprs = [];
-        for(value in _deps) {
-            for(tl in value.topLevel) {
-                nExprs.push(Binop.OpAssign.createBinop(tl.name.createExprIdent(), tl.expr));
-            }
+        for(tl in _topLevel) {
+            nExprs.push(Binop.OpAssign.createBinop(tl.fieldname.createExprIdent(), tl.expr));
         }
 
         return {
@@ -117,6 +116,14 @@ class Deps
             access: [APublic],
             pos: Context.currentPos()
         }
+    }
+
+    private function getDep(name :String) : Dep
+    {
+        if(!_deps.exists(name)) {
+            _deps.set(name, new Dep());
+        }
+        return _deps.get(name);
     }
 
     private function createSetter(fieldName :String, position :Position) : Field
@@ -144,22 +151,20 @@ class Deps
     {
         var exprs = _deps.get(fieldName).setterFns;
         var arraCbs :Expr = {pos:Context.currentPos(), expr: EArrayDecl(exprs)};
-        return [fieldName.createExprIdent(), arraCbs]
-            .createCall("updateDependencies");
+        return [arraCbs].createCall("updateDependencies");
     }
 
     private var _deps :Map<String, Dep>;
+    private var _topLevel :Array<{fieldname :String, expr :Expr}>;
 }
 #end
 
 class Dep
 {
-    public var topLevel :Array<{name :String, expr :Expr}>;
     public var setterFns :Array<Expr>;
 
     public function new() : Void
     {
-        this.topLevel = [];
         this.setterFns = [];
     }
 }

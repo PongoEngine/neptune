@@ -2,24 +2,46 @@
 (function ($global) { "use strict";
 class HelloWorld {
 	constructor() {
+		this.isCool = false;
 		this.hai = "Hai";
+		this.ten = 1;
 		this.numba = 1;
-		let text = this.numba;
-		this.var_0 = window.document.createTextNode(text);
-		this.var_1 = window.document.createTextNode(this.hai);
+		let text = (this.numba + this.ten) * 200;
+		this.var_1 = window.document.createTextNode(text);
+		let text1 = this.hai;
+		this.var_2 = window.document.createTextNode(text1);
+		let text2 = this.isCool ? "sausage" : "turkey";
+		this.var_3 = window.document.createTextNode(text2);
 	}
 	handleClick() {
 		let _g = this;
 		_g.set_numba(_g.numba + 1);
 	}
+	changeText() {
+		this.set_hai("Carla");
+		this.set_isCool(!this.isCool);
+	}
 	template() {
+		let s = new Sage();
 		let div = window.document.createElement("div");
 		div.appendChild(window.document.createTextNode(" "));
+		let h6 = window.document.createElement("h6");
+		h6.appendChild(window.document.createTextNode("This is some good stuff"));
+		div.appendChild(h6);
+		div.appendChild(window.document.createTextNode(" "));
 		let h2 = window.document.createElement("h2");
-		h2.appendChild(this.var_0);
-		h2.appendChild(window.document.createTextNode(" - "));
 		h2.appendChild(this.var_1);
+		h2.appendChild(window.document.createTextNode(" - "));
+		h2.appendChild(this.var_2);
 		div.appendChild(h2);
+		div.appendChild(window.document.createTextNode(" "));
+		let h3 = window.document.createElement("h3");
+		h3.appendChild(this.var_3);
+		div.appendChild(h3);
+		div.appendChild(window.document.createTextNode(" "));
+		let h4 = window.document.createElement("h4");
+		h4.appendChild(s.template());
+		div.appendChild(h4);
 		div.appendChild(window.document.createTextNode(" "));
 		let button = window.document.createElement("button");
 		button.setAttribute("class","button");
@@ -27,12 +49,50 @@ class HelloWorld {
 		button.appendChild(window.document.createTextNode("Increment"));
 		div.appendChild(button);
 		div.appendChild(window.document.createTextNode(" "));
+		let button1 = window.document.createElement("button");
+		button1.addEventListener("click",$bind(this,this.changeText));
+		button1.appendChild(window.document.createTextNode("Say Hello"));
+		div.appendChild(button1);
+		div.appendChild(window.document.createTextNode(" "));
 		return div;
 	}
 	set_numba(val) {
 		this.numba = val;
-		neptune_lib_Runtime.updateDependencies(this.numba,[neptune_lib_Runtime.updateTextNode(this.var_0)]);
+		let text = this.var_1;
+		let content = (this.numba + this.ten) * 200;
+		neptune_lib_Runtime.updateDependencies([function() {
+			text.textContent = content;
+		}]);
 		return val;
+	}
+	set_hai(val) {
+		this.hai = val;
+		let text = this.var_2;
+		let content = this.hai;
+		neptune_lib_Runtime.updateDependencies([function() {
+			text.textContent = content;
+		}]);
+		return val;
+	}
+	set_isCool(val) {
+		this.isCool = val;
+		let text = this.var_3;
+		let content = this.isCool ? "sausage" : "turkey";
+		neptune_lib_Runtime.updateDependencies([function() {
+			text.textContent = content;
+		}]);
+		return val;
+	}
+}
+class Sage {
+	constructor() {
+		this.flavor = 9999;
+		this.var_0 = window.document.createTextNode(this.flavor);
+	}
+	template() {
+		let h2 = window.document.createElement("h2");
+		h2.appendChild(this.var_0);
+		return h2;
 	}
 }
 class Main {
@@ -54,14 +114,9 @@ class haxe_iterators_ArrayIterator {
 	}
 }
 class neptune_lib_Runtime {
-	static updateDependencies(identifer,cbs) {
+	static updateDependencies(cbs) {
 		let _g = 0;
-		while(_g < cbs.length) cbs[_g++](identifer);
-	}
-	static updateTextNode(text) {
-		return function(content) {
-			text.textContent = content;
-		};
+		while(_g < cbs.length) cbs[_g++]();
 	}
 }
 var $_;

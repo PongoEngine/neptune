@@ -91,7 +91,7 @@ class NeptuneMacro
     }
   }
   
-  static function compileMarkup(deps :Deps, e :Expr) : Expr
+  public static function compileMarkup(deps :Deps, e :Expr) : Expr
   {
     var xml = switch e.expr {
       case EConst(c): switch c {

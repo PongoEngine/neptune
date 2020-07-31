@@ -38,17 +38,24 @@ class Runtime
       return document.createTextNode(text);
     }
 
-    public static function updateDependencies<T>(identifer :T, cbs :Array<T -> Void>) : Void
+    public static function updateDependencies(cbs :Array<Void -> Void>) : Void
     {
       for(cb in cbs) {
-        cb(identifer);
+        cb();
       }
     }
 
-    public static function updateTextNode(text :js.html.Text) : Dynamic -> Void
+    public static inline function updateTextNode(text :js.html.Text, content :Dynamic) : Void -> Void
     {
-      return content -> {
+      return () -> {
         text.textContent = content;
+      }
+    }
+
+    public static inline function addTextNode(text :js.html.Text, a :Float, b :Float) : Void -> Void
+    {
+      return () -> {
+        text.textContent = cast (a + b);
       }
     }
 
