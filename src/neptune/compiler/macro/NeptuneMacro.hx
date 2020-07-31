@@ -26,7 +26,7 @@ import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.Compiler;
-import neptune.compiler.macro.Compiler.NewFields;
+import neptune.compiler.macro.Deps;
 using neptune.compiler.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
@@ -37,10 +37,10 @@ class NeptuneMacro
   macro static public function fromInterface():Array<Field> 
   {
     var fields = Context.getBuildFields();
-    var fNames = new Map<String, NewFields>();
-    var results = fields.map(mapFunc.bind(fNames));
+    var deps = new Deps();
+    var results = fields.map(mapFunc.bind(deps));
 
-    for(fName in fNames.keyValueIterator()) {
+    for(fName in deps.keyValueIterator()) {
       for(tl in fName.value.topLevel) {
         results.push({
           pos: Context.currentPos(),
@@ -51,7 +51,7 @@ class NeptuneMacro
       }
     }
 
-    var ft = appendConstructor(fNames);
+    var ft = appendConstructor(deps);
     var field :Field = {
       name: "new",
       kind: ft,
@@ -60,17 +60,17 @@ class NeptuneMacro
     }
     results.push(field);
     
-    for(nField in addSetters(fNames, results)) {
+    for(nField in addSetters(deps, results)) {
       results.push(nField);
     }
 
     return results;
   }
 
-  static function appendConstructor(fNames :Map<String, NewFields>) : FieldType
+  static function appendConstructor(deps :Deps) : FieldType
   {
     var nExprs = [];
-    for(fName in fNames.keyValueIterator()) {
+    for(fName in deps.keyValueIterator()) {
       for(tl in fName.value.topLevel) {
         nExprs.push(Binop.OpAssign.createBinop(tl.name.createExprIdent(), tl.expr));
       }
@@ -83,11 +83,11 @@ class NeptuneMacro
     });
   }
 
-  static function addSetters(fnames :Map<String, NewFields>, results:Array<Field>) : Array<Field>
+  static function addSetters(deps :Deps, results:Array<Field>) : Array<Field>
   {
     var newFields :Array<Field> = [];
 
-    for(keyVal in fnames.keyValueIterator()) {
+    for(keyVal in deps.keyValueIterator()) {
       var item = keyVal.key;
       for(result in results) {
         if(result.name == item) {
@@ -137,7 +137,7 @@ class NeptuneMacro
       .createCall("updateIdent");
   }
   
-  static function mapFunc(fnames :Map<String, NewFields>, field :Field) : Field
+  static function mapFunc(deps :Deps, field :Field) : Field
   {
     return switch field.kind {
       case FFun(f): {
@@ -148,7 +148,7 @@ class NeptuneMacro
           kind: FFun({
             args: f.args,
             ret: f.ret,
-            expr: fieldMeta(fnames, f.expr),
+            expr: fieldMeta(deps, f.expr),
             params: f.params
           })
         };
@@ -157,27 +157,27 @@ class NeptuneMacro
     }
   }
 
-  static function fieldMeta(fnames :Map<String, NewFields>, expr :Expr) : Expr
+  static function fieldMeta(deps :Deps, expr :Expr) : Expr
   {
     return switch expr.expr {
       case EMeta(s, e):
-        transformString(fnames, e);
+        transformString(deps, e);
       case EBlock(exprs):
         {
           pos: Context.currentPos(),
-          expr: EBlock(exprs.map(fieldMeta.bind(fnames)))
+          expr: EBlock(exprs.map(fieldMeta.bind(deps)))
         }
       case EReturn(e):
         {
           pos: Context.currentPos(),
-          expr: EReturn(fieldMeta(fnames, e))
+          expr: EReturn(fieldMeta(deps, e))
         }
       case _:
         expr;
     }
   }
   
-  static function transformString(fnames :Map<String, NewFields>, e :Expr) : Expr
+  static function transformString(deps :Deps, e :Expr) : Expr
   {
     var xml = switch e.expr {
       case EConst(c): switch c {
@@ -189,7 +189,7 @@ class NeptuneMacro
     var start = Context.getPosInfos(e.pos).min;
     var filename = Context.getPosInfos(Context.currentPos()).file;
     var result = Parser.parse(new Scanner(filename, xml, start));
-    return Compiler.compile(fnames, result);
+    return Compiler.compile(deps, result);
   }
 }
 #end

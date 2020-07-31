@@ -27,50 +27,27 @@ import neptune.compiler.dom.Parser.DomAST;
 import neptune.compiler.dom.Parser.Attr;
 using neptune.compiler.Utils;
 
-class NewFields
-{
-    public var topLevel :Array<{name :String, expr :Expr}>;
-    public var setterFns :Array<Expr>;
-
-    public function new() : Void
-    {
-        this.topLevel = [];
-        this.setterFns = [];
-    }
-}
-
 #if macro
 class Compiler
 {
-
-    
-
-    public static function compile(fields :Map<String, NewFields>, child :DomAST) : Expr
+    public static function compile(deps :Deps, child :DomAST) : Expr
     {
         return switch child {
             case DomText(text):
                 return compileText(text);
             case DomTextExpr(expr):
-                return compileTextExpr(fields, expr);
+                return compileTextExpr(deps, expr);
             case DomElement(tag, attrs, children):
-                return compileElement(fields, tag, attrs, children);
+                return compileElement(deps, tag, attrs, children);
         }
     }
 
-    static function getFieldsArray(ident :String, fields :Map<String, NewFields>) : NewFields
-    {
-        if(!fields.exists(ident)) {
-            fields.set(ident, new NewFields());
-        }
-        return fields.get(ident);
-    }
-
-    static function createDep(fields :Map<String, NewFields>, expr :Expr) : String
+    static function createDep(deps :Deps, expr :Expr) : String
     {
         return switch expr.expr {
             case EConst(c): switch c {
                 case CIdent(s):
-                    var fields = getFieldsArray(s, fields);
+                    var fields = deps.getDep(s);
                     var fieldName = Utils.createFieldName();
                     return fieldName;
                 case _: 
@@ -87,13 +64,13 @@ class Compiler
         }
     }
 
-    static function compileTextExpr(fields :Map<String, NewFields>, expr :Expr) : Expr
+    static function compileTextExpr(deps :Deps, expr :Expr) : Expr
     {
         return switch expr.expr {
             case EConst(c): switch c {
                 case CIdent(s):
-                    var fieldName = createDep(fields, expr);
-                    var fields = getFieldsArray(s, fields);
+                    var fieldName = createDep(deps, expr);
+                    var fields = deps.getDep(s);
 
                     var func = [expr]
                         .createCall("createText");
@@ -109,8 +86,8 @@ class Compiler
             case ECall(e, params):
                 expr;
             case EBinop(op, e1, e2):
-                var fieldName1 = createDep(fields, e1);
-                var fieldName2 = createDep(fields, e2);
+                var fieldName1 = createDep(deps, e1);
+                var fieldName2 = createDep(deps, e2);
                 trace(fieldName1, fieldName2);
                 // throw "not supported";
                 expr;
@@ -127,7 +104,7 @@ class Compiler
         return [strExpr].createCall("createText");
     }
 
-    static function compileElement(fields :Map<String, NewFields>, tag :String, attrs:Array<Attr>, children:Array<DomAST>) : Expr
+    static function compileElement(deps :Deps, tag :String, attrs:Array<Attr>, children:Array<DomAST>) : Expr
     {
         var root = [tag.createExprString()].createCall("createElement");
         var block :Array<Expr> = [];
@@ -138,7 +115,7 @@ class Compiler
         }
 
         for(child in children) {
-            block.push(createChild(fields, tag, child));
+            block.push(createChild(deps, tag, child));
         }
 
         block.push(tag.createExprIdent());
@@ -170,9 +147,9 @@ class Compiler
         }
     }
 
-    static function createChild(fields :Map<String, NewFields>, tag :String, child :DomAST) : Expr
+    static function createChild(deps :Deps, tag :String, child :DomAST) : Expr
     {
-        var cexpr = compile(fields, child);
+        var cexpr = compile(deps, child);
         return [tag.createExprIdent(), cexpr].createCall("addChild");
     }
 }
