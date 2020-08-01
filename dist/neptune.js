@@ -7,11 +7,11 @@ class HelloWorld {
 		this.ten = 1;
 		this.numba = 1;
 		let text = (this.numba + this.ten) * 200;
-		this.var_1 = window.document.createTextNode(text);
+		this.var_0 = window.document.createTextNode(text);
 		let text1 = this.hai;
-		this.var_2 = window.document.createTextNode(text1);
+		this.var_1 = window.document.createTextNode(text1);
 		let text2 = this.isCool ? "sausage" : "turkey";
-		this.var_3 = window.document.createTextNode(text2);
+		this.var_2 = window.document.createTextNode(text2);
 	}
 	handleClick() {
 		let _g = this;
@@ -22,27 +22,22 @@ class HelloWorld {
 		this.set_isCool(!this.isCool);
 	}
 	template() {
-		window.document.createElement("h1").appendChild(window.document.createTextNode("Hello"));
-		let s = new Sage();
+		let x = 3;
+		(function(val) {
+			x = val;
+			console.log("src/HelloWorld.hx:35:",x);
+		})(1000);
 		let div = window.document.createElement("div");
 		div.appendChild(window.document.createTextNode(" "));
-		let h6 = window.document.createElement("h6");
-		h6.appendChild(window.document.createTextNode("This is some good stuff"));
-		div.appendChild(h6);
-		div.appendChild(window.document.createTextNode(" "));
 		let h2 = window.document.createElement("h2");
-		h2.appendChild(this.var_1);
+		h2.appendChild(this.var_0);
 		h2.appendChild(window.document.createTextNode(" - "));
-		h2.appendChild(this.var_2);
+		h2.appendChild(this.var_1);
 		div.appendChild(h2);
 		div.appendChild(window.document.createTextNode(" "));
 		let h3 = window.document.createElement("h3");
-		h3.appendChild(this.var_3);
+		h3.appendChild(this.var_2);
 		div.appendChild(h3);
-		div.appendChild(window.document.createTextNode(" "));
-		let h4 = window.document.createElement("h4");
-		h4.appendChild(s.template());
-		div.appendChild(h4);
 		div.appendChild(window.document.createTextNode(" "));
 		let button = window.document.createElement("button");
 		button.setAttribute("class","button");
@@ -59,7 +54,7 @@ class HelloWorld {
 	}
 	set_numba(val) {
 		this.numba = val;
-		let text = this.var_1;
+		let text = this.var_0;
 		let content = (this.numba + this.ten) * 200;
 		neptune_lib_Runtime.updateDependencies([function() {
 			text.textContent = content;
@@ -68,7 +63,7 @@ class HelloWorld {
 	}
 	set_hai(val) {
 		this.hai = val;
-		let text = this.var_2;
+		let text = this.var_1;
 		let content = this.hai;
 		neptune_lib_Runtime.updateDependencies([function() {
 			text.textContent = content;
@@ -77,23 +72,12 @@ class HelloWorld {
 	}
 	set_isCool(val) {
 		this.isCool = val;
-		let text = this.var_3;
+		let text = this.var_2;
 		let content = this.isCool ? "sausage" : "turkey";
 		neptune_lib_Runtime.updateDependencies([function() {
 			text.textContent = content;
 		}]);
 		return val;
-	}
-}
-class Sage {
-	constructor() {
-		this.flavor = 9999;
-		this.var_0 = window.document.createTextNode(this.flavor);
-	}
-	template() {
-		let h2 = window.document.createElement("h2");
-		h2.appendChild(this.var_0);
-		return h2;
 	}
 }
 class Main {

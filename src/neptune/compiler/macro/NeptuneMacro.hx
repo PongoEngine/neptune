@@ -56,19 +56,37 @@ class NeptuneMacro
       return switch field.kind {
         case FFun(f): {
           {
-            pos: field.pos,
             name: field.name,
+            doc: field.doc,
             access: [APublic],
             kind: FFun({
               args: f.args,
               ret: f.ret,
               expr: transformMarkup(deps, f.expr),
               params: f.params
-            })
+            }),
+            pos: field.pos,
+            meta: field.meta
           };
         }
-        case _: 
-          field;
+        case FVar(t, e):
+          {
+            name: field.name,
+            doc: field.doc,
+            access: [APublic],
+            kind: FVar(t, transformMarkup(deps, e)),
+            pos: field.pos,
+            meta: field.meta
+          };
+        case FProp(get, set, t, e):
+          {
+            name: field.name,
+            doc: field.doc,
+            access: [APublic],
+            kind: FProp(get, set, t, transformMarkup(deps, e)),
+            pos: field.pos,
+            meta: field.meta
+          };
       }
   }
 
