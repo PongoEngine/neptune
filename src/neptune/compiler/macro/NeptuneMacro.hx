@@ -51,7 +51,7 @@ class NeptuneMacro
             kind: FFun({
               args: f.args,
               ret: f.ret,
-              expr: MetaTransformer.transformMarkup(compileMarkup, f.expr),
+              expr: MetaTransformer.transform(compileMarkup, f.expr),
               params: f.params
             }),
             pos: field.pos,
@@ -63,7 +63,7 @@ class NeptuneMacro
             name: field.name,
             doc: field.doc,
             access: [APublic],
-            kind: FVar(t, MetaTransformer.transformMarkup(compileMarkup, e)),
+            kind: FVar(t, MetaTransformer.transform(compileMarkup, e)),
             pos: field.pos,
             meta: field.meta
           };
@@ -72,7 +72,7 @@ class NeptuneMacro
             name: field.name,
             doc: field.doc,
             access: [APublic],
-            kind: FProp(get, set, t, MetaTransformer.transformMarkup(compileMarkup, e)),
+            kind: FProp(get, set, t, MetaTransformer.transform(compileMarkup, e)),
             pos: field.pos,
             meta: field.meta
           };
@@ -91,6 +91,7 @@ class NeptuneMacro
     var start = Context.getPosInfos(e.pos).min;
     var filename = Context.getPosInfos(Context.currentPos()).file;
     var result = Parser.parse(new Scanner(filename, xml, start));
+
     return {
       pos: e.pos,
       expr: EConst(CString(xml))

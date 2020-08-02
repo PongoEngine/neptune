@@ -4,17 +4,7 @@ class HelloWorld {
 	constructor() {
 	}
 	template() {
-		let x_0 = "<h1>Hi2</h1>";
-		let x_1 = "<h1>Hi3</h1>";
-		let r = "<h4>hsfd</h4>";
-		r = "<h1>cool</h1>";
-		let r1 = "<h1>sdf</h1>";
-		try {
-		} catch( _g ) {
-		}
-		let x = "<h1>Hi2</h1>";
-		let x1 = "<h1>Hi2</h1>";
-		return x1[1];
+		return "<h1>{true ? <h1>Stuff</h1> : <h1>Garbage</h1>}</h1>";
 	}
 }
 class Main {
