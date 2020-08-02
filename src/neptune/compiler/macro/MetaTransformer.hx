@@ -4,7 +4,7 @@ import haxe.macro.Expr;
 
 class MetaTransformer
 {
-    public static function transformField(fn :Expr -> Expr, scope :Scope, field :Field) : Field
+    public static function transformField(fn :Scope -> Expr -> Expr, scope :Scope, field :Field) : Field
     {
         return switch field.kind {
             case FFun(f): {
@@ -15,7 +15,7 @@ class MetaTransformer
                     kind: FFun({
                         args: f.args,
                         ret: f.ret,
-                        expr: transformExpr(fn, scope, f.expr),
+                        expr: transformExpr(fn, scope.createChild(), f.expr),
                         params: f.params
                     }),
                     pos: field.pos,
@@ -23,6 +23,7 @@ class MetaTransformer
                 };
                 }
             case FVar(t, e):
+                scope.addItem(field.name, SField(field));
                 {
                     name: field.name,
                     doc: field.doc,
@@ -32,6 +33,7 @@ class MetaTransformer
                     meta: field.meta
                 };
             case FProp(get, set, t, e):
+                scope.addItem(field.name, SField(field));
                 {
                     name: field.name,
                     doc: field.doc,
@@ -43,7 +45,7 @@ class MetaTransformer
         }
     }
 
-    public static function transformExpr(fn :Expr -> Expr, scope :Scope, expr :Expr) : Expr
+    public static function transformExpr(fn :Scope -> Expr -> Expr, scope :Scope, expr :Expr) : Expr
     {
         if(expr == null) return null;
         return switch expr.expr {
@@ -66,7 +68,7 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope)))
+                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild())))
                 }
             case EBreak: 
                 expr;
@@ -95,10 +97,16 @@ class MetaTransformer
                 expr;
             case EField(e, field): 
                 expr;
-            case EFor(it, expr): 
-                expr;
+            case EFor(it, e): 
+                {
+                    pos: expr.pos,
+                    expr: EFor(it, transformExpr(fn, scope, e))
+                }
             case EFunction(kind, f): 
-                expr;
+                {
+                    pos: expr.pos,
+                    expr: EFunction(kind, transformFunction(fn, scope, f))
+                }
             case EIf(econd, eif, eelse): 
                 {
                     pos: expr.pos,
@@ -109,7 +117,7 @@ class MetaTransformer
                     )
                 }
             case EMeta(s, e):
-                fn(e);
+                fn(scope, e);
             case ENew(t, params): 
                 {
                     pos: expr.pos,
@@ -146,7 +154,10 @@ class MetaTransformer
                     )
                 }
             case EThrow(e): 
-                expr;
+                {
+                    pos: expr.pos,
+                    expr: EThrow(transformExpr(fn, scope, e))
+                }
             case ETry(e, catches): 
                 {
                     pos: expr.pos,
@@ -174,7 +185,7 @@ class MetaTransformer
         }
     }
     
-    private static function transformCase(fn :Expr -> Expr, scope :Scope, case_ :Case) : Case
+    private static function transformCase(fn :Scope -> Expr -> Expr, scope :Scope, case_ :Case) : Case
     {
         return {
             values: case_.values.map(transformExpr.bind(fn, scope)),
@@ -183,12 +194,22 @@ class MetaTransformer
         };
     }
     
-    private static function transformCatch(fn :Expr -> Expr, scope :Scope, catch_ :Catch) : Catch
+    private static function transformCatch(fn :Scope -> Expr -> Expr, scope :Scope, catch_ :Catch) : Catch
     {
         return {
             name: catch_.name,
             type: catch_.type,
             expr: transformExpr(fn, scope, catch_.expr)
+        };
+    }
+
+    private static function transformFunction(fn :Scope -> Expr -> Expr, scope :Scope, function_ :Function) : Function
+    {
+        return {
+            args: function_.args,
+            ret: function_.ret,
+            expr: transformExpr(fn, scope, function_.expr),
+            params: function_.params
         };
     }
 }

@@ -9,23 +9,54 @@
 	name: hello
 	pos: #pos
 }, {
-	access: null
+	access: [APublic]
 	doc: null
-	kind: null <- expected value
-	meta: null
-	name: null <- expected value
-	pos: null <- expected value
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: new
+	pos: #pos
 }, {
-	access: null
+	access: [APublic]
 	doc: null
-	kind: null <- expected value
-	meta: null
-	name: null <- expected value
-	pos: null <- expected value
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: null <- expected value
+				pos: null <- expected value
+			}, {
+				expr: EReturn({
+					expr: EConst(CString(taco, DoubleQuotes))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: String
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: template
+	pos: #pos
 }]
-line 14: expected value
-line 16: expected value
-line 17: expected value
-line 21: expected value
-line 23: expected value
-line 24: expected value
+line 38: expected value
+line 39: expected value

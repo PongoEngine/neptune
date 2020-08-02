@@ -32,11 +32,15 @@ enum ScopeItem
 class Scope
 {
     public var parent :Scope = null;
-    public var items :Map<String, ScopeItem>;
 
     public function new() : Void
     {
-        this.items = new Map<String, ScopeItem>();
+        _items = new Map<String, ScopeItem>();
+    }
+
+    public function addItem(name :String, item :ScopeItem) : Void
+    {
+        _items.set(name, item);
     }
 
     public function createChild() : Scope
@@ -45,4 +49,6 @@ class Scope
         c.parent = this;
         return c;
     }
+
+    private var _items :Map<String, ScopeItem>;
 }

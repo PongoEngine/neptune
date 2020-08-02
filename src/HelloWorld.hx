@@ -12,10 +12,15 @@ class HelloWorld implements Neptune
 
     public function template() : String
     {
-        var x = 2, y = 5, z = 3;
-        function changeX() {
-            x += 1;
+
+        function cool() {
+            trace("sup!");
+            return <h1>Hello</h1>;
         }
-        return <h1 onclick={changeX}>{x}{y}{z}{"hello"}</h1>;
+
+
+        // return <h1 onclick={changeX}>{x}{y}{z}{"helssslo"}</h1>;
+
+        return "taco";
     }
 }

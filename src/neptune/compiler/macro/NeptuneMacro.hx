@@ -42,7 +42,7 @@ class NeptuneMacro
         return fields;
     }
 
-    public static function compileMarkup(e :Expr) : Expr
+    public static function compileMarkup(scope :Scope, e :Expr) : Expr
     {
         var xml = switch e.expr {
             case EConst(c): switch c {
@@ -55,7 +55,7 @@ class NeptuneMacro
         var start = Context.getPosInfos(e.pos).min;
         var filename = Context.getPosInfos(Context.currentPos()).file;
         var result = Parser.parse(new Scanner(filename, xml, start));
-        // handleTree(null, result);
+        handleTree(scope, null, result);
 
         return {
             pos: e.pos,
@@ -63,14 +63,15 @@ class NeptuneMacro
         };
     }
 
-    public static function handleTree(parent :Null<DomAST>, current :DomAST) : Void
+    public static function handleTree(scope :Scope, parent :Null<DomAST>, current :DomAST) : Void
     {
         switch current {
             case DomText(string):
-            case DomExpr(expr): trace(expr);
+            case DomExpr(expr): 
+                // trace(expr);
             case DomElement(tag, attrs, children): {
                 for(child in children) {
-                    handleTree(current, child);
+                    handleTree(scope, current, child);
                 }
             }
         }
