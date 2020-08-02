@@ -15,7 +15,10 @@ class MetaTransformer
                     kind: FFun({
                         args: f.args,
                         ret: f.ret,
-                        expr: transformExpr(fn, scope.createChild(), f.expr),
+                        expr: switch f.expr.expr {
+                            case EBlock(exprs): transformExpr(fn, scope.createChild(exprs), f.expr);
+                            case _: transformExpr(fn, scope.createChild([]), f.expr);
+                        },
                         params: f.params
                     }),
                     pos: field.pos,
@@ -68,7 +71,7 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild())))
+                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild(exprs))))
                 }
             case EBreak: 
                 expr;

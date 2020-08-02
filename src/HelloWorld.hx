@@ -18,10 +18,9 @@ class HelloWorld implements Neptune
 
     public function template() : Node
     {
+        var tasty = 100;
+        tasty += 20 - helper;
         return 
-            <div>
-                <h1>{x}</h1>
-                <div>{<h3>Cool</h3>}</div>
-            </div>;
+            <div>{tasty}</div>;
     }
 }

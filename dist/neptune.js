@@ -2,10 +2,12 @@
 (function ($global) { "use strict";
 class HelloWorld {
 	constructor() {
-		this.x = neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("span"),[window.document.createTextNode("Hi")]);
+		this.helper = 101;
 	}
 	template() {
-		return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("div"),[window.document.createTextNode(" "),neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[this.x]),window.document.createTextNode(" "),neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("div"),[neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h3"),[window.document.createTextNode("Cool")])]),window.document.createTextNode(" ")]);
+		let tasty = 100;
+		tasty = 100 + (20 - this.helper);
+		return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("div"),[window.document.createTextNode(tasty)]);
 	}
 }
 class Main {

@@ -60,7 +60,7 @@
 				expr: EConst(CIdent(createElement))
 				pos: #pos
 			}, [{
-				expr: EConst(CString(div, null))
+				expr: EConst(CString(span, null))
 				pos: #pos
 			}])
 			pos: #pos
@@ -83,105 +83,23 @@
 	name: x
 	pos: #pos
 }, {
-	access: [APublic]
+	access: null
 	doc: null
-	kind: FFun({
-		args: []
-		expr: {
-			expr: EBlock([])
-			pos: #pos
-		}
-		params: []
-		ret: TPath({
-			name: Void
-			pack: []
-			params: []
-			sub: null
-		})
-	})
-	meta: []
-	name: new
-	pos: #pos
+	kind: null <- expected value
+	meta: null
+	name: null <- expected value
+	pos: null <- expected value
 }, {
-	access: [APublic]
+	access: null
 	doc: null
-	kind: FFun({
-		args: []
-		expr: {
-			expr: EBlock([{
-				expr: EReturn({
-					expr: ECall({
-						expr: EConst(CIdent(addChildren))
-						pos: #pos
-					}, [{
-						expr: ECall({
-							expr: EConst(CIdent(createElement))
-							pos: #pos
-						}, [{
-							expr: EConst(CString(div, null))
-							pos: #pos
-						}])
-						pos: #pos
-					}, {
-						expr: EArrayDecl([{
-							expr: ECall({
-								expr: EConst(CIdent(createText))
-								pos: #pos
-							}, [{
-								expr: EConst(CString( , null))
-								pos: #pos
-							}])
-							pos: #pos
-						}, {
-							expr: ECall({
-								expr: EConst(CIdent(addChildren))
-								pos: #pos
-							}, [{
-								expr: ECall({
-									expr: EConst(CIdent(createElement))
-									pos: #pos
-								}, [{
-									expr: EConst(CString(h1, null))
-									pos: #pos
-								}])
-								pos: #pos
-							}, {
-								expr: EArrayDecl([{
-									expr: null <- expected value
-									pos: null <- expected value
-								}])
-								pos: #pos
-							}])
-							pos: #pos
-						}, {
-							expr: ECall({
-								expr: EConst(CIdent(createText))
-								pos: #pos
-							}, [{
-								expr: EConst(CString( , null))
-								pos: #pos
-							}])
-							pos: #pos
-						}])
-						pos: #pos
-					}])
-					pos: #pos
-				})
-				pos: #pos
-			}])
-			pos: #pos
-		}
-		params: []
-		ret: TPath({
-			name: Node
-			pack: []
-			params: []
-			sub: null
-		})
-	})
-	meta: []
-	name: template
-	pos: #pos
+	kind: null <- expected value
+	meta: null
+	name: null <- expected value
+	pos: null <- expected value
 }]
-line 150: expected value
-line 151: expected value
+line 88: expected value
+line 90: expected value
+line 91: expected value
+line 95: expected value
+line 97: expected value
+line 98: expected value

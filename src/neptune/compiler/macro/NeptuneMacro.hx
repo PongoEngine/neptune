@@ -34,7 +34,7 @@ class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
-        var scope = new Scope();
+        var scope = new Scope([]);
         var func = MetaTransformer.transformField.bind(compileMarkup, scope);
         var fields = Context.getBuildFields()
             .map(func);
@@ -99,7 +99,7 @@ class NeptuneMacro
                         }
                         else {
                             expr.expr = [s.createDefIdent().toExpr()]
-                                .createDefCall("addChild");
+                                .createDefCall("createText");
                             expr;
                         }
                     case _:
@@ -132,7 +132,14 @@ class NeptuneMacro
                         throw "not implemented yet";
                 }
             case SExpr(expr):
-                throw "not implemented yet";
+                switch expr.expr {
+                    case EMeta(s, e):
+                        true;
+                    case EConst(c):
+                        false;
+                    case _:
+                        throw "not implemented yet";
+                }
         }
     }
 }
