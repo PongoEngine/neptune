@@ -4,46 +4,33 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
-    // public var robot (default, null):Int = 1;
-    public var numba :Int = 1;
-    public var ten :Int = 1;
-    public var hai :String = "Hai";
-    public var isCool = false;
-
-    public function handleClick() 
+    public function new() : Void
     {
-        numba += 1;
+        var x = <h1>Hi2</h1>;
     }
 
-    public function changeText() 
+
+    public function template() : String
     {
-        hai = "Carla";
-        this.isCool = !this.isCool;
-    }
+        var x :Int = cast [<h1>Hi2</h1>, <h1>Hi3</h1>];
+        var r = <h4>hsfd</h4>;
+        r = <h1>cool</h1>;
 
-    public function template() : Element
-    {
-        // var taccccooo = <h1>Taco bout it?</h1>;
-        // var r= 0;
-
-        // // var x : = 3;
-        // var robot :Int = 1;
-        var x = 3;
-
-        function set_x(val) {
-            x = val;
-            trace(x);
+        var r = <h1>sdf</h1>;
+        try {
+            <h3>dfs</h3>;
+        }
+        catch(e) {
+            <h3>dfs</h3>;
         }
 
-        set_x(1000);
+        var x = switch true {
+            case true: <h1>Hi2</h1>;
+            case false: <h1>Hi2</h1>;
+        }
 
-
-        return 
-            <div>
-                <h2>{(numba + ten) * 200} - {hai}</h2>
-                <h3>{isCool ? "sausage" : "turkey"}</h3>
-                <button class="button" onclick={handleClick}>Increment</button>
-                <button onclick={changeText}>Say Hello</button>
-            </div>;
+        var x = if(true) <h1>Hi2</h1> else (<h1>Hi2</h1>);
+        // var x = true ? <h1>Hi2</h1> : <h1>totes</h1>;
+        return untyped x[1];
     }
 }

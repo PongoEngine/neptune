@@ -2,88 +2,24 @@
 (function ($global) { "use strict";
 class HelloWorld {
 	constructor() {
-		this.isCool = false;
-		this.hai = "Hai";
-		this.ten = 1;
-		this.numba = 1;
-		let text = (this.numba + this.ten) * 200;
-		this.var_0 = window.document.createTextNode(text);
-		let text1 = this.hai;
-		this.var_1 = window.document.createTextNode(text1);
-		let text2 = this.isCool ? "sausage" : "turkey";
-		this.var_2 = window.document.createTextNode(text2);
-	}
-	handleClick() {
-		let _g = this;
-		_g.set_numba(_g.numba + 1);
-	}
-	changeText() {
-		this.set_hai("Carla");
-		this.set_isCool(!this.isCool);
 	}
 	template() {
-		let x = 3;
-		(function(val) {
-			x = val;
-			console.log("src/HelloWorld.hx:35:",x);
-		})(1000);
-		let div = window.document.createElement("div");
-		div.appendChild(window.document.createTextNode(" "));
-		let h2 = window.document.createElement("h2");
-		h2.appendChild(this.var_0);
-		h2.appendChild(window.document.createTextNode(" - "));
-		h2.appendChild(this.var_1);
-		div.appendChild(h2);
-		div.appendChild(window.document.createTextNode(" "));
-		let h3 = window.document.createElement("h3");
-		h3.appendChild(this.var_2);
-		div.appendChild(h3);
-		div.appendChild(window.document.createTextNode(" "));
-		let button = window.document.createElement("button");
-		button.setAttribute("class","button");
-		button.addEventListener("click",$bind(this,this.handleClick));
-		button.appendChild(window.document.createTextNode("Increment"));
-		div.appendChild(button);
-		div.appendChild(window.document.createTextNode(" "));
-		let button1 = window.document.createElement("button");
-		button1.addEventListener("click",$bind(this,this.changeText));
-		button1.appendChild(window.document.createTextNode("Say Hello"));
-		div.appendChild(button1);
-		div.appendChild(window.document.createTextNode(" "));
-		return div;
-	}
-	set_numba(val) {
-		this.numba = val;
-		let text = this.var_0;
-		let content = (this.numba + this.ten) * 200;
-		neptune_lib_Runtime.updateDependencies([function() {
-			text.textContent = content;
-		}]);
-		return val;
-	}
-	set_hai(val) {
-		this.hai = val;
-		let text = this.var_1;
-		let content = this.hai;
-		neptune_lib_Runtime.updateDependencies([function() {
-			text.textContent = content;
-		}]);
-		return val;
-	}
-	set_isCool(val) {
-		this.isCool = val;
-		let text = this.var_2;
-		let content = this.isCool ? "sausage" : "turkey";
-		neptune_lib_Runtime.updateDependencies([function() {
-			text.textContent = content;
-		}]);
-		return val;
+		let x_0 = "<h1>Hi2</h1>";
+		let x_1 = "<h1>Hi3</h1>";
+		let r = "<h4>hsfd</h4>";
+		r = "<h1>cool</h1>";
+		let r1 = "<h1>sdf</h1>";
+		try {
+		} catch( _g ) {
+		}
+		let x = "<h1>Hi2</h1>";
+		let x1 = "<h1>Hi2</h1>";
+		return x1[1];
 	}
 }
 class Main {
 	static main() {
-		let helloWorld = new HelloWorld();
-		window.document.body.appendChild(helloWorld.template());
+		console.log("src/Main.hx:6:",new HelloWorld().template());
 	}
 }
 class haxe_iterators_ArrayIterator {
@@ -98,14 +34,5 @@ class haxe_iterators_ArrayIterator {
 		return this.array[this.current++];
 	}
 }
-class neptune_lib_Runtime {
-	static updateDependencies(cbs) {
-		let _g = 0;
-		while(_g < cbs.length) cbs[_g++]();
-	}
-}
-var $_;
-function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
-$global.$haxeUID |= 0;
 Main.main();
-})(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
+})({});

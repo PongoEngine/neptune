@@ -25,8 +25,6 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
-import neptune.compiler.macro.Compiler;
-import neptune.compiler.macro.Deps;
 using neptune.compiler.macro.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
@@ -36,22 +34,13 @@ class NeptuneMacro
 {
   macro static public function fromInterface():Array<Field> 
   {
-    var deps = new Deps();
     var fields = Context.getBuildFields()
-      .map(transformFieldKind.bind(deps));
-
-    fields = fields.concat(deps.createConstructorFields());
-    fields.push(deps.createConstructor());
-
-    //create setter functions
-    fields = fields.concat(deps.createDependentSetters(fields));
-    //wrap dependent fields with setters
-    fields = deps.transformDependentFields(fields);
+      .map(transformFieldKind);
 
     return fields;
   }
   
-  static function transformFieldKind(deps :Deps, field :Field) : Field
+  static function transformFieldKind(field :Field) : Field
   {
       return switch field.kind {
         case FFun(f): {
@@ -62,7 +51,7 @@ class NeptuneMacro
             kind: FFun({
               args: f.args,
               ret: f.ret,
-              expr: transformMarkup(deps, f.expr),
+              expr: MetaTransformer.transformMarkup(compileMarkup, f.expr),
               params: f.params
             }),
             pos: field.pos,
@@ -74,7 +63,7 @@ class NeptuneMacro
             name: field.name,
             doc: field.doc,
             access: [APublic],
-            kind: FVar(t, transformMarkup(deps, e)),
+            kind: FVar(t, MetaTransformer.transformMarkup(compileMarkup, e)),
             pos: field.pos,
             meta: field.meta
           };
@@ -83,44 +72,14 @@ class NeptuneMacro
             name: field.name,
             doc: field.doc,
             access: [APublic],
-            kind: FProp(get, set, t, transformMarkup(deps, e)),
+            kind: FProp(get, set, t, MetaTransformer.transformMarkup(compileMarkup, e)),
             pos: field.pos,
             meta: field.meta
           };
       }
   }
-
-  static function transformMarkup(deps :Deps, expr :Expr) : Expr
-  {
-    return switch expr.expr {
-      case EMeta(s, e):
-        compileMarkup(deps, e);
-      case EBlock(exprs):
-        {
-          pos: expr.pos,
-          expr: EBlock(exprs.map(transformMarkup.bind(deps)))
-        }
-      case EReturn(e):
-        {
-          pos: expr.pos,
-          expr: EReturn(transformMarkup(deps, e))
-        }
-      case EVars(vars):
-        {
-          pos: expr.pos,
-          expr: EVars(vars.map(v -> {
-            name: v.name,
-            type: v.type,
-            expr: transformMarkup(deps, v.expr),
-            isFinal: v.isFinal
-          }))
-        }
-      case _:
-        expr;
-    }
-  }
   
-  public static function compileMarkup(deps :Deps, e :Expr) : Expr
+  public static function compileMarkup(e :Expr) : Expr
   {
     var xml = switch e.expr {
       case EConst(c): switch c {
@@ -132,7 +91,10 @@ class NeptuneMacro
     var start = Context.getPosInfos(e.pos).min;
     var filename = Context.getPosInfos(Context.currentPos()).file;
     var result = Parser.parse(new Scanner(filename, xml, start));
-    return Compiler.compile(deps, result);
+    return {
+      pos: e.pos,
+      expr: EConst(CString(xml))
+    };
   }
 }
 #end
