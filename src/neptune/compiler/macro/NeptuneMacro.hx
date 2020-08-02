@@ -49,61 +49,90 @@ class NeptuneMacro
                 case CString(s, _): s;
                 case _: throw "err";
             }
-            case _: throw "err";
+            case _:
+                trace(e.expr);
+                throw "err";
         }
 
         var start = Context.getPosInfos(e.pos).min;
         var filename = Context.getPosInfos(Context.currentPos()).file;
         var result = Parser.parse(new Scanner(filename, xml, start));
-        handleTree(scope, null, result);
 
-        return {
-            pos: e.pos,
-            expr: EConst(CString(xml))
-        };
+        return handleTree(scope, result);
     }
 
-    public static function handleTree(scope :Scope, parent :Null<DomAST>, current :DomAST) : Void
+    public static function handleTree(scope :Scope, current :DomAST) : Expr
     {
-        switch current {
+        return switch current {
             case DomText(string):
+                var str = string.cleanWhitespace();
+                [str.createDefString().toExpr()]
+                    .createDefCall("createText")
+                    .toExpr();
+
             case DomExpr(expr):
-                handleExpr(scope, parent, current, expr); 
+                handleDomExpr(scope, expr); 
+                
             case DomElement(tag, attrs, children): {
-                for(child in children) {
-                    handleTree(scope, current, child);
-                }
+                var cExpr = children.map(handleTree.bind(scope))
+                    .createDefArrayDecl()
+                    .toExpr();
+                var element = [tag.createDefString().toExpr()]
+                    .createDefCall("createElement")
+                    .toExpr();
+                [element, cExpr]
+                    .createDefCall("addChildren")
+                    .toExpr();
             }
         }
     }
 
 
-    public static function handleExpr(scope :Scope, parent :Null<DomAST>, current :DomAST, expr :Expr) : Void
+    public static function handleDomExpr(scope :Scope, expr :Expr) : Expr
     {
-        switch expr.expr {
+        return switch expr.expr {
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        // switch 
-                        // var item = scope.get(s);
-                        // if(item != null) {
-                        //     switch item {
-                        //         case SField(field):
-                        //         case SExpr(expr): switch expr.expr {
-                        //             case EConst(c): switch c {
-                        //                 case CInt(v):
-                        //                     expr.expr =  EConst(CInt("200"));
-                        //                 case _:
-                        //             }
-                        //             case _:
-                        //         }
-                        //     }
-                        // }
-                        // trace(scope.get(s));
-                        trace(s, scope.exists(s));
+                        if(isMarkup(s, scope)) {
+                            expr;
+                        }
+                        else {
+                            expr.expr = [s.createDefIdent().toExpr()]
+                                .createDefCall("addChild");
+                            expr;
+                        }
                     case _:
+                        throw "not implmented yet";
                 }
+            case EMeta(s, e):
+                compileMarkup(scope, e);
             case _:
+                throw "not implmented yet";
+        }
+    }
+
+    private static function isMarkup(identifier :String, scope :Scope) : Bool
+    {
+        var expr = scope.get(identifier);
+        return switch expr {
+            case SField(field):
+                switch field.kind {
+                    case FVar(t, e): switch e.expr {
+                        case EMeta(s, e):
+                            true;
+                        case EConst(c):
+                            false;
+                        case _:
+                            throw "not implemented yet";
+                    }
+                    case FFun(f): 
+                        throw "not implemented yet";
+                    case FProp(get, set, t, e): 
+                        throw "not implemented yet";
+                }
+            case SExpr(expr):
+                throw "not implemented yet";
         }
     }
 }

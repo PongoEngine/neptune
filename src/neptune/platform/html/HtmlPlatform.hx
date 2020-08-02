@@ -1,4 +1,4 @@
-package neptune.lib;
+package neptune.platform.html;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -26,7 +26,7 @@ import js.html.Element;
 import js.html.Text;
 import js.html.Node;
 
-class Runtime
+class HtmlPlatform
 {
     public static inline function createElement(tagname :String) : Element
     {
@@ -38,50 +38,18 @@ class Runtime
       return document.createTextNode(text);
     }
 
-    public static function updateDependencies(cbs :Array<Void -> Void>) : Void
+    public static function addChildren(element :Element, children :Array<Node>) : Element
     {
-      for(cb in cbs) {
-        cb();
+      for(child in children) {
+        addChild(element, child);
       }
+      return element;
     }
 
-    public static inline function updateTextNode(text :js.html.Text, content :Dynamic) : Void -> Void
-    {
-      return () -> {
-        text.textContent = content;
-      }
-    }
-
-    public static inline function addTextNode(text :js.html.Text, a :Float, b :Float) : Void -> Void
-    {
-      return () -> {
-        text.textContent = cast (a + b);
-      }
-    }
-
-    public static inline function addAttr(element :Element, attrName :String, attrValue :Dynamic) : Void
-    {
-      element.setAttribute(attrName, attrValue);
-    }
-
-    public static inline function removeAttr(element :Element, attrName :String) : Void
-    {
-      element.removeAttribute(attrName);
-    }
-
-    public static inline function addAttrEvent(element :Element, attrName :String, attrValue :Dynamic) : Void
-    {
-      element.addEventListener("click", attrValue);
-    }
-
-    public static inline function removeAttrEvent(element :Element, attrName :String, attrValue :Dynamic) : Void
-    {
-      element.removeEventListener(attrName, attrValue);
-    }
-
-    public inline static function addChild(element :Element, child :Node) : Void
+    public inline static function addChild(element :Element, child :Node) : Element
     {
       element.appendChild(child);
+      return element;
     }
 
     public inline static function removeChild(element :Element, child :Node) : Void

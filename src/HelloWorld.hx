@@ -1,35 +1,27 @@
-import js.html.Element;
-import neptune.lib.Runtime.*;
+import js.html.Node;
+import neptune.platform.html.HtmlPlatform.*;
 import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
-    var hello = "Hi";
-    var giibye = "woah";
+    var hello = "Hello";
+    var gf = "Carla";
+    var hungry = "All the time";
+    var helper = 101;
+    var isYes = true;
 
+    var x = <span>Hi</span>;
 
     public function new() : Void
     {
     }
 
-
-    public function template() : String
+    public function template() : Node
     {
-        var robot = 2;
-        var x = 0.3;
-        var carla = <p>woah</p>;
-
-        function cool() {
-            return <h1>{carla}</h1>;
-        }
-
-        function water() {
-            var neptune = <p>woah</p>;
-            return <h1>{carla}</h1>;
-        }
-
-        trace(robot);
-
-        return <h1 onclick={changeX}>{x}{y}{z}{hello}</h1>;
+        return 
+            <div>
+                <h1>{x}</h1>
+                <div>{<h3>Cool</h3>}</div>
+            </div>;
     }
 }

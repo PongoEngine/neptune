@@ -2,11 +2,85 @@
 	access: [APublic]
 	doc: null
 	kind: FVar(null, {
-		expr: EConst(CString(Hi, DoubleQuotes))
+		expr: EConst(CString(Hello, DoubleQuotes))
 		pos: #pos
 	})
 	meta: []
 	name: hello
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(null, {
+		expr: EConst(CString(Carla, DoubleQuotes))
+		pos: #pos
+	})
+	meta: []
+	name: gf
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(null, {
+		expr: EConst(CString(All the time, DoubleQuotes))
+		pos: #pos
+	})
+	meta: []
+	name: hungry
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(null, {
+		expr: EConst(CInt(101))
+		pos: #pos
+	})
+	meta: []
+	name: helper
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(null, {
+		expr: EConst(CIdent(true))
+		pos: #pos
+	})
+	meta: []
+	name: isYes
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(null, {
+		expr: ECall({
+			expr: EConst(CIdent(addChildren))
+			pos: #pos
+		}, [{
+			expr: ECall({
+				expr: EConst(CIdent(createElement))
+				pos: #pos
+			}, [{
+				expr: EConst(CString(div, null))
+				pos: #pos
+			}])
+			pos: #pos
+		}, {
+			expr: EArrayDecl([{
+				expr: ECall({
+					expr: EConst(CIdent(createText))
+					pos: #pos
+				}, [{
+					expr: EConst(CString(Hi, null))
+					pos: #pos
+				}])
+				pos: #pos
+			}])
+			pos: #pos
+		}])
+		pos: #pos
+	})
+	meta: []
+	name: x
 	pos: #pos
 }, {
 	access: [APublic]
@@ -35,54 +109,62 @@
 		args: []
 		expr: {
 			expr: EBlock([{
-				expr: EVars([{
-					expr: {
-						expr: null <- expected value
+				expr: EReturn({
+					expr: ECall({
+						expr: EConst(CIdent(addChildren))
 						pos: #pos
-					}
-					isFinal: false
-					name: x
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EFunction(FNamed(cool, false), {
-					args: []
-					expr: {
-						expr: EBlock([{
+					}, [{
+						expr: ECall({
+							expr: EConst(CIdent(createElement))
+							pos: #pos
+						}, [{
+							expr: EConst(CString(div, null))
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EArrayDecl([{
 							expr: ECall({
-								expr: EConst(CIdent(trace))
+								expr: EConst(CIdent(createText))
 								pos: #pos
 							}, [{
-								expr: EConst(CString(sup!, DoubleQuotes))
+								expr: EConst(CString( , null))
 								pos: #pos
 							}])
 							pos: #pos
 						}, {
-							expr: EReturn({
-								expr: EConst(CString(<h1>Hello</h1>, null))
+							expr: ECall({
+								expr: EConst(CIdent(addChildren))
 								pos: #pos
-							})
+							}, [{
+								expr: ECall({
+									expr: EConst(CIdent(createElement))
+									pos: #pos
+								}, [{
+									expr: EConst(CString(h1, null))
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EArrayDecl([{
+									expr: null <- expected value
+									pos: null <- expected value
+								}])
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(createText))
+								pos: #pos
+							}, [{
+								expr: EConst(CString( , null))
+								pos: #pos
+							}])
 							pos: #pos
 						}])
 						pos: #pos
-					}
-					params: []
-					ret: null
-				})
-				pos: #pos
-			}, {
-				expr: ECall({
-					expr: EConst(CIdent(trace))
-					pos: #pos
-				}, [{
-					expr: EConst(CIdent(x))
-					pos: #pos
-				}])
-				pos: #pos
-			}, {
-				expr: EReturn({
-					expr: EConst(CString(<h1 onclick={changeX}>{x}{y}{z}{hello}</h1>, null))
+					}])
 					pos: #pos
 				})
 				pos: #pos
@@ -91,7 +173,7 @@
 		}
 		params: []
 		ret: TPath({
-			name: String
+			name: Node
 			pack: []
 			params: []
 			sub: null
@@ -101,4 +183,5 @@
 	name: template
 	pos: #pos
 }]
-line 40: expected value
+line 150: expected value
+line 151: expected value
