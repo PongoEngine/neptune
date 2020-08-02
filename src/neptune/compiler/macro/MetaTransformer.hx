@@ -4,7 +4,46 @@ import haxe.macro.Expr;
 
 class MetaTransformer
 {
-    public static function transform(fn :Expr -> Expr, expr :Expr) : Expr
+    public static function transformField(fn :Expr -> Expr, field :Field) : Field
+    {
+        return switch field.kind {
+            case FFun(f): {
+                {
+                    name: field.name,
+                    doc: field.doc,
+                    access: [APublic],
+                    kind: FFun({
+                        args: f.args,
+                        ret: f.ret,
+                        expr: transformExpr(fn, f.expr),
+                        params: f.params
+                    }),
+                    pos: field.pos,
+                    meta: field.meta
+                };
+                }
+            case FVar(t, e):
+                {
+                    name: field.name,
+                    doc: field.doc,
+                    access: [APublic],
+                    kind: FVar(t, transformExpr(fn, e)),
+                    pos: field.pos,
+                    meta: field.meta
+                };
+            case FProp(get, set, t, e):
+                {
+                    name: field.name,
+                    doc: field.doc,
+                    access: [APublic],
+                    kind: FProp(get, set, t, transformExpr(fn, e)),
+                    pos: field.pos,
+                    meta: field.meta
+                };
+        }
+    }
+
+    public static function transformExpr(fn :Expr -> Expr, expr :Expr) : Expr
     {
         if(expr == null) return null;
         return switch expr.expr {
@@ -13,21 +52,21 @@ class MetaTransformer
             case EArrayDecl(values): 
                 {
                     pos: expr.pos,
-                    expr: EArrayDecl(values.map(transform.bind(fn)))
+                    expr: EArrayDecl(values.map(transformExpr.bind(fn)))
                 }
             case EBinop(op, e1, e2): 
                 {
                     pos: expr.pos,
                     expr: EBinop(
                         op,
-                        transform(fn, e1),
-                        transform(fn, e2)
+                        transformExpr(fn, e1),
+                        transformExpr(fn, e2)
                     )
                 }
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transform.bind(fn)))
+                    expr: EBlock(exprs.map(transformExpr.bind(fn)))
                 }
             case EBreak: 
                 expr;
@@ -36,12 +75,12 @@ class MetaTransformer
             case ECast(e, t): 
                 {
                     pos: expr.pos,
-                    expr: ECast(transform(fn, e), t)
+                    expr: ECast(transformExpr(fn, e), t)
                 }
             case ECheckType(e, t): 
                 {
                     pos: expr.pos,
-                    expr: ECheckType(transform(fn, e), t)
+                    expr: ECheckType(transformExpr(fn, e), t)
                 }
             case EConst(c):
                 expr;
@@ -50,7 +89,7 @@ class MetaTransformer
             case EDisplay(e, displayKind): 
                 {
                     pos: expr.pos,
-                    expr: EDisplay(transform(fn, e), displayKind)
+                    expr: EDisplay(transformExpr(fn, e), displayKind)
                 }
             case EDisplayNew(t): 
                 expr;
@@ -64,9 +103,9 @@ class MetaTransformer
                 {
                     pos: expr.pos,
                     expr: EIf(
-                        transform(fn, econd),
-                        transform(fn, eif),
-                        transform(fn, eelse)
+                        transformExpr(fn, econd),
+                        transformExpr(fn, eif),
+                        transformExpr(fn, eelse)
                     )
                 }
             case EMeta(s, e):
@@ -74,36 +113,36 @@ class MetaTransformer
             case ENew(t, params): 
                 {
                     pos: expr.pos,
-                    expr: ENew(t, params.map(transform.bind(fn)))
+                    expr: ENew(t, params.map(transformExpr.bind(fn)))
                 }
             case EObjectDecl(fields): 
                 expr;
             case EParenthesis(e): 
                 {
                     pos: expr.pos,
-                    expr: EParenthesis(transform(fn, e))
+                    expr: EParenthesis(transformExpr(fn, e))
                 }
             case EReturn(e):
                 {
                     pos: expr.pos,
-                    expr: EReturn(transform(fn, e))
+                    expr: EReturn(transformExpr(fn, e))
                 }
             case ESwitch(e, cases, edef): 
                 {
                     pos: expr.pos,
                     expr: ESwitch(
-                        transform(fn, e),
+                        transformExpr(fn, e),
                         cases.map(transformCase.bind(fn)),
-                        transform(fn, edef)
+                        transformExpr(fn, edef)
                     )
                 }
             case ETernary(econd, eif, eelse):
                 {
                     pos: expr.pos,
                     expr: ETernary(
-                        transform(fn, econd),
-                        transform(fn, eif),
-                        transform(fn, eelse)
+                        transformExpr(fn, econd),
+                        transformExpr(fn, eif),
+                        transformExpr(fn, eelse)
                     )
                 }
             case EThrow(e): 
@@ -111,14 +150,14 @@ class MetaTransformer
             case ETry(e, catches): 
                 {
                     pos: expr.pos,
-                    expr: ETry(transform(fn, e), catches.map(transformCatch.bind(fn)))
+                    expr: ETry(transformExpr(fn, e), catches.map(transformCatch.bind(fn)))
                 }
             case EUnop(op, postFix, e): 
                 expr;
             case EUntyped(e): 
                 {
                     pos: expr.pos,
-                    expr: EUntyped(transform(fn, e))
+                    expr: EUntyped(transformExpr(fn, e))
                 }
             case EVars(vars):
                 {
@@ -126,7 +165,7 @@ class MetaTransformer
                     expr: EVars(vars.map(v -> {
                         name: v.name,
                         type: v.type,
-                        expr: transform(fn, v.expr),
+                        expr: transformExpr(fn, v.expr),
                         isFinal: v.isFinal
                     }))
                 }
@@ -138,9 +177,9 @@ class MetaTransformer
     private static function transformCase(fn :Expr -> Expr, case_ :Case) : Case
     {
         return {
-            values: case_.values.map(transform.bind(fn)),
-            guard: transform(fn, case_.guard),
-            expr: transform(fn, case_.expr)
+            values: case_.values.map(transformExpr.bind(fn)),
+            guard: transformExpr(fn, case_.guard),
+            expr: transformExpr(fn, case_.expr)
         };
     }
     
@@ -149,7 +188,7 @@ class MetaTransformer
         return {
             name: catch_.name,
             type: catch_.type,
-            expr: transform(fn, catch_.expr)
+            expr: transformExpr(fn, catch_.expr)
         };
     }
 }

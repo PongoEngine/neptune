@@ -4,7 +4,7 @@ class HelloWorld {
 	constructor() {
 	}
 	template() {
-		return "<h1>{true ? <h1>Stuff</h1> : <h1>Garbage</h1>}</h1>";
+		return "<h1>{hello}</h1>";
 	}
 }
 class Main {
