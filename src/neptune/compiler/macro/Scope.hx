@@ -29,12 +29,18 @@ enum ScopeItem
     SExpr(expr :Expr);
 }
 
+enum ScopeType
+{
+    SFields(fields :Array<Field>);
+    SExprs(exprs :Array<Expr>);
+}
+
 class Scope
 {
     public var parent :Scope = null;
-    public var block :Array<Expr>;
+    public var block :ScopeType;
 
-    public function new(block :Array<Expr>) : Void
+    public function new(block :ScopeType) : Void
     {
         _items = new Map<String, ScopeItem>();
         this.block = block;
@@ -71,7 +77,7 @@ class Scope
         }
     }
 
-    public function createChild(block :Array<Expr>) : Scope
+    public function createChild(block :ScopeType) : Scope
     {
         var c = new Scope(block);
         c.parent = this;

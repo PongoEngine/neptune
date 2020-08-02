@@ -16,8 +16,8 @@ class MetaTransformer
                         args: f.args,
                         ret: f.ret,
                         expr: switch f.expr.expr {
-                            case EBlock(exprs): transformExpr(fn, scope.createChild(exprs), f.expr);
-                            case _: transformExpr(fn, scope.createChild([]), f.expr);
+                            case EBlock(exprs): transformExpr(fn, scope.createChild(SExprs(exprs)), f.expr);
+                            case _: transformExpr(fn, scope.createChild(null), f.expr);
                         },
                         params: f.params
                     }),
@@ -71,7 +71,7 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild(exprs))))
+                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild(SExprs(exprs)))))
                 }
             case EBreak: 
                 expr;

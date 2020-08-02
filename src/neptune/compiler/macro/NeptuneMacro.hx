@@ -34,9 +34,10 @@ class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
-        var scope = new Scope([]);
+        var fields = Context.getBuildFields();
+        var scope = new Scope(SFields(fields));
         var func = MetaTransformer.transformField.bind(compileMarkup, scope);
-        var fields = Context.getBuildFields()
+        var fields = fields
             .map(func);
 
         return fields;
@@ -112,6 +113,7 @@ class NeptuneMacro
         }
     }
 
+    //not a complete thought
     private static function isMarkup(identifier :String, scope :Scope) : Bool
     {
         var expr = scope.get(identifier);
