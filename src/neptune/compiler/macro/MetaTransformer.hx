@@ -174,14 +174,20 @@ class MetaTransformer
                 {
                     pos: expr.pos,
                     expr: EVars(vars.map(v -> {
-                        name: v.name,
-                        type: v.type,
-                        expr: transformExpr(fn, scope, v.expr),
-                        isFinal: v.isFinal
+                        scope.addItem(v.name, SExpr(v.expr));
+                        return {
+                            name: v.name,
+                            type: v.type,
+                            expr: transformExpr(fn, scope, v.expr),
+                            isFinal: v.isFinal
+                        }
                     }))
                 }
             case EWhile(econd, e, normalWhile): 
-                expr;
+                {
+                    pos: expr.pos,
+                    expr: EWhile(econd, transformExpr(fn, scope, e), normalWhile)
+                }
         }
     }
     

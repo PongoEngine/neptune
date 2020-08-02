@@ -43,6 +43,32 @@ class Scope
         _items.set(name, item);
     }
 
+    public function exists(name :String) : Bool
+    {
+        if(_items.exists(name)) {
+            return true;
+        }
+        else if(parent != null) {
+            return parent.exists(name);
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function get(name :String) : Null<ScopeItem>
+    {
+        if(_items.exists(name)) {
+            return _items.get(name);
+        }
+        else if(parent != null) {
+            return parent.get(name);
+        }
+        else {
+            return null;
+        }
+    }
+
     public function createChild() : Scope
     {
         var c = new Scope();

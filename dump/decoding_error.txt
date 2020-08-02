@@ -35,11 +35,54 @@
 		args: []
 		expr: {
 			expr: EBlock([{
-				expr: null <- expected value
-				pos: null <- expected value
+				expr: EVars([{
+					expr: {
+						expr: null <- expected value
+						pos: #pos
+					}
+					isFinal: false
+					name: x
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EFunction(FNamed(cool, false), {
+					args: []
+					expr: {
+						expr: EBlock([{
+							expr: ECall({
+								expr: EConst(CIdent(trace))
+								pos: #pos
+							}, [{
+								expr: EConst(CString(sup!, DoubleQuotes))
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: EReturn({
+								expr: EConst(CString(<h1>Hello</h1>, null))
+								pos: #pos
+							})
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					params: []
+					ret: null
+				})
+				pos: #pos
+			}, {
+				expr: ECall({
+					expr: EConst(CIdent(trace))
+					pos: #pos
+				}, [{
+					expr: EConst(CIdent(x))
+					pos: #pos
+				}])
+				pos: #pos
 			}, {
 				expr: EReturn({
-					expr: EConst(CString(taco, DoubleQuotes))
+					expr: EConst(CString(<h1 onclick={changeX}>{x}{y}{z}{hello}</h1>, null))
 					pos: #pos
 				})
 				pos: #pos
@@ -58,5 +101,4 @@
 	name: template
 	pos: #pos
 }]
-line 38: expected value
-line 39: expected value
+line 40: expected value

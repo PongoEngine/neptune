@@ -67,13 +67,43 @@ class NeptuneMacro
     {
         switch current {
             case DomText(string):
-            case DomExpr(expr): 
-                // trace(expr);
+            case DomExpr(expr):
+                handleExpr(scope, parent, current, expr); 
             case DomElement(tag, attrs, children): {
                 for(child in children) {
                     handleTree(scope, current, child);
                 }
             }
+        }
+    }
+
+
+    public static function handleExpr(scope :Scope, parent :Null<DomAST>, current :DomAST, expr :Expr) : Void
+    {
+        switch expr.expr {
+            case EConst(c):
+                switch c {
+                    case CIdent(s):
+                        // switch 
+                        // var item = scope.get(s);
+                        // if(item != null) {
+                        //     switch item {
+                        //         case SField(field):
+                        //         case SExpr(expr): switch expr.expr {
+                        //             case EConst(c): switch c {
+                        //                 case CInt(v):
+                        //                     expr.expr =  EConst(CInt("200"));
+                        //                 case _:
+                        //             }
+                        //             case _:
+                        //         }
+                        //     }
+                        // }
+                        // trace(scope.get(s));
+                        trace(s, scope.exists(s));
+                    case _:
+                }
+            case _:
         }
     }
 }
