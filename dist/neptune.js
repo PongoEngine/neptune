@@ -4,7 +4,7 @@ class HelloWorld {
 	constructor() {
 	}
 	template() {
-		return "<h1>{hello}</h1>";
+		return "<h1 onclick={changeX}>{x}{y}{z}{\"hello\"}</h1>";
 	}
 }
 class Main {

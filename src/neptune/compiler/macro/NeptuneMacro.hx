@@ -34,7 +34,8 @@ class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
-        var func = MetaTransformer.transformField.bind(compileMarkup);
+        var scope = new Scope();
+        var func = MetaTransformer.transformField.bind(compileMarkup, scope);
         var fields = Context.getBuildFields()
             .map(func);
 
@@ -54,7 +55,7 @@ class NeptuneMacro
         var start = Context.getPosInfos(e.pos).min;
         var filename = Context.getPosInfos(Context.currentPos()).file;
         var result = Parser.parse(new Scanner(filename, xml, start));
-        handleTree(result);
+        // handleTree(null, result);
 
         return {
             pos: e.pos,
@@ -62,25 +63,18 @@ class NeptuneMacro
         };
     }
 
-    public static function handleTree(dom :DomAST) : Void
+    public static function handleTree(parent :Null<DomAST>, current :DomAST) : Void
     {
-        switch dom {
-            case DomText(string): trace(string);
-            case DomTextExpr(expr):
+        switch current {
+            case DomText(string):
+            case DomExpr(expr): trace(expr);
             case DomElement(tag, attrs, children): {
-                //tag
-                //attrs
                 for(child in children) {
-                    handleTree(child);
+                    handleTree(current, child);
                 }
             }
         }
     }
-}
-
-enum Scope
-{
-
 }
 
 #end

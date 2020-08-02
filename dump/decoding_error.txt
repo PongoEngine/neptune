@@ -1,201 +1,31 @@
 [{
 	access: [APublic]
 	doc: null
-	kind: FFun({
-		args: []
-		expr: {
-			expr: EBlock([{
-				expr: EVars([{
-					expr: {
-						expr: EConst(CString(<h1>Hi2</h1>, null))
-						pos: #pos
-					}
-					isFinal: false
-					name: x
-					type: null
-				}])
-				pos: #pos
-			}])
-			pos: #pos
-		}
-		params: []
-		ret: TPath({
-			name: Void
-			pack: []
-			params: []
-			sub: null
-		})
+	kind: FVar(null, {
+		expr: EConst(CString(Hi, DoubleQuotes))
+		pos: #pos
 	})
 	meta: []
-	name: new
+	name: hello
 	pos: #pos
 }, {
-	access: [APublic]
+	access: null
 	doc: null
-	kind: FFun({
-		args: []
-		expr: {
-			expr: EBlock([{
-				expr: EVars([{
-					expr: {
-						expr: ECast({
-							expr: EArrayDecl([{
-								expr: EConst(CString(<h1>Hi2</h1>, null))
-								pos: #pos
-							}, {
-								expr: EConst(CString(<h1>Hi3</h1>, null))
-								pos: #pos
-							}])
-							pos: #pos
-						}, null)
-						pos: #pos
-					}
-					isFinal: false
-					name: x
-					type: TPath({
-						name: Int
-						pack: []
-						params: []
-						sub: null
-					})
-				}])
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
-						expr: EConst(CString(<h4>hsfd</h4>, null))
-						pos: #pos
-					}
-					isFinal: false
-					name: r
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EBinop(OpAssign, {
-					expr: EConst(CIdent(r))
-					pos: #pos
-				}, {
-					expr: EConst(CString(<h1>cool</h1>, null))
-					pos: #pos
-				})
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
-						expr: EConst(CString(<h1>sdf</h1>, null))
-						pos: #pos
-					}
-					isFinal: false
-					name: r
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: ETry({
-					expr: EBlock([{
-						expr: EConst(CString(<h3>dfs</h3>, null))
-						pos: #pos
-					}])
-					pos: #pos
-				}, [{
-					expr: null <- expected value
-					name: null <- expected value
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
-						expr: ESwitch({
-							expr: EConst(CIdent(true))
-							pos: #pos
-						}, [{
-							expr: {
-								expr: EBlock([{
-									expr: EConst(CString(<h1>Hi2</h1>, null))
-									pos: #pos
-								}])
-								pos: #pos
-							}
-							guard: null
-							values: [{
-								expr: EConst(CIdent(true))
-								pos: #pos
-							}]
-						}, {
-							expr: {
-								expr: EBlock([{
-									expr: EConst(CString(<h1>Hi2</h1>, null))
-									pos: #pos
-								}])
-								pos: #pos
-							}
-							guard: null
-							values: [{
-								expr: EConst(CIdent(false))
-								pos: #pos
-							}]
-						}], null)
-						pos: #pos
-					}
-					isFinal: false
-					name: x
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
-						expr: EIf({
-							expr: EConst(CIdent(true))
-							pos: #pos
-						}, {
-							expr: EConst(CString(<h1>Hi2</h1>, null))
-							pos: #pos
-						}, {
-							expr: EParenthesis({
-								expr: EConst(CString(<h1>Hi2</h1>, null))
-								pos: #pos
-							})
-							pos: #pos
-						})
-						pos: #pos
-					}
-					isFinal: false
-					name: x
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EReturn({
-					expr: EUntyped({
-						expr: EArray({
-							expr: EConst(CIdent(x))
-							pos: #pos
-						}, {
-							expr: EConst(CInt(1))
-							pos: #pos
-						})
-						pos: #pos
-					})
-					pos: #pos
-				})
-				pos: #pos
-			}])
-			pos: #pos
-		}
-		params: []
-		ret: TPath({
-			name: String
-			pack: []
-			params: []
-			sub: null
-		})
-	})
-	meta: []
-	name: template
-	pos: #pos
+	kind: null <- expected value
+	meta: null
+	name: null <- expected value
+	pos: null <- expected value
+}, {
+	access: null
+	doc: null
+	kind: null <- expected value
+	meta: null
+	name: null <- expected value
+	pos: null <- expected value
 }]
-line 102: expected value
-line 103: expected value
+line 14: expected value
+line 16: expected value
+line 17: expected value
+line 21: expected value
+line 23: expected value
+line 24: expected value

@@ -91,7 +91,7 @@ class Parser
                     var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
                     var expr = Context.parse(exprStr, pos);
                     assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
-                    return DomTextExpr(expr);
+                    return DomExpr(expr);
                 }
                 case _: {
                     return DomText(scanner.consumeWhile((str) -> {
@@ -184,6 +184,6 @@ typedef Attr = {name :String, value :DomAttr};
 enum DomAST
 {
     DomText(string :String);
-    DomTextExpr(expr :haxe.macro.Expr);
+    DomExpr(expr :haxe.macro.Expr);
     DomElement(tag:String, attrs:Array<Attr>, children :Array<DomAST>);
 }

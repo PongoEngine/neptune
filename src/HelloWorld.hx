@@ -4,6 +4,7 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
+    var hello = "Hi";
     public function new() : Void
     {
     }
@@ -11,7 +12,10 @@ class HelloWorld implements Neptune
 
     public function template() : String
     {
-        var hello = "Hi";
-        return <h1>{hello}</h1>;
+        var x = 2, y = 5, z = 3;
+        function changeX() {
+            x += 1;
+        }
+        return <h1 onclick={changeX}>{x}{y}{z}{"hello"}</h1>;
     }
 }
