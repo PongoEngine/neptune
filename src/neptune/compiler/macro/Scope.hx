@@ -85,7 +85,10 @@ class Scope
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
         for(nExpr in _newExprs) {
-            block.unshift(nExpr);
+            var last = block.length - 1;
+            var lastExpr = block[last];
+            block[last] = nExpr;
+            block.push(lastExpr);
         }
     }
 

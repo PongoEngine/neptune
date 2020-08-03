@@ -92,12 +92,12 @@ class NeptuneMacro
                     case CIdent(s):
                         var text = [s.createDefIdent().toExpr()]
                             .createDefCall("createText");
+                        var varExpr = text.toExpr().createDefVar("textElem").toExpr();
+                        scope.addScopedExpr(s, varExpr);
+                        var traceExpr = ["textElem".createDefIdent().toExpr()].createDefCall("trace").toExpr();
+                        scope.addScopedExpr(s, traceExpr);
 
-                        var textExpr = ["Hello From Scope".createDefString().toExpr()]
-                            .createDefCall("trace").toExpr();
-                        scope.addScopedExpr(s, textExpr);
-
-                        expr.updateDef(text);
+                        expr.updateDef("textElem".createDefIdent());
                     case _:
                         throw "not implmented yet";
                 }

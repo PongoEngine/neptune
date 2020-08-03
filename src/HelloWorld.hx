@@ -13,13 +13,14 @@ class HelloWorld implements Neptune
     {
         var tasty = 200;
 
-        function a(nameA :String) {
-            return function b(nameB :String) {
-                var x = "Woah";
-                return <div>{nameA} | {nameB} | {x}</div>;
-            }
-        }
+        var x = "Woah";
 
-        return a("Turtle")("Fred");
+        // function func1(road :String) {
+        //     var a = "cool";
+        //     return <h1>{road} {a}</h1>;
+        // }
+
+
+        return <div>{x}</div>;
     }
 }
