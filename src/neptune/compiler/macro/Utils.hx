@@ -78,6 +78,12 @@ class Utils
         }
     }
 
+    public static function updateDef(e :Expr, def :ExprDef) : Expr
+    {
+        e.expr = def;
+        return e;
+    }
+
     public static function toExpr(e :ExprDef) : Expr
     {
         return {

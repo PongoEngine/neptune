@@ -15,10 +15,7 @@ class MetaTransformer
                     kind: FFun({
                         args: f.args,
                         ret: f.ret,
-                        expr: switch f.expr.expr {
-                            case EBlock(exprs): transformExpr(fn, scope.createChild(SExprs(exprs)), f.expr);
-                            case _: transformExpr(fn, scope.createChild(null), f.expr);
-                        },
+                        expr: transformExpr(fn, scope, f.expr),
                         params: f.params
                     }),
                     pos: field.pos,
@@ -71,7 +68,12 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope.createChild(SExprs(exprs)))))
+                    expr: EBlock({
+                        var child = scope.createChild();
+                        var blockExprs = exprs.map(transformExpr.bind(fn, child));
+                        child.insertScopedExprs(blockExprs);
+                        blockExprs;
+                    })
                 }
             case EBreak: 
                 expr;
@@ -215,10 +217,22 @@ class MetaTransformer
     private static function transformFunction(fn :Scope -> Expr -> Expr, scope :Scope, function_ :Function) : Function
     {
         return {
-            args: function_.args,
+            args: function_.args.map(transformFunctionArgs.bind(fn, scope)),
             ret: function_.ret,
             expr: transformExpr(fn, scope, function_.expr),
             params: function_.params
+        };
+    }
+
+    private static function transformFunctionArgs(fn :Scope -> Expr -> Expr, scope :Scope, arg :FunctionArg) : FunctionArg
+    {
+        scope.addItem(arg.name, SExpr(arg.value));
+        return {
+            name: arg.name,
+            opt: arg.opt,
+            type: arg.type,
+            value: transformExpr(fn, scope, arg.value),
+            meta: arg.meta
         };
     }
 }

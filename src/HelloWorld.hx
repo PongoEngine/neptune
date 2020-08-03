@@ -4,13 +4,6 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
-    var hello = "Hello";
-    var gf = "Carla";
-    var hungry = "All the time";
-    var helper = 101;
-    var isYes = true;
-
-    var x = <span>Hi</span>;
 
     public function new() : Void
     {
@@ -18,9 +11,15 @@ class HelloWorld implements Neptune
 
     public function template() : Node
     {
-        var tasty = 100;
-        tasty += 20 - helper;
-        return 
-            <div>{tasty}</div>;
+        var tasty = 200;
+
+        function a(nameA :String) {
+            return function b(nameB :String) {
+                var x = "Woah";
+                return <div>{nameA} | {nameB} | {x}</div>;
+            }
+        }
+
+        return a("Turtle")("Fred");
     }
 }

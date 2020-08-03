@@ -1,88 +1,4 @@
 [{
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: EConst(CString(Hello, DoubleQuotes))
-		pos: #pos
-	})
-	meta: []
-	name: hello
-	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: EConst(CString(Carla, DoubleQuotes))
-		pos: #pos
-	})
-	meta: []
-	name: gf
-	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: EConst(CString(All the time, DoubleQuotes))
-		pos: #pos
-	})
-	meta: []
-	name: hungry
-	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: EConst(CInt(101))
-		pos: #pos
-	})
-	meta: []
-	name: helper
-	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: EConst(CIdent(true))
-		pos: #pos
-	})
-	meta: []
-	name: isYes
-	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FVar(null, {
-		expr: ECall({
-			expr: EConst(CIdent(addChildren))
-			pos: #pos
-		}, [{
-			expr: ECall({
-				expr: EConst(CIdent(createElement))
-				pos: #pos
-			}, [{
-				expr: EConst(CString(span, null))
-				pos: #pos
-			}])
-			pos: #pos
-		}, {
-			expr: EArrayDecl([{
-				expr: ECall({
-					expr: EConst(CIdent(createText))
-					pos: #pos
-				}, [{
-					expr: EConst(CString(Hi, null))
-					pos: #pos
-				}])
-				pos: #pos
-			}])
-			pos: #pos
-		}])
-		pos: #pos
-	})
-	meta: []
-	name: x
-	pos: #pos
-}, {
 	access: null
 	doc: null
 	kind: null <- expected value
@@ -97,9 +13,9 @@
 	name: null <- expected value
 	pos: null <- expected value
 }]
-line 88: expected value
-line 90: expected value
-line 91: expected value
-line 95: expected value
-line 97: expected value
-line 98: expected value
+line 4: expected value
+line 6: expected value
+line 7: expected value
+line 11: expected value
+line 13: expected value
+line 14: expected value

@@ -35,12 +35,9 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var fields = Context.getBuildFields();
-        var scope = new Scope(SFields(fields));
+        var scope = new Scope();
         var func = MetaTransformer.transformField.bind(compileMarkup, scope);
-        var fields = fields
-            .map(func);
-
-        return fields;
+        return fields.map(func);
     }
 
     public static function compileMarkup(scope :Scope, e :Expr) : Expr
@@ -51,7 +48,6 @@ class NeptuneMacro
                 case _: throw "err";
             }
             case _:
-                trace(e.expr);
                 throw "err";
         }
 
@@ -66,8 +62,7 @@ class NeptuneMacro
     {
         return switch current {
             case DomText(string):
-                var str = string.cleanWhitespace();
-                [str.createDefString().toExpr()]
+                [string.cleanWhitespace().createDefString().toExpr()]
                     .createDefCall("createText")
                     .toExpr();
 
@@ -95,14 +90,14 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        if(isMarkup(s, scope)) {
-                            expr;
-                        }
-                        else {
-                            expr.expr = [s.createDefIdent().toExpr()]
-                                .createDefCall("createText");
-                            expr;
-                        }
+                        var text = [s.createDefIdent().toExpr()]
+                            .createDefCall("createText");
+
+                        var textExpr = ["Hello From Scope".createDefString().toExpr()]
+                            .createDefCall("trace").toExpr();
+                        scope.addScopedExpr(s, textExpr);
+
+                        expr.updateDef(text);
                     case _:
                         throw "not implmented yet";
                 }
@@ -110,38 +105,6 @@ class NeptuneMacro
                 compileMarkup(scope, e);
             case _:
                 throw "not implmented yet";
-        }
-    }
-
-    //not a complete thought
-    private static function isMarkup(identifier :String, scope :Scope) : Bool
-    {
-        var expr = scope.get(identifier);
-        return switch expr {
-            case SField(field):
-                switch field.kind {
-                    case FVar(t, e): switch e.expr {
-                        case EMeta(s, e):
-                            true;
-                        case EConst(c):
-                            false;
-                        case _:
-                            throw "not implemented yet";
-                    }
-                    case FFun(f): 
-                        throw "not implemented yet";
-                    case FProp(get, set, t, e): 
-                        throw "not implemented yet";
-                }
-            case SExpr(expr):
-                switch expr.expr {
-                    case EMeta(s, e):
-                        true;
-                    case EConst(c):
-                        false;
-                    case _:
-                        throw "not implemented yet";
-                }
         }
     }
 }
