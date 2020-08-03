@@ -1,21 +1,166 @@
 [{
-	access: null
+	access: [APublic]
 	doc: null
-	kind: null <- expected value
-	meta: null
-	name: null <- expected value
-	pos: null <- expected value
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: new
+	pos: #pos
 }, {
-	access: null
+	access: [APublic]
 	doc: null
-	kind: null <- expected value
-	meta: null
-	name: null <- expected value
-	pos: null <- expected value
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EVars([{
+					expr: {
+						expr: EConst(CInt(200))
+						pos: #pos
+					}
+					isFinal: false
+					name: tasty
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EVars([{
+					expr: {
+						expr: EConst(CString(Woah, DoubleQuotes))
+						pos: #pos
+					}
+					isFinal: false
+					name: x
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EFunction(FNamed(func1, false), {
+					args: [{
+						meta: []
+						name: road
+						opt: false
+						type: TPath({
+							name: String
+							pack: []
+							params: []
+							sub: null
+						})
+						value: null
+					}]
+					expr: {
+						expr: EBlock([{
+							expr: EVars([{
+								expr: {
+									expr: ECall({
+										expr: EConst(CIdent(addChildren))
+										pos: #pos
+									}, [{
+										expr: ECall({
+											expr: EConst(CIdent(createElement))
+											pos: #pos
+										}, [{
+											expr: EConst(CString(h2, null))
+											pos: #pos
+										}])
+										pos: #pos
+									}, {
+										expr: EArrayDecl([{
+											expr: ECall({
+												expr: EConst(CIdent(createText))
+												pos: #pos
+											}, [{
+												expr: EConst(CString(Coo, null))
+												pos: #pos
+											}])
+											pos: #pos
+										}])
+										pos: #pos
+									}])
+									pos: #pos
+								}
+								isFinal: false
+								name: a
+								type: null
+							}])
+							pos: #pos
+						}, {
+							expr: {pos: #pos(src/HelloWorld.hx:5: character 1), expr: EVars([{name: var_0, type: null, expr: {pos: #pos(src/HelloWorld.hx:5: character 1), expr: ECall(<...>,<...>)}}])} <- expected enum value
+							pos: null <- expected value
+						}, {
+							expr: {pos: #pos(src/HelloWorld.hx:5: character 1), expr: ECall({pos: #pos(src/HelloWorld.hx:5: character 1), expr: EConst(CIdent(trace))},[{pos: #pos(src/HelloWorld.hx:5: character 1), expr: EConst(CIdent(<...>))}])} <- expected enum value
+							pos: null <- expected value
+						}, {
+							expr: EReturn({
+								expr: ECall({
+									expr: EConst(CIdent(addChildren))
+									pos: #pos
+								}, [{
+									expr: ECall({
+										expr: EConst(CIdent(createElement))
+										pos: #pos
+									}, [{
+										expr: EConst(CString(h1, null))
+										pos: #pos
+									}])
+									pos: #pos
+								}, {
+									expr: EArrayDecl([{
+										expr: EConst(CIdent(var_0))
+										pos: #pos
+									}])
+									pos: #pos
+								}])
+								pos: #pos
+							})
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					params: []
+					ret: null
+				})
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: ECall({
+						expr: EConst(CIdent(func1))
+						pos: #pos
+					}, [{
+						expr: EConst(CString(turtle, DoubleQuotes))
+						pos: #pos
+					}])
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Node
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: template
+	pos: #pos
 }]
-line 4: expected value
-line 6: expected value
-line 7: expected value
-line 11: expected value
-line 13: expected value
-line 14: expected value
+line 100: expected enum value
+line 101: expected value
+line 103: expected enum value
+line 104: expected value

@@ -72,7 +72,7 @@ class Scope
     public function addScopedExpr(ident :String, expr :Expr) : Void
     {
         if(_items.exists(ident)) {
-            _newExprs.push(expr);
+            _newExprs.push({ident:ident, expr: expr});
         }
         else if(_parent != null) {
             _parent.addScopedExpr(ident, expr);
@@ -85,11 +85,27 @@ class Scope
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
         for(nExpr in _newExprs) {
-            var last = block.length - 1;
-            var lastExpr = block[last];
-            block[last] = nExpr;
-            block.push(lastExpr);
+            var index = getIndex(nExpr.ident, block);
+            block.insert(index, nExpr.expr);
         }
+    }
+
+    private function getIndex(ident :String, block :Array<Expr>) : Int
+    {
+        var index = 0;
+        for(item in block) {
+            switch item.expr {
+                case EVars(vars): for(var_ in vars) {
+                    if(var_.name == ident) {
+                        return index;
+                    }
+                }
+                case _:
+            }
+            index++;
+        }
+
+        return -1;
     }
 
     public function createChild() : Scope
@@ -101,5 +117,5 @@ class Scope
 
     private var _items :Map<String, ScopeItem>;
     private var _parent :Scope = null;
-    private var _newExprs :Array<Expr>;
+    private var _newExprs :Array<{ident :String, expr :Expr}>;
 }

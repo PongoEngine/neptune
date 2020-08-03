@@ -11,12 +11,12 @@ class HelloWorld implements Neptune
 
     public function template() : Node
     {
-        var tasty = 200;
-
         var x = "Woah";
+        x += " nice ";
+        trace(x + "turkey");
 
         function func1(road :String) {
-            var a = <h2>Coo</h2>;
+            // var a = <h2>{x}</h2>;
             return <h1>{road}</h1>;
         }
 
