@@ -15,12 +15,11 @@ class HelloWorld implements Neptune
 
         var x = "Woah";
 
-        // function func1(road :String) {
-        //     var a = "cool";
-        //     return <h1>{road} {a}</h1>;
-        // }
+        function func1(road :String) {
+            return <h1>{road}</h1>;
+        }
 
 
-        return <div>{x}</div>;
+        return func1("turtle");
     }
 }

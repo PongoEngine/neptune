@@ -12,12 +12,7 @@ class MetaTransformer
                     name: field.name,
                     doc: field.doc,
                     access: [APublic],
-                    kind: FFun({
-                        args: f.args,
-                        ret: f.ret,
-                        expr: transformExpr(fn, scope, f.expr),
-                        params: f.params
-                    }),
+                    kind: FFun(transformFunction(fn, scope, f)),
                     pos: field.pos,
                     meta: field.meta
                 };
@@ -68,12 +63,7 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock({
-                        var child = scope.createChild();
-                        var blockExprs = exprs.map(transformExpr.bind(fn, child));
-                        child.insertScopedExprs(blockExprs);
-                        blockExprs;
-                    })
+                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope)))
                 }
             case EBreak: 
                 expr;
@@ -216,12 +206,21 @@ class MetaTransformer
 
     private static function transformFunction(fn :Scope -> Expr -> Expr, scope :Scope, function_ :Function) : Function
     {
-        return {
-            args: function_.args.map(transformFunctionArgs.bind(fn, scope)),
+        var childScope = scope.createChild();
+        var func = {
+            args: function_.args.map(transformFunctionArgs.bind(fn, childScope)),
             ret: function_.ret,
-            expr: transformExpr(fn, scope, function_.expr),
+            expr: transformExpr(fn, childScope, function_.expr),
             params: function_.params
         };
+
+        switch func.expr.expr {
+            case EBlock(exprs): childScope.insertScopedExprs(exprs);
+            case _: throw "not imlemented";
+        }
+        // childScope.insertScopedExprs
+
+        return func;
     }
 
     private static function transformFunctionArgs(fn :Scope -> Expr -> Expr, scope :Scope, arg :FunctionArg) : FunctionArg

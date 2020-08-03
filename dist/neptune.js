@@ -4,9 +4,11 @@ class HelloWorld {
 	constructor() {
 	}
 	template() {
-		let textElem = window.document.createTextNode("Woah");
-		console.log("src/HelloWorld.hx:5:",textElem);
-		return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("div"),[textElem]);
+		return (function(road) {
+			let textElem = window.document.createTextNode(road);
+			console.log("src/HelloWorld.hx:5:",textElem);
+			return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[textElem]);
+		})("turtle");
 	}
 }
 class Main {
