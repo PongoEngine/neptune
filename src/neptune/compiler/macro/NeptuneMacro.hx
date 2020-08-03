@@ -90,14 +90,15 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
+                        var newIdent = createIdent();
                         var text = [s.createDefIdent().toExpr()]
                             .createDefCall("createText");
-                        var varExpr = text.toExpr().createDefVar("textElem").toExpr();
+                        var varExpr = text.toExpr().createDefVar(newIdent).toExpr();
                         scope.addScopedExpr(s, varExpr);
-                        var traceExpr = ["textElem".createDefIdent().toExpr()].createDefCall("trace").toExpr();
+                        var traceExpr = [newIdent.createDefIdent().toExpr()].createDefCall("trace").toExpr();
                         scope.addScopedExpr(s, traceExpr);
 
-                        expr.updateDef("textElem".createDefIdent());
+                        expr.updateDef(newIdent.createDefIdent());
                     case _:
                         throw "not implmented yet";
                 }
@@ -106,6 +107,12 @@ class NeptuneMacro
             case _:
                 throw "not implmented yet";
         }
+    }
+
+    private static var _index = 0;
+    private static function createIdent() : String
+    {
+        return 'var_${_index++}';
     }
 }
 

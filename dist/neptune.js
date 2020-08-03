@@ -5,9 +5,10 @@ class HelloWorld {
 	}
 	template() {
 		return (function(road) {
-			let textElem = window.document.createTextNode(road);
-			console.log("src/HelloWorld.hx:5:",textElem);
-			return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[textElem]);
+			neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h2"),[window.document.createTextNode("Coo")]);
+			let var_0 = window.document.createTextNode(road);
+			console.log("src/HelloWorld.hx:5:",var_0);
+			return neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[var_0]);
 		})("turtle");
 	}
 }

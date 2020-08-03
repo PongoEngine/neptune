@@ -16,6 +16,7 @@ class HelloWorld implements Neptune
         var x = "Woah";
 
         function func1(road :String) {
+            var a = <h2>Coo</h2>;
             return <h1>{road}</h1>;
         }
 

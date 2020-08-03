@@ -63,7 +63,12 @@ class MetaTransformer
             case EBlock(exprs):
                 {
                     pos: expr.pos,
-                    expr: EBlock(exprs.map(transformExpr.bind(fn, scope)))
+                    expr: EBlock({
+                        var child = scope.createChild();
+                        var blockExprs = exprs.map(transformExpr.bind(fn, child));
+                        child.insertScopedExprs(blockExprs);
+                        blockExprs;
+                    })
                 }
             case EBreak: 
                 expr;
