@@ -1,9 +1,7 @@
-# Haxe project
+# Neptune
 
-This is an example Haxe project scaffolded by Visual Studio Code.
+This is a WIP.
 
-Without further changes the structure is following:
+I'm still in the process of defining pretty much everything. The macro is not optimized. The updates are not optimized. The types of setters are not all defined. No real project has been created. 
 
- * `src/Main.hx`: Entry point Haxe source file
- * `build.hxml`: Haxe command line file used to build the project
- * `README.md`: This file
+## This readme was updated August 4th 2020. My goals is to have a working example project by the 1st of September.
