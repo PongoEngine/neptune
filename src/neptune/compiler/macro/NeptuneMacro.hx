@@ -39,33 +39,9 @@ class NeptuneMacro
         var setter = new Setter();
         var transformedFields = Context.getBuildFields()
             .map(transformField.bind(compileMarkup, scope, setter));
-        var fields = scope.updateFields(transformedFields);
-        var initializers = scope.createFieldInitializers();
         setter.transformAssignments();
 
-        //hacky initializing
-        for(field in transformedFields) {
-            if(field.name == "new") {
-                switch field.kind {
-                    case FFun(f): switch f.expr.expr {
-                        case EBlock(exprs): for(initializer in initializers) {
-                            var identExpr = initializer.name
-                                .createDefIdent()
-                                .toExpr();
-                            var assignmentExpr = Binop.OpAssign.createDefBinop(identExpr, initializer.expr)
-                                .toExpr();
-                            exprs.push(assignmentExpr);
-                        }
-                        case _:
-                            throw "not implemented yet";
-                    }
-                    case _: 
-                        throw "not implemented yet";
-                }
-            }
-        }
-
-        return transformedFields.concat(fields);
+        return transformedFields;
     }
 
     /**
@@ -219,7 +195,7 @@ class NeptuneMacro
     {
         return switch scope.getItem(ident) {
             case SField(field): switch field.kind {
-                case FVar(t, e): getExprItemType(e);
+                case FVar(t, e): throw "not implemented yet";
                 case FFun(f): throw "not implemented yet";
                 case FProp(get, set, t, e): throw "not implemented yet";
             }

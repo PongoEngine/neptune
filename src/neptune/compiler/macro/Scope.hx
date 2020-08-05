@@ -92,9 +92,12 @@ class Scope
     {
         function tempUpdateFunc(ident :String) : Expr
         {
-            var nodeName = 'nep_${ident}';
-            return [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
-                .createDefCall("updateTextNode")
+            // var nodeName = 'nep_${ident}';
+            // return [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
+            //     .createDefCall("updateTextNode")
+            //     .toExpr();
+            return ["Hello".createDefString().toExpr()]
+                .createDefCall("trace")
                 .toExpr();
         }
 
@@ -107,53 +110,6 @@ class Scope
             }
             block.insert(index++, Setter.createSetter(ident, tempUpdateFunc));
         }
-    }
-
-    //super hacky
-    public function updateFields(fields :Array<Field>) : Array<Field>
-    {
-        var newFields = [];
-        for(dep in _newExprs.keyValueIterator()) {
-            var ident = dep.key;
-            var exprs = dep.value;
-            for(expr in exprs) {
-                switch expr.expr {
-                    case EVars(vars):
-                        for(var_ in vars) {
-                            newFields.push({
-                                name: var_.name,
-                                doc: null,
-                                access: [APublic],
-                                kind: FVar(macro: Dynamic, null),
-                                pos: Context.currentPos(),
-                                meta: null,
-                            });
-                            for(f in fields) {
-                                if(f.name == var_.name.substr(4)) {
-                                    switch f.kind {
-                                        case FVar(t, e):
-                                            f.kind = FProp("default", "set", t, e);
-                                        case _:
-                                            trace(f.kind);
-                                            throw "not implemented yet";
-                                    }
-                                }
-                            }
-                            newFields.push({
-                                name: 'set_${var_.name.substr(4)}',
-                                doc: null,
-                                access: [APrivate],
-                                kind: FFun(createSetterFn(var_.name)),
-                                pos: Context.currentPos(),
-                                meta: null,
-                            });
-                        } 
-                    case _:
-                        throw "not implemented yet";
-                }
-            }
-        }
-        return newFields;
     }
 
     private static function createSetterFn(name :String) : Function
@@ -190,26 +146,6 @@ class Scope
             expr: block,
             params: []
         };
-    }
-
-    public function createFieldInitializers() : Array<{name :String, expr :Expr}>
-    {
-        var initializers = [];
-        for(dep in _newExprs.keyValueIterator()) {
-            var ident = dep.key;
-            var exprs = dep.value;
-            for(expr in exprs) {
-                switch expr.expr {
-                    case EVars(vars):
-                        for(initializer in vars) {
-                            initializers.push({name: initializer.name, expr: initializer.expr});
-                        } 
-                    case _:
-                        throw "not implemented yet";
-                }
-            }
-        }
-        return initializers;
     }
 
     public function createChild() : Scope

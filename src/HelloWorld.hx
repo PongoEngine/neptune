@@ -4,8 +4,6 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
-    public var name = "Neptune";
-
     public function new() : Void
     {
         // this.name = "Robot"; //need to add fields by index
@@ -19,7 +17,6 @@ class HelloWorld implements Neptune
         function click() {
             x = x + 1 + q;
             y = y - 2;
-            this.name = "Sage";
         }
 
         var markup = <button onclick={click}>Update XY</button>;
@@ -28,7 +25,6 @@ class HelloWorld implements Neptune
             <div class="taco">
                 <h1>x: {x}</h1>
                 <h2>y: {y}</h2>
-                <h3>name: {name}</h3>
                 {markup}
             </div>;
     }
