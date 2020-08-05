@@ -26,7 +26,7 @@ HelloWorld.prototype = {
 			set_y(y - 2);
 			_gthis.set_name("Sage");
 		};
-		var elem = window.document.createElement("Button");
+		var elem = window.document.createElement("button");
 		neptune_platform_html_HtmlPlatform.addChildren(elem,[window.document.createTextNode("Update XY")]);
 		elem.onclick = click;
 		var elem1 = window.document.createElement("div");

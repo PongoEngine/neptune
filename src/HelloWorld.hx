@@ -22,7 +22,7 @@ class HelloWorld implements Neptune
             this.name = "Sage";
         }
 
-        var markup = <Button onclick={click}>Update XY</Button>;
+        var markup = <button onclick={click}>Update XY</button>;
 
         return 
             <div class="taco">

@@ -32,7 +32,7 @@ class Setter
         _assignments = [];
     }
     
-    public function save(expr :Expr) : Void
+    public function saveAssignment(expr :Expr) : Void
     {
         switch expr.expr {
             case EBinop(op, e1, e2): 
@@ -56,6 +56,9 @@ class Setter
         }
     }
 
+    /**
+     * Transform all assigment type expressions to use setters in place
+     */
     public function transformAssignments() : Void
     {
         for(assignment in _assignments) {
@@ -84,18 +87,13 @@ class Setter
         }
     }
 
-    public static function createSetter(ident :String) : Expr
+    public static function createSetter(ident :String, updateFunc :String -> Expr) : Expr
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
             .toExpr();
 
-        var nodeName = 'nep_${ident}';
-        var updateFunc = [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
-            .createDefCall("updateTextNode")
-            .toExpr();
-
-        var blockExpr = [assignmentExpr, updateFunc]
+        var blockExpr = [assignmentExpr, updateFunc(ident)]
             .createDefBlock()
             .toExpr();
 

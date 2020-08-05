@@ -90,6 +90,14 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
+        function tempUpdateFunc(ident :String) : Expr
+        {
+            var nodeName = 'nep_${ident}';
+            return [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
+                .createDefCall("updateTextNode")
+                .toExpr();
+        }
+
         for(dep in _newExprs.keyValueIterator()) {
             var ident = dep.key;
             var exprs = dep.value;
@@ -97,7 +105,7 @@ class Scope
             for(expr in exprs) {
                 block.insert(index++, expr);
             }
-            block.insert(index++, Setter.createSetter(ident));
+            block.insert(index++, Setter.createSetter(ident, tempUpdateFunc));
         }
     }
 
@@ -126,6 +134,7 @@ class Scope
                                         case FVar(t, e):
                                             f.kind = FProp("default", "set", t, e);
                                         case _:
+                                            trace(f.kind);
                                             throw "not implemented yet";
                                     }
                                 }

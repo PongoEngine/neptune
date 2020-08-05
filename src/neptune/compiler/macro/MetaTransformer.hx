@@ -211,7 +211,7 @@ class MetaTransformer
                     expr: EWhile(econd, transformExpr(fn, scope, setter, e), normalWhile)
                 }
         }
-        setter.save(updatedExpr);
+        setter.saveAssignment(updatedExpr);
         return updatedExpr;
     }
     
