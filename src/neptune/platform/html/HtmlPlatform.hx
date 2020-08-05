@@ -44,7 +44,7 @@ class HtmlPlatform
       return node;
     }
 
-    public static function runUpdates(update :Void -> Void) : Void
+    public static inline function runUpdates(update :Void -> Void) : Void
     {
       update();
     }

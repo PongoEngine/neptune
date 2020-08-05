@@ -174,8 +174,6 @@ class NeptuneMacro
                                 var updater = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
                                     .createDefCall("updateTextNode")
                                     .toExpr();
-                                    // .createDefFuncAnon()
-                                    // .toExpr();
 
                                 scope.addScopedExpr(s, initializer, updater);
                                 expr.updateDef(ident.createDefIdent());
