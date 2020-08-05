@@ -87,13 +87,13 @@ class Setter
         }
     }
 
-    public static function createSetter(ident :String, updateFunc :String -> Expr) : Expr
+    public static function createSetter(ident :String, updateExpr :Expr) : Expr
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
             .toExpr();
 
-        var blockExpr = [assignmentExpr, updateFunc(ident)]
+        var blockExpr = [assignmentExpr, updateExpr]
             .createDefBlock()
             .toExpr();
 

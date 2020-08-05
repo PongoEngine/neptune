@@ -161,15 +161,23 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        var ident = 'nep_${s}';
                         switch getItemType(s, scope) {
                             case Text: {
-                                var textElem = [s.createDefIdent().toExpr()]
+                                var ident = createIdent();
+
+                                var initializer = [s.createDefIdent().toExpr()]
                                     .createDefCall("createText")
                                     .toExpr()
                                     .createDefVar(ident)
                                     .toExpr();
-                                scope.addScopedExpr(s, textElem);
+                                    
+                                var updater = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
+                                    .createDefCall("updateTextNode")
+                                    .toExpr()
+                                    .createDefFuncAnon()
+                                    .toExpr();
+
+                                scope.addScopedExpr(s, initializer, updater);
                                 expr.updateDef(ident.createDefIdent());
                             }
                             case Element:
@@ -183,6 +191,12 @@ class NeptuneMacro
             case _:
                 throw "not implmented yet";
         }
+    }
+
+    private static var _identIndex = 0;
+    private static function createIdent() : String
+    {
+        return 'var_${_identIndex++}';
     }
 
     /**

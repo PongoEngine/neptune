@@ -44,6 +44,13 @@ class HtmlPlatform
       return node;
     }
 
+    public static function runUpdates(updates :Array<Void -> Void>) : Void
+    {
+      for(update in updates) {
+        update();
+      }
+    }
+
     public static function addChildren(element :Element, children :Array<Node>) : Element
     {
       for(child in children) {

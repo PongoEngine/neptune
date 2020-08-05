@@ -19,12 +19,13 @@ class HelloWorld implements Neptune
             y = y - 2;
         }
 
-        var markup = <button onclick={click}>Update XY</button>;
+        var markup = <button onclick={click}>Update XY {x} {y}</button>;
 
         return 
             <div class="taco">
                 <h1>x: {x}</h1>
                 <h2>y: {y}</h2>
+                <h3>y: {y}</h3>
                 {markup}
             </div>;
     }

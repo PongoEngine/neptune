@@ -91,6 +91,15 @@ class Utils
         });
     }
 
+    public static function createDefFuncAnon(body :Expr) : ExprDef
+    {
+        return EFunction(FunctionKind.FAnonymous, {
+            args: [],
+            ret: null,
+            expr: body
+        });
+    }
+
     public static function cloneExpr(e :Expr) : Expr
     {
         return {

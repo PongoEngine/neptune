@@ -72,16 +72,16 @@ class Scope
         }
     }
 
-    public function addScopedExpr(ident :String, expr :Expr) : Void
+    public function addScopedExpr(ident :String, initializer :Expr, updater :Expr) : Void
     {
         if(_items.exists(ident)) {
             if(!_newExprs.exists(ident)) {
                 _newExprs.set(ident, []);
             }
-            _newExprs.get(ident).push(expr);
+            _newExprs.get(ident).push({initializer: initializer, updater: updater});
         }
         else if(_parent != null) {
-            _parent.addScopedExpr(ident, expr);
+            _parent.addScopedExpr(ident, initializer, updater);
         }
         else {
             throw "err";
@@ -90,26 +90,24 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        function tempUpdateFunc(ident :String) : Expr
-        {
-            // var nodeName = 'nep_${ident}';
-            // return [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
-            //     .createDefCall("updateTextNode")
-            //     .toExpr();
-            return ["Hello".createDefString().toExpr()]
-                .createDefCall("trace")
-                .toExpr();
-        }
-
         for(dep in _newExprs.keyValueIterator()) {
             var ident = dep.key;
             var exprs = dep.value;
             var index = getExprIndex(ident, block);
+            var updates :Array<Expr> = [];
             for(expr in exprs) {
-                block.insert(index++, expr);
+                block.insert(index++, expr.initializer);
+                updates.push(expr.updater);
             }
-            block.insert(index++, Setter.createSetter(ident, tempUpdateFunc));
+            block.insert(index++, Setter.createSetter(ident, createUpdateFunc(updates)));
         }
+    }
+
+    private function createUpdateFunc(updates :Array<Expr>) : Expr
+    {
+        return [updates.createDefArrayDecl().toExpr()]
+            .createDefCall("runUpdates")
+            .toExpr();
     }
 
     private static function createSetterFn(name :String) : Function
@@ -186,6 +184,6 @@ class Scope
 
     private var _items :Map<String, ScopeItem>;
     private var _parent :Scope = null;
-    private var _newExprs :Map<String, Array<Expr>>;
+    private var _newExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
 }
 #end
