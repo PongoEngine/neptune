@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
@@ -30,7 +31,6 @@ using neptune.compiler.macro.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
 
-#if macro
 class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
@@ -39,6 +39,7 @@ class NeptuneMacro
         var transformedFields = Context.getBuildFields()
             .map(transformField.bind(compileMarkup, scope));
         scope.insertScopedExprs();
+        scope.transformAssignments();
 
         return transformedFields;
     }
@@ -136,7 +137,7 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        var ident = createIdent();
+                        var ident = 'nep_${s}';
                         switch getItemType(s, scope) {
                             case Text: {
                                 var textElem = [s.createDefIdent().toExpr()]
@@ -169,12 +170,6 @@ class NeptuneMacro
                 case _: Text;
             }
         }
-    }
-
-    private static var _index = 0;
-    private static function createIdent() : String
-    {
-        return 'var_${_index++}';
     }
 }
 

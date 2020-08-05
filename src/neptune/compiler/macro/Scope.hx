@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.Utils;
 
@@ -30,7 +31,6 @@ enum ScopeItem
     SExpr(expr :Expr);
 }
 
-#if macro
 class Scope
 {
 
@@ -123,22 +123,30 @@ class Scope
         for(child in _children) {
             child.insertScopedExprs();
         }
-
-        // transformAssignments();
     }
 
     private function createSetter(ident :String) : Expr
     {
         var argName = 'new_${ident}';
-        var assignment = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
+        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
             .toExpr();
 
-        return assignment.createDefFunc('set_${ident}', [argName])
+        var nodeName = 'nep_${ident}';
+        var updateFunc = [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
+            .createDefCall("updateTextNode")
+            .toExpr();
+
+        var blockExpr = [assignmentExpr, updateFunc]
+            .createDefBlock()
+            .toExpr();
+
+
+        return blockExpr.createDefFunc('set_${ident}', [argName])
             .toExpr();
 
     }
 
-    private function transformAssignments() : Void
+    public function transformAssignments() : Void
     {
         for(assignment in _assignments) {
             switch assignment.expr {
@@ -154,7 +162,7 @@ class Scope
                                             throw "not implemented yet";
                                     }
                                 case _:
-                                    trace(e1.expr);
+                                    throw "not implemented yet";
                             }
                         case _: 
                             throw "not implemented yet";
@@ -162,6 +170,10 @@ class Scope
                 case _: 
                     throw "not implemented yet";
             }
+        }
+
+        for(child in _children) {
+            child.transformAssignments();
         }
     }
 

@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#if macro
 import haxe.macro.Expr;
 
 class Setter
@@ -52,3 +53,4 @@ class Setter
         }
     }
 }
+#end

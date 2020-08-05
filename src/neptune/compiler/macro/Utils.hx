@@ -21,22 +21,16 @@ package neptune.compiler.macro;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#if macro
 import haxe.macro.Expr;
 import haxe.macro.Context;
 
-#if macro
 class Utils
 {
     public static function cleanWhitespace(str :String) : String
     {
         var reg = ~/\s\s+/g;
         return reg.replace(str, " ");
-    }
-
-    private static var _fieldIndex = 0;
-    public static function createDefFieldName() : String
-    {
-        return 'var_${_fieldIndex++}';
     }
 
     public static function createDefVar(e :Expr, name :String) : ExprDef

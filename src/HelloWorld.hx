@@ -14,16 +14,16 @@ class HelloWorld implements Neptune
         var y = 0;
         function click() {
             x = x + 1;
-            y = y - 1;
-            trace(x, y);
+            y = y - 2;
         }
 
-        var markup = <span>Taco</span>;
+        var markup = <Button onclick={click}>Update XY</Button>;
 
         return 
-            <h1 class="taco" onclick={click}>
-                Number {x} {y}
+            <div class="taco">
+                <h1>x: {x}</h1>
+                <h1>y: {y}</h1>
                 {markup}
-            </h1>;
+            </div>;
     }
 }

@@ -21,6 +21,7 @@ package neptune.compiler.macro;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#if macro
 import haxe.macro.Expr;
 
 class MetaTransformer
@@ -64,8 +65,7 @@ class MetaTransformer
     public static function transformExpr(fn :Scope -> Expr -> Expr, scope :Scope, expr :Expr) : Expr
     {
         if(expr == null) return null;
-        Setter.save(scope, expr);
-        return switch expr.expr {
+        var updatedExpr = switch expr.expr {
             case EArray(e1, e2): 
                 expr;
             case EArrayDecl(values): 
@@ -211,6 +211,8 @@ class MetaTransformer
                     expr: EWhile(econd, transformExpr(fn, scope, e), normalWhile)
                 }
         }
+        Setter.save(scope, updatedExpr);
+        return updatedExpr;
     }
     
     private static function transformCase(fn :Scope -> Expr -> Expr, scope :Scope, case_ :Case) : Case
@@ -261,3 +263,4 @@ class MetaTransformer
         };
     }
 }
+#end

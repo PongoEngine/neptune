@@ -2,10 +2,18 @@
 	access: [APublic]
 	doc: null
 	kind: FFun({
-		args: null <- expected value
-		expr: null
-		params: null
-		ret: null
+		args: []
+		expr: {
+			expr: EBlock([])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
 	})
 	meta: []
 	name: new
@@ -14,14 +22,307 @@
 	access: [APublic]
 	doc: null
 	kind: FFun({
-		args: null <- expected value
-		expr: null
-		params: null
-		ret: null
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EVars([{
+					expr: {
+						expr: EConst(CInt(0))
+						pos: #pos
+					}
+					isFinal: false
+					name: x
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EVars([{
+					expr: {
+						expr: ECall({
+							expr: EConst(CIdent(createText))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(x))
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					isFinal: null
+					name: var_0
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: null <- expected value
+				pos: null <- expected value
+			}, {
+				expr: EVars([{
+					expr: {
+						expr: EConst(CInt(0))
+						pos: #pos
+					}
+					isFinal: false
+					name: y
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EVars([{
+					expr: {
+						expr: ECall({
+							expr: EConst(CIdent(createText))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(y))
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					isFinal: null
+					name: var_1
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: null <- expected value
+				pos: null <- expected value
+			}, {
+				expr: EFunction(FNamed(click, false), {
+					args: []
+					expr: {
+						expr: EBlock([{
+							expr: ECall({
+								expr: EConst(CIdent(set_x))
+								pos: #pos
+							}, [{
+								expr: EBinop(OpAdd, {
+									expr: EConst(CIdent(x))
+									pos: #pos
+								}, {
+									expr: EConst(CInt(1))
+									pos: #pos
+								})
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(set_y))
+								pos: #pos
+							}, [{
+								expr: EBinop(OpSub, {
+									expr: EConst(CIdent(y))
+									pos: #pos
+								}, {
+									expr: EConst(CInt(1))
+									pos: #pos
+								})
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(trace))
+								pos: #pos
+							}, [{
+								expr: EConst(CIdent(x))
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(y))
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					params: []
+					ret: null
+				})
+				pos: #pos
+			}, {
+				expr: EVars([{
+					expr: {
+						expr: EBlock([{
+							expr: EVars([{
+								expr: {
+									expr: ECall({
+										expr: EConst(CIdent(createElement))
+										pos: #pos
+									}, [{
+										expr: EConst(CString(span, null))
+										pos: #pos
+									}])
+									pos: #pos
+								}
+								isFinal: null
+								name: elem
+								type: null
+							}])
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(addChildren))
+								pos: #pos
+							}, [{
+								expr: EConst(CIdent(elem))
+								pos: #pos
+							}, {
+								expr: EArrayDecl([{
+									expr: ECall({
+										expr: EConst(CIdent(createText))
+										pos: #pos
+									}, [{
+										expr: EConst(CString(Taco, null))
+										pos: #pos
+									}])
+									pos: #pos
+								}])
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: EArrayDecl([])
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(elem))
+							pos: #pos
+						}])
+						pos: #pos
+					}
+					isFinal: false
+					name: markup
+					type: null
+				}])
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: EBlock([{
+						expr: EVars([{
+							expr: {
+								expr: ECall({
+									expr: EConst(CIdent(createElement))
+									pos: #pos
+								}, [{
+									expr: EConst(CString(h1, null))
+									pos: #pos
+								}])
+								pos: #pos
+							}
+							isFinal: null
+							name: elem
+							type: null
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(addChildren))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(elem))
+							pos: #pos
+						}, {
+							expr: EArrayDecl([{
+								expr: ECall({
+									expr: EConst(CIdent(createText))
+									pos: #pos
+								}, [{
+									expr: EConst(CString( Number , null))
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(var_0))
+								pos: #pos
+							}, {
+								expr: ECall({
+									expr: EConst(CIdent(createText))
+									pos: #pos
+								}, [{
+									expr: EConst(CString( , null))
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(var_1))
+								pos: #pos
+							}, {
+								expr: ECall({
+									expr: EConst(CIdent(createText))
+									pos: #pos
+								}, [{
+									expr: EConst(CString( , null))
+									pos: #pos
+								}])
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(markup))
+								pos: #pos
+							}, {
+								expr: ECall({
+									expr: EConst(CIdent(createText))
+									pos: #pos
+								}, [{
+									expr: EConst(CString( , null))
+									pos: #pos
+								}])
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EArrayDecl([{
+							expr: ECall({
+								expr: EConst(CIdent(addAttr))
+								pos: #pos
+							}, [{
+								expr: EConst(CIdent(elem))
+								pos: #pos
+							}, {
+								expr: EConst(CString(class, null))
+								pos: #pos
+							}, {
+								expr: EConst(CString(taco, null))
+								pos: #pos
+							}])
+							pos: #pos
+						}, {
+							expr: ECall({
+								expr: EConst(CIdent(onclick))
+								pos: #pos
+							}, [{
+								expr: EConst(CIdent(elem))
+								pos: #pos
+							}, {
+								expr: EConst(CIdent(click))
+								pos: #pos
+							}])
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(elem))
+						pos: #pos
+					}])
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Node
+			pack: []
+			params: []
+			sub: null
+		})
 	})
 	meta: []
 	name: cool
 	pos: #pos
 }]
-line 5: expected value
-line 17: expected value
+line 56: expected value
+line 57: expected value
+line 87: expected value
+line 88: expected value
