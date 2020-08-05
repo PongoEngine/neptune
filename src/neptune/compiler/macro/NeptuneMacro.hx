@@ -39,10 +39,35 @@ class NeptuneMacro
         var setter = new Setter();
         var transformedFields = Context.getBuildFields()
             .map(transformField.bind(compileMarkup, scope, setter));
+        var fieldsSetters = scope.createFields();
         
         setter.transformAssignments();
 
-        return transformedFields;
+        for(field in transformedFields) {
+            if(field.name == "new") {
+                // field.
+                switch field.kind {
+                    case FFun(f): switch f.expr.expr {
+                        case EBlock(exprs): for(setter in fieldsSetters) {
+                            // exprs.push(setter.cexpr);
+                            // trace(setter.cexpr);
+                            var identExpr = setter.field.name
+                                .createDefIdent()
+                                .toExpr();
+                            var assignmentExpr = Binop.OpAssign.createDefBinop(identExpr, setter.cexpr)
+                                .toExpr();
+                            exprs.push(assignmentExpr);
+                        }
+                        case _:
+                            throw "not implemented yet";
+                    }
+                    case _: 
+                        throw "not implemented yet";
+                }
+            }
+        }
+
+        return transformedFields.concat(fieldsSetters.map(fs -> fs.field));
     }
 
     private static function compileMarkup(scope :Scope, e :Expr) : Expr
@@ -165,11 +190,20 @@ class NeptuneMacro
     private static function getItemType(ident :String, scope :Scope) : ItemType
     {
         return switch scope.getItem(ident) {
-            case SField(field): throw "not implemented yet";
-            case SExpr(expr): switch expr.expr {
-                case EMeta(s, e): Element;
-                case _: Text;
+            case SField(field): switch field.kind {
+                case FVar(t, e): getExprItemType(e);
+                case FFun(f): throw "not implemented yet";
+                case FProp(get, set, t, e): throw "not implemented yet";
             }
+            case SExpr(expr): getExprItemType(expr);
+        }
+    }
+
+    private static function getExprItemType(expr :Expr) : ItemType
+    {
+        return switch expr.expr {
+            case EMeta(s, e): Element;
+            case _: Text;
         }
     }
 }

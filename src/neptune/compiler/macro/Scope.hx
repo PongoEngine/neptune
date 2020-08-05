@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Context;
 #if macro
 import haxe.macro.Expr;
 
@@ -91,12 +92,40 @@ class Scope
         for(dep in _newExprs.keyValueIterator()) {
             var ident = dep.key;
             var exprs = dep.value;
-            var index = getIndex(ident, block);
+            var index = getExprIndex(ident, block);
             for(expr in exprs) {
                 block.insert(index++, expr);
             }
             block.insert(index++, Setter.createSetter(ident));
         }
+    }
+
+    public function createFields() : Array<{field :Field, cexpr :Expr}>
+    {
+        var fields = [];
+        for(dep in _newExprs.keyValueIterator()) {
+            var ident = dep.key;
+            var exprs = dep.value;
+            for(expr in exprs) {
+                switch expr.expr {
+                    case EVars(vars):
+                        for(var_ in vars) {
+                            var field = {
+                                name: var_.name,
+                                doc: null,
+                                access: [APublic],
+                                kind: FVar(macro: Dynamic, null),
+                                pos: Context.currentPos(),
+                                meta: null,
+                            };
+                            fields.push({field:field, cexpr:var_.expr});
+                        } 
+                    case _:
+                        throw "not implemented yet";
+                }
+            }
+        }
+        return fields;
     }
 
     public function createChild() : Scope
@@ -107,7 +136,7 @@ class Scope
     }
 
     //wasteful
-    private function getIndex(ident :String, block :Array<Expr>) : Int
+    private function getExprIndex(ident :String, block :Array<Expr>) : Int
     {
         var index = 1;
         for(item in block) {

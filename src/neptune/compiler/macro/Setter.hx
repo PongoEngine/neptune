@@ -71,6 +71,7 @@ class Setter
                                         case _:
                                             throw "not implemented yet";
                                     }
+                                case EField(e, field):
                                 case _:
                                     throw "not implemented yet";
                             }
@@ -97,7 +98,6 @@ class Setter
         var blockExpr = [assignmentExpr, updateFunc]
             .createDefBlock()
             .toExpr();
-
 
         return blockExpr.createDefFunc('set_${ident}', [argName])
             .toExpr();
