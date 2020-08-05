@@ -39,22 +39,19 @@ class NeptuneMacro
         var setter = new Setter();
         var transformedFields = Context.getBuildFields()
             .map(transformField.bind(compileMarkup, scope, setter));
-        var fieldsSetters = scope.createFields();
-        
+        var fields = scope.createFields();
+        var initializers = scope.createFieldInitializers();
         setter.transformAssignments();
 
         for(field in transformedFields) {
             if(field.name == "new") {
-                // field.
                 switch field.kind {
                     case FFun(f): switch f.expr.expr {
-                        case EBlock(exprs): for(setter in fieldsSetters) {
-                            // exprs.push(setter.cexpr);
-                            // trace(setter.cexpr);
-                            var identExpr = setter.field.name
+                        case EBlock(exprs): for(initializer in initializers) {
+                            var identExpr = initializer.name
                                 .createDefIdent()
                                 .toExpr();
-                            var assignmentExpr = Binop.OpAssign.createDefBinop(identExpr, setter.cexpr)
+                            var assignmentExpr = Binop.OpAssign.createDefBinop(identExpr, initializer.expr)
                                 .toExpr();
                             exprs.push(assignmentExpr);
                         }
@@ -67,7 +64,7 @@ class NeptuneMacro
             }
         }
 
-        return transformedFields.concat(fieldsSetters.map(fs -> fs.field));
+        return transformedFields.concat(fields);
     }
 
     private static function compileMarkup(scope :Scope, e :Expr) : Expr

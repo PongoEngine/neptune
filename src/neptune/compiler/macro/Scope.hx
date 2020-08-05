@@ -100,7 +100,7 @@ class Scope
         }
     }
 
-    public function createFields() : Array<{field :Field, cexpr :Expr}>
+    public function createFields() : Array<Field>
     {
         var fields = [];
         for(dep in _newExprs.keyValueIterator()) {
@@ -110,15 +110,14 @@ class Scope
                 switch expr.expr {
                     case EVars(vars):
                         for(var_ in vars) {
-                            var field = {
+                            fields.push({
                                 name: var_.name,
                                 doc: null,
                                 access: [APublic],
                                 kind: FVar(macro: Dynamic, null),
                                 pos: Context.currentPos(),
                                 meta: null,
-                            };
-                            fields.push({field:field, cexpr:var_.expr});
+                            });
                         } 
                     case _:
                         throw "not implemented yet";
@@ -126,6 +125,26 @@ class Scope
             }
         }
         return fields;
+    }
+
+    public function createFieldInitializers() : Array<{name :String, expr :Expr}>
+    {
+        var initializers = [];
+        for(dep in _newExprs.keyValueIterator()) {
+            var ident = dep.key;
+            var exprs = dep.value;
+            for(expr in exprs) {
+                switch expr.expr {
+                    case EVars(vars):
+                        for(initializer in vars) {
+                            initializers.push({name: initializer.name, expr: initializer.expr});
+                        } 
+                    case _:
+                        throw "not implemented yet";
+                }
+            }
+        }
+        return initializers;
     }
 
     public function createChild() : Scope
