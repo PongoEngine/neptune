@@ -43,6 +43,7 @@ class NeptuneMacro
         var initializers = scope.createFieldInitializers();
         setter.transformAssignments();
 
+        //hacky initializing
         for(field in transformedFields) {
             if(field.name == "new") {
                 switch field.kind {
