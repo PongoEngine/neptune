@@ -105,7 +105,7 @@ class Scope
 
     private function createUpdateFunc(updates :Array<Expr>) : Expr
     {
-        return [updates.createDefArrayDecl().toExpr()]
+        return [updates.createDefBlock().toExpr().createDefFuncAnon().toExpr()]
             .createDefCall("runUpdates")
             .toExpr();
     }
