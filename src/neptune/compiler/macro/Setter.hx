@@ -83,6 +83,26 @@ class Setter
         }
     }
 
+    public static function createSetter(ident :String) : Expr
+    {
+        var argName = 'new_${ident}';
+        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
+            .toExpr();
+
+        var nodeName = 'nep_${ident}';
+        var updateFunc = [nodeName.createDefIdent().toExpr(), ident.createDefIdent().toExpr()]
+            .createDefCall("updateTextNode")
+            .toExpr();
+
+        var blockExpr = [assignmentExpr, updateFunc]
+            .createDefBlock()
+            .toExpr();
+
+
+        return blockExpr.createDefFunc('set_${ident}', [argName])
+            .toExpr();
+    }
+
     private var _assignments :Array<Expr>;
 }
 #end

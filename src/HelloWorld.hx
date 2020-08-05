@@ -12,8 +12,9 @@ class HelloWorld implements Neptune
     {
         var x = 0;
         var y = 0;
+        var q = 3;
         function click() {
-            x = x + 1;
+            x = x + 1 + q;
             y = y - 2;
         }
 

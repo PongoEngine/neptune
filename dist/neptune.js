@@ -16,8 +16,9 @@ HelloWorld.prototype = {
 			y = new_y;
 			nep_y.textContent = y;
 		};
+		var q = 3;
 		var click = function() {
-			set_x(x + 1);
+			set_x(x + 1 + q);
 			set_y(y - 2);
 		};
 		var elem = window.document.createElement("Button");
