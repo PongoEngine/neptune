@@ -13,10 +13,11 @@ class HelloWorld implements Neptune
     {
         var x = 0;
         var y = 0;
-        var q = 3 + 200;
+        var textValue = "sage";
         function click() {
-            x = x + 1 + q;
-            y = y - 2;
+            x = x + 1;
+            y = -x;
+            textValue = "neptune";
         }
 
         var markup = <button onclick={click}>Update XY {x} {y}</button>;
@@ -25,8 +26,8 @@ class HelloWorld implements Neptune
             <div class="taco">
                 <h1>x: {x}</h1>
                 <h2>y: {y}</h2>
-                <h3>y: {y}</h3>
                 {markup}
+                <p>{textValue}</p>
             </div>;
     }
 }
