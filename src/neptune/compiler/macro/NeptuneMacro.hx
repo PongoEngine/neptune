@@ -25,6 +25,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
+import neptune.compiler.macro.MetaTransformer.transformField;
 using neptune.compiler.macro.Utils;
 using haxe.macro.ExprTools;
 using StringTools;
@@ -34,10 +35,12 @@ class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
-        var fields = Context.getBuildFields();
         var scope = new Scope();
-        var func = MetaTransformer.transformField.bind(compileMarkup, scope);
-        return fields.map(func);
+        var transformedFields = Context.getBuildFields()
+            .map(transformField.bind(compileMarkup, scope));
+        scope.insertScopedExprs();
+
+        return transformedFields;
     }
 
     private static function compileMarkup(scope :Scope, e :Expr) : Expr

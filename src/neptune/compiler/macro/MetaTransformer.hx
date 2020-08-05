@@ -88,7 +88,7 @@ class MetaTransformer
                     expr: EBlock({
                         var child = scope.createChild();
                         var blockExprs = exprs.map(transformExpr.bind(fn, child));
-                        child.insertScopedExprs(blockExprs);
+                        child.setBlock(blockExprs);
                         blockExprs;
                     })
                 }
@@ -242,7 +242,7 @@ class MetaTransformer
         };
 
         switch func.expr.expr {
-            case EBlock(exprs): childScope.insertScopedExprs(exprs);
+            case EBlock(exprs): childScope.setBlock(exprs);
             case _: throw "not imlemented";
         }
 

@@ -22,6 +22,7 @@ package neptune.compiler.macro;
 */
 
 import haxe.macro.Expr;
+using neptune.compiler.macro.Utils;
 
 enum ScopeItem
 {
@@ -29,6 +30,7 @@ enum ScopeItem
     SExpr(expr :Expr);
 }
 
+#if macro
 class Scope
 {
 
@@ -37,6 +39,7 @@ class Scope
         _items = new Map<String, ScopeItem>();
         _newExprs = [];
         _assignments = [];
+        _children = [];
     }
 
     public function addItem(name :String, item :ScopeItem) : Void
@@ -91,23 +94,90 @@ class Scope
         }
     }
 
-    public function insertScopedExprs(block :Array<Expr>) : Void
+    public function setBlock(block :Array<Expr>) : Void
     {
-        for(dep in _newExprs.keyValueIterator()) {
-            var ident = dep.key;
-            var exprs = dep.value;
-            var index = getIndex(ident, block);
-            for(expr in exprs) {
-                block.insert(index++, expr);
+        if(_block != null) {
+            throw "block is already set";
+        }
+        _block = block;
+    }
+
+    public function insertScopedExprs() : Void
+    {
+        if(_hasInsertedExprs) {
+            throw "Already inserted Expressions";
+        }
+
+        if(_block != null) {
+            for(dep in _newExprs.keyValueIterator()) {
+                var ident = dep.key;
+                var exprs = dep.value;
+                var index = getIndex(ident);
+                for(expr in exprs) {
+                    _block.insert(index++, expr);
+                }
+                _block.insert(index++, createSetter(ident));
+            }
+        }
+
+        for(child in _children) {
+            child.insertScopedExprs();
+        }
+
+        // transformAssignments();
+    }
+
+    private function createSetter(ident :String) : Expr
+    {
+        var argName = 'new_${ident}';
+        var assignment = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
+            .toExpr();
+
+        return assignment.createDefFunc('set_${ident}', [argName])
+            .toExpr();
+
+    }
+
+    private function transformAssignments() : Void
+    {
+        for(assignment in _assignments) {
+            switch assignment.expr {
+                case EBinop(op, e1, e2):
+                    switch op {
+                        case OpAssign:
+                            switch e1.expr {
+                                case EConst(c):
+                                    switch c {
+                                        case CIdent(s):
+                                            assignment.expr = [e2].createDefCall('set_${s}');
+                                        case _:
+                                            throw "not implemented yet";
+                                    }
+                                case _:
+                                    trace(e1.expr);
+                            }
+                        case _: 
+                            throw "not implemented yet";
+                    }
+                case _: 
+                    throw "not implemented yet";
             }
         }
     }
 
+    public function createChild() : Scope
+    {
+        var c = new Scope();
+        c._parent = this;
+        _children.push(c);
+        return c;
+    }
+
     //wasteful
-    public function getIndex(ident :String, block :Array<Expr>) : Int
+    private function getIndex(ident :String) : Int
     {
         var index = 1;
-        for(item in block) {
+        for(item in _block) {
             switch item.expr {
                 case EVars(vars):
                     if(varsContainsIdent(ident, vars)) {
@@ -122,7 +192,7 @@ class Scope
     }
 
     //wasteful
-    public function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
+    private function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
     {
         for(v in vars) {
             if(v.name == ident) {
@@ -132,15 +202,12 @@ class Scope
         return false;
     }
 
-    public function createChild() : Scope
-    {
-        var c = new Scope();
-        c._parent = this;
-        return c;
-    }
-
     private var _items :Map<String, ScopeItem>;
     private var _parent :Scope = null;
+    private var _children :Array<Scope>;
     private var _newExprs :Map<String, Array<Expr>>;
     private var _assignments :Array<Expr>;
+    private var _block :Array<Expr>;
+    private var _hasInsertedExprs = false;
 }
+#end

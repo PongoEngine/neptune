@@ -82,12 +82,18 @@ class Utils
         return EReturn(e);
     }
 
-    public static function createDefAnonFunc(e :Expr) : ExprDef
+    public static function createDefFunc(body :Expr, name :String, args :Array<String>) : ExprDef
     {
-        return EFunction(FunctionKind.FAnonymous, {
-            args: [],
+        return EFunction(FunctionKind.FNamed(name), {
+            args: args.map(a -> {
+                name: a,
+                opt: false,
+                type: null,
+                value: null,
+                meta: null
+            }),
             ret: null,
-            expr: e
+            expr: body
         });
     }
 
