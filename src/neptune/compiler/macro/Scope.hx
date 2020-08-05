@@ -72,7 +72,10 @@ class Scope
     public function addScopedExpr(ident :String, expr :Expr) : Void
     {
         if(_items.exists(ident)) {
-            _newExprs.push({ident:ident, expr: expr});
+            if(!_newExprs.exists(ident)) {
+                _newExprs.set(ident, []);
+            }
+            _newExprs.get(ident).push(expr);
         }
         else if(_parent != null) {
             _parent.addScopedExpr(ident, expr);
@@ -84,28 +87,43 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(nExpr in _newExprs) {
-            var index = getIndex(nExpr.ident, block);
-            block.insert(index, nExpr.expr);
+        for(dep in _newExprs.keyValueIterator()) {
+            var ident = dep.key;
+            var exprs = dep.value;
+            var index = getIndex(ident, block);
+            for(expr in exprs) {
+                block.insert(index++, expr);
+            }
         }
     }
 
-    private function getIndex(ident :String, block :Array<Expr>) : Int
+    //wasteful
+    public function getIndex(ident :String, block :Array<Expr>) : Int
     {
-        var index = 0;
+        var index = 1;
         for(item in block) {
             switch item.expr {
-                case EVars(vars): for(var_ in vars) {
-                    if(var_.name == ident) {
+                case EVars(vars):
+                    if(varsContainsIdent(ident, vars)) {
                         return index;
                     }
-                }
                 case _:
             }
             index++;
         }
 
-        return -1;
+        return 0;
+    }
+
+    //wasteful
+    public function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
+    {
+        for(v in vars) {
+            if(v.name == ident) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function createChild() : Scope
@@ -117,5 +135,5 @@ class Scope
 
     private var _items :Map<String, ScopeItem>;
     private var _parent :Scope = null;
-    private var _newExprs :Array<{ident :String, expr :Expr}>;
+    private var _newExprs :Map<String, Array<Expr>>;
 }

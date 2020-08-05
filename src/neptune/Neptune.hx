@@ -24,6 +24,5 @@ package neptune;
 @:autoBuild(neptune.compiler.macro.NeptuneMacro.fromInterface())
 interface Neptune
 {
-    public function template() : js.html.Node;
 }
 

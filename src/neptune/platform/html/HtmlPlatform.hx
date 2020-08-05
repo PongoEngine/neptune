@@ -46,6 +46,18 @@ class HtmlPlatform
       return element;
     }
 
+    public static function addAttr(element :Element, name :String, value :Dynamic) : Element
+    {
+      element.setAttribute(name, value);
+      return element;
+    }
+
+    public static inline function onclick(element :Element, value :Dynamic) : Element
+    {
+      element.onclick = value;
+      return element;
+    }
+
     public inline static function addChild(element :Element, child :Node) : Element
     {
       element.appendChild(child);

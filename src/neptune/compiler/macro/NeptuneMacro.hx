@@ -58,9 +58,9 @@ class NeptuneMacro
         return handleTree(scope, result);
     }
 
-    public static function handleTree(scope :Scope, current :DomAST) : Expr
+    public static function handleTree(scope :Scope, node :DomAST) : Expr
     {
-        return switch current {
+        return switch node {
             case DomText(string):
                 [string.cleanWhitespace().createDefString().toExpr()]
                     .createDefCall("createText")
@@ -73,12 +73,55 @@ class NeptuneMacro
                 var cExpr = children.map(handleTree.bind(scope))
                     .createDefArrayDecl()
                     .toExpr();
+
                 var element = [tag.createDefString().toExpr()]
                     .createDefCall("createElement")
+                    .toExpr()
+                    .createDefVar("elem")
                     .toExpr();
-                [element, cExpr]
+                
+                var addChildren = ["elem".createDefIdent().toExpr(), cExpr]
                     .createDefCall("addChildren")
                     .toExpr();
+
+                var addAttrs = attrs
+                    .map(handleAttr.bind(scope))
+                    .map(f -> f("elem".createDefIdent().toExpr()))
+                    .createDefArrayDecl()
+                    .toExpr();
+
+                var ident = "elem".createDefIdent().toExpr();
+
+                [element, addChildren, addAttrs, ident]
+                    .createDefBlock()
+                    .toExpr();
+            }
+        }
+    }
+
+    public static function handleAttr(scope :Scope, attr :Attr) : Expr -> Expr
+    {
+        return switch attr.value {
+            case AttrText(value): (element) -> {
+                var attrName = attr.name.createDefString().toExpr();
+                var attrValue = value.createDefString().toExpr();
+                return [element, attrName, attrValue]
+                    .createDefCall("addAttr")
+                    .toExpr();
+            }
+            case AttrExpr(expr): (element) -> {
+                if(attr.name == "onclick") {
+                    return [element, expr]
+                        .createDefCall("onclick")
+                        .toExpr();
+                }
+                else {
+                    var attrName = attr.name.createDefString().toExpr();
+                    return [element, attrName, expr]
+                        .createDefCall("addAttr")
+                        .toExpr();
+                }
+                
             }
         }
     }
@@ -90,15 +133,15 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        var newIdent = createIdent();
-                        var text = [s.createDefIdent().toExpr()]
-                            .createDefCall("createText");
-                        var varExpr = text.toExpr().createDefVar(newIdent).toExpr();
-                        scope.addScopedExpr(s, varExpr);
-                        var traceExpr = [newIdent.createDefIdent().toExpr()].createDefCall("trace").toExpr();
-                        scope.addScopedExpr(s, traceExpr);
+                        var ident = createIdent();
+                        var textElem = [s.createDefIdent().toExpr()]
+                            .createDefCall("createText")
+                            .toExpr()
+                            .createDefVar(ident)
+                            .toExpr();
+                        scope.addScopedExpr(s, textElem);
 
-                        expr.updateDef(newIdent.createDefIdent());
+                        expr.updateDef(ident.createDefIdent());
                     case _:
                         throw "not implmented yet";
                 }

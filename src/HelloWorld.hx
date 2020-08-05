@@ -4,23 +4,17 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
-
     public function new() : Void
     {
     }
 
-    public function template() : Node
+    public function cool() : Node
     {
-        var x = "Woah";
-        x += " nice ";
-        trace(x + "turkey");
-
-        function func1(road :String) {
-            // var a = <h2>{x}</h2>;
-            return <h1>{road}</h1>;
+        var x = 0;
+        function click() {
+            x += 1;
         }
 
-
-        return func1("turtle");
+        return <h1 class="taco" onclick={click}>Number {x}</h1>;
     }
 }
