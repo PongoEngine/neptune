@@ -6,7 +6,6 @@ class HelloWorld implements Neptune
 {
     public function new() : Void
     {
-        // this.name = "Robot"; //need to add fields by index
     }
 
     public function cool() : Node

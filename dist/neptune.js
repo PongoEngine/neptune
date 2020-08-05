@@ -9,22 +9,22 @@ HelloWorld.prototype = {
 		var var_2 = window.document.createTextNode(x);
 		var set_x = function(new_x) {
 			x = new_x;
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_0,x);
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_2,x);
+			var_0.textContent = x;
+			var_2.textContent = x;
 		};
 		var y = 0;
 		var var_1 = window.document.createTextNode(y);
 		var var_3 = window.document.createTextNode(y);
 		var set_y = function(new_y) {
 			y = new_y;
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_1,y);
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_3,y);
+			var_1.textContent = y;
+			var_3.textContent = y;
 		};
 		var textValue = "sage";
 		var var_4 = window.document.createTextNode(textValue);
 		var set_textValue = function(new_textValue) {
 			textValue = new_textValue;
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_4,textValue);
+			var_4.textContent = textValue;
 		};
 		var click = function() {
 			set_x(x + 1);
@@ -68,10 +68,6 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
-neptune_platform_html_HtmlPlatform.updateTextNode = function(node,value) {
-	node.textContent = value;
-	return node;
-};
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);
