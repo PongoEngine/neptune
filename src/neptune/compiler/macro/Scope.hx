@@ -36,11 +36,17 @@ class Scope
     {
         _items = new Map<String, ScopeItem>();
         _newExprs = [];
+        _assignments = [];
     }
 
     public function addItem(name :String, item :ScopeItem) : Void
     {
         _items.set(name, item);
+    }
+
+    public function saveAssignment(expr :Expr) : Void
+    {
+        _assignments.push(expr);
     }
 
     public function exists(name :String) : Bool
@@ -136,4 +142,5 @@ class Scope
     private var _items :Map<String, ScopeItem>;
     private var _parent :Scope = null;
     private var _newExprs :Map<String, Array<Expr>>;
+    private var _assignments :Array<Expr>;
 }

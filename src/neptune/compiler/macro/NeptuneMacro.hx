@@ -40,7 +40,7 @@ class NeptuneMacro
         return fields.map(func);
     }
 
-    public static function compileMarkup(scope :Scope, e :Expr) : Expr
+    private static function compileMarkup(scope :Scope, e :Expr) : Expr
     {
         var xml = switch e.expr {
             case EConst(c): switch c {
@@ -58,7 +58,7 @@ class NeptuneMacro
         return handleTree(scope, result);
     }
 
-    public static function handleTree(scope :Scope, node :DomAST) : Expr
+    private static function handleTree(scope :Scope, node :DomAST) : Expr
     {
         return switch node {
             case DomText(string):
@@ -99,7 +99,7 @@ class NeptuneMacro
         }
     }
 
-    public static function handleAttr(scope :Scope, attr :Attr) : Expr -> Expr
+    private static function handleAttr(scope :Scope, attr :Attr) : Expr -> Expr
     {
         return switch attr.value {
             case AttrText(value): (element) -> {
@@ -127,21 +127,26 @@ class NeptuneMacro
     }
 
 
-    public static function handleDomExpr(scope :Scope, expr :Expr) : Expr
+    private static function handleDomExpr(scope :Scope, expr :Expr) : Expr
     {
         return switch expr.expr {
             case EConst(c):
                 switch c {
                     case CIdent(s):
                         var ident = createIdent();
-                        var textElem = [s.createDefIdent().toExpr()]
-                            .createDefCall("createText")
-                            .toExpr()
-                            .createDefVar(ident)
-                            .toExpr();
-                        scope.addScopedExpr(s, textElem);
-
-                        expr.updateDef(ident.createDefIdent());
+                        switch getItemType(s, scope) {
+                            case Text: {
+                                var textElem = [s.createDefIdent().toExpr()]
+                                    .createDefCall("createText")
+                                    .toExpr()
+                                    .createDefVar(ident)
+                                    .toExpr();
+                                scope.addScopedExpr(s, textElem);
+                                expr.updateDef(ident.createDefIdent());
+                            }
+                            case Element:
+                                expr;
+                        }
                     case _:
                         throw "not implmented yet";
                 }
@@ -152,11 +157,28 @@ class NeptuneMacro
         }
     }
 
+    private static function getItemType(ident :String, scope :Scope) : ItemType
+    {
+        return switch scope.getItem(ident) {
+            case SField(field): throw "not implemented yet";
+            case SExpr(expr): switch expr.expr {
+                case EMeta(s, e): Element;
+                case _: Text;
+            }
+        }
+    }
+
     private static var _index = 0;
     private static function createIdent() : String
     {
         return 'var_${_index++}';
     }
+}
+
+enum ItemType
+{
+    Text;
+    Element;
 }
 
 #end

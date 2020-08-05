@@ -6,14 +6,19 @@ HelloWorld.prototype = {
 	cool: function() {
 		var x = 0;
 		var var_0 = window.document.createTextNode(x);
+		var y = 0;
+		var var_1 = window.document.createTextNode(y);
 		var click = function() {
 			x += 1;
+			y = x - 1;
 		};
-		var elem = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(elem,[window.document.createTextNode("Number "),var_0]);
-		neptune_platform_html_HtmlPlatform.addAttr(elem,"class","taco");
-		elem.onclick = click;
-		return elem;
+		var elem = window.document.createElement("span");
+		neptune_platform_html_HtmlPlatform.addChildren(elem,[window.document.createTextNode("Taco")]);
+		var elem1 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(elem1,[window.document.createTextNode(" Number "),var_0,window.document.createTextNode(" "),var_1,window.document.createTextNode(" "),elem,window.document.createTextNode(" ")]);
+		neptune_platform_html_HtmlPlatform.addAttr(elem1,"class","taco");
+		elem1.onclick = click;
+		return elem1;
 	}
 };
 var Main = function() { };
