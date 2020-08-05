@@ -38,7 +38,7 @@ class HtmlPlatform
       return document.createTextNode(text);
     }
 
-    public static inline function updateTextNode(node :Text, value :Dynamic) : Text
+    public static function updateTextNode(node :Text, value :Dynamic) : Text
     {
       node.textContent = value;
       return node;

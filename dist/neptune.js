@@ -12,19 +12,19 @@ HelloWorld.prototype = {
 		var nep_x = window.document.createTextNode(x);
 		var set_x = function(new_x) {
 			x = new_x;
-			nep_x.textContent = x;
+			neptune_platform_html_HtmlPlatform.updateTextNode(nep_x,x);
 		};
 		var y = 0;
 		var nep_y = window.document.createTextNode(y);
 		var set_y = function(new_y) {
 			y = new_y;
-			nep_y.textContent = y;
+			neptune_platform_html_HtmlPlatform.updateTextNode(nep_y,y);
 		};
 		var q = 3;
 		var click = function() {
 			set_x(x + 1 + q);
 			set_y(y - 2);
-			_gthis.name = "Sage";
+			_gthis.set_name("Sage");
 		};
 		var elem = window.document.createElement("Button");
 		neptune_platform_html_HtmlPlatform.addChildren(elem,[window.document.createTextNode("Update XY")]);
@@ -42,6 +42,11 @@ HelloWorld.prototype = {
 		neptune_platform_html_HtmlPlatform.addChildren(elem1,[tmp,elem2,tmp1,elem3,tmp2,elem4,window.document.createTextNode(" "),elem,window.document.createTextNode(" ")]);
 		neptune_platform_html_HtmlPlatform.addAttr(elem1,"class","taco");
 		return elem1;
+	}
+	,set_name: function(val) {
+		this.name = val;
+		neptune_platform_html_HtmlPlatform.updateTextNode(this.nep_name,val);
+		return this.name;
 	}
 };
 var Main = function() { };
@@ -62,6 +67,10 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
+neptune_platform_html_HtmlPlatform.updateTextNode = function(node,value) {
+	node.textContent = value;
+	return node;
+};
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);

@@ -15,8 +15,20 @@
 		args: []
 		expr: {
 			expr: EBlock([{
-				expr: null <- expected value
-				pos: null <- expected value
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(nep_name))
+					pos: #pos
+				}, {
+					expr: ECall({
+						expr: EConst(CIdent(createText))
+						pos: #pos
+					}, [{
+						expr: EConst(CIdent(name))
+						pos: #pos
+					}])
+					pos: #pos
+				})
+				pos: #pos
 			}])
 			pos: #pos
 		}
@@ -577,7 +589,7 @@
 }, {
 	access: [APublic]
 	doc: null
-	kind: FVar(TPath({
+	kind: FProp(default, set, TPath({
 		name: Dynamic
 		pack: []
 		params: []
@@ -586,6 +598,17 @@
 	meta: null
 	name: nep_name
 	pos: #pos
+}, {
+	access: [APrivate]
+	doc: null
+	kind: FFun({
+		args: null <- expected value
+		expr: null
+		params: null
+		ret: null
+	})
+	meta: null
+	name: set_nep_name
+	pos: #pos
 }]
-line 18: expected value
-line 19: expected value
+line 605: expected value

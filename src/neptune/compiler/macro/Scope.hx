@@ -24,6 +24,7 @@ package neptune.compiler.macro;
 import haxe.macro.Context;
 #if macro
 import haxe.macro.Expr;
+using neptune.compiler.macro.Utils;
 
 enum ScopeItem
 {
@@ -100,9 +101,10 @@ class Scope
         }
     }
 
-    public function createFields() : Array<Field>
+    //super hacky
+    public function updateFields(fields :Array<Field>) : Array<Field>
     {
-        var fields = [];
+        var newFields = [];
         for(dep in _newExprs.keyValueIterator()) {
             var ident = dep.key;
             var exprs = dep.value;
@@ -110,11 +112,29 @@ class Scope
                 switch expr.expr {
                     case EVars(vars):
                         for(var_ in vars) {
-                            fields.push({
+                            newFields.push({
                                 name: var_.name,
                                 doc: null,
                                 access: [APublic],
                                 kind: FVar(macro: Dynamic, null),
+                                pos: Context.currentPos(),
+                                meta: null,
+                            });
+                            for(f in fields) {
+                                if(f.name == var_.name.substr(4)) {
+                                    switch f.kind {
+                                        case FVar(t, e):
+                                            f.kind = FProp("default", "set", t, e);
+                                        case _:
+                                            throw "not implemented yet";
+                                    }
+                                }
+                            }
+                            newFields.push({
+                                name: 'set_${var_.name.substr(4)}',
+                                doc: null,
+                                access: [APrivate],
+                                kind: FFun(createSetterFn(var_.name)),
                                 pos: Context.currentPos(),
                                 meta: null,
                             });
@@ -124,7 +144,43 @@ class Scope
                 }
             }
         }
-        return fields;
+        return newFields;
+    }
+
+    private static function createSetterFn(name :String) : Function
+    {
+        var arg = {
+            name: "val",
+            opt: false,
+            type: null,
+            value: null,
+            meta: null
+        };
+
+
+        var ident = name.substring(4).createDefIdent()
+            .toExpr();
+        var val = "val".createDefIdent()
+            .toExpr();
+        var binop = Binop.OpAssign.createDefBinop(ident, val)
+            .toExpr();
+        var returnExpr = ident.createDefReturn()
+            .toExpr();
+
+        var updateFunc = [name.createDefIdent().toExpr(), val]
+            .createDefCall("updateTextNode")
+            .toExpr();
+
+        var block = [binop, updateFunc, returnExpr]
+            .createDefBlock()
+            .toExpr();
+
+        return {
+            args: [arg],
+            ret: null,
+            expr: block,
+            params: []
+        };
     }
 
     public function createFieldInitializers() : Array<{name :String, expr :Expr}>

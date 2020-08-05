@@ -39,7 +39,7 @@ class NeptuneMacro
         var setter = new Setter();
         var transformedFields = Context.getBuildFields()
             .map(transformField.bind(compileMarkup, scope, setter));
-        var fields = scope.createFields();
+        var fields = scope.updateFields(transformedFields);
         var initializers = scope.createFieldInitializers();
         setter.transformAssignments();
 
