@@ -36,10 +36,11 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var scope = new Scope();
+        var setter = new Setter();
         var transformedFields = Context.getBuildFields()
-            .map(transformField.bind(compileMarkup, scope));
+            .map(transformField.bind(compileMarkup, scope, setter));
         scope.insertScopedExprs();
-        scope.transformAssignments();
+        setter.transformAssignments();
 
         return transformedFields;
     }

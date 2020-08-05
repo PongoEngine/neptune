@@ -23,17 +23,22 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
+using neptune.compiler.macro.Utils;
 
 class Setter
 {
-    public static function save(scope :Scope, expr :Expr) : Expr
+    public function new() : Void
     {
-        return switch expr.expr {
+        _assignments = [];
+    }
+    
+    public function save(expr :Expr) : Void
+    {
+        switch expr.expr {
             case EBinop(op, e1, e2): 
                 switch op {
                     case OpAssign:
-                        scope.saveAssignment(expr);
-                        expr;
+                        _assignments.push(expr);
                     case OpAssignOp(op):
                         throw "not implemented yet";
                     case _:
@@ -46,11 +51,38 @@ class Setter
                     case OpDecrement:
                         throw "not implemented yet";
                     case _:
-                        expr;
                     }
             case _:
-                expr;
         }
     }
+
+    public function transformAssignments() : Void
+    {
+        for(assignment in _assignments) {
+            switch assignment.expr {
+                case EBinop(op, e1, e2):
+                    switch op {
+                        case OpAssign:
+                            switch e1.expr {
+                                case EConst(c):
+                                    switch c {
+                                        case CIdent(s):
+                                            assignment.expr = [e2].createDefCall('set_${s}');
+                                        case _:
+                                            throw "not implemented yet";
+                                    }
+                                case _:
+                                    throw "not implemented yet";
+                            }
+                        case _: 
+                            throw "not implemented yet";
+                    }
+                case _: 
+                    throw "not implemented yet";
+            }
+        }
+    }
+
+    private var _assignments :Array<Expr>;
 }
 #end

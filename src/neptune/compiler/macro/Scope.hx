@@ -146,37 +146,6 @@ class Scope
 
     }
 
-    public function transformAssignments() : Void
-    {
-        for(assignment in _assignments) {
-            switch assignment.expr {
-                case EBinop(op, e1, e2):
-                    switch op {
-                        case OpAssign:
-                            switch e1.expr {
-                                case EConst(c):
-                                    switch c {
-                                        case CIdent(s):
-                                            assignment.expr = [e2].createDefCall('set_${s}');
-                                        case _:
-                                            throw "not implemented yet";
-                                    }
-                                case _:
-                                    throw "not implemented yet";
-                            }
-                        case _: 
-                            throw "not implemented yet";
-                    }
-                case _: 
-                    throw "not implemented yet";
-            }
-        }
-
-        for(child in _children) {
-            child.transformAssignments();
-        }
-    }
-
     public function createChild() : Scope
     {
         var c = new Scope();
