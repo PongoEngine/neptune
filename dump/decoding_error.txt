@@ -14,22 +14,7 @@
 	kind: FFun({
 		args: []
 		expr: {
-			expr: EBlock([{
-				expr: EBinop(OpAssign, {
-					expr: EConst(CIdent(nep_name))
-					pos: #pos
-				}, {
-					expr: ECall({
-						expr: EConst(CIdent(createText))
-						pos: #pos
-					}, [{
-						expr: EConst(CIdent(name))
-						pos: #pos
-					}])
-					pos: #pos
-				})
-				pos: #pos
-			}])
+			expr: EBlock([])
 			pos: #pos
 		}
 		params: []
@@ -63,61 +48,6 @@
 			}, {
 				expr: EVars([{
 					expr: {
-						expr: ECall({
-							expr: EConst(CIdent(createText))
-							pos: #pos
-						}, [{
-							expr: EConst(CIdent(x))
-							pos: #pos
-						}])
-						pos: #pos
-					}
-					isFinal: null
-					name: nep_x
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EFunction(FNamed(set_x, null), {
-					args: [{
-						meta: null
-						name: new_x
-						opt: false
-						type: null
-						value: null
-					}]
-					expr: {
-						expr: EBlock([{
-							expr: EBinop(OpAssign, {
-								expr: EConst(CIdent(x))
-								pos: #pos
-							}, {
-								expr: EConst(CIdent(new_x))
-								pos: #pos
-							})
-							pos: #pos
-						}, {
-							expr: ECall({
-								expr: EConst(CIdent(updateTextNode))
-								pos: #pos
-							}, [{
-								expr: EConst(CIdent(nep_x))
-								pos: #pos
-							}, {
-								expr: EConst(CIdent(x))
-								pos: #pos
-							}])
-							pos: #pos
-						}])
-						pos: #pos
-					}
-					params: null
-					ret: null
-				})
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
 						expr: EConst(CInt(0))
 						pos: #pos
 					}
@@ -129,62 +59,13 @@
 			}, {
 				expr: EVars([{
 					expr: {
-						expr: ECall({
-							expr: EConst(CIdent(createText))
-							pos: #pos
-						}, [{
-							expr: EConst(CIdent(y))
-							pos: #pos
-						}])
-						pos: #pos
-					}
-					isFinal: null
-					name: nep_y
-					type: null
-				}])
-				pos: #pos
-			}, {
-				expr: EFunction(FNamed(set_y, null), {
-					args: [{
-						meta: null
-						name: new_y
-						opt: false
-						type: null
-						value: null
-					}]
-					expr: {
-						expr: EBlock([{
-							expr: EBinop(OpAssign, {
-								expr: EConst(CIdent(y))
-								pos: #pos
-							}, {
-								expr: EConst(CIdent(new_y))
-								pos: #pos
-							})
+						expr: EBinop(OpAdd, {
+							expr: EConst(CInt(3))
 							pos: #pos
 						}, {
-							expr: ECall({
-								expr: EConst(CIdent(updateTextNode))
-								pos: #pos
-							}, [{
-								expr: EConst(CIdent(nep_y))
-								pos: #pos
-							}, {
-								expr: EConst(CIdent(y))
-								pos: #pos
-							}])
+							expr: EConst(CInt(200))
 							pos: #pos
-						}])
-						pos: #pos
-					}
-					params: null
-					ret: null
-				})
-				pos: #pos
-			}, {
-				expr: EVars([{
-					expr: {
-						expr: EConst(CInt(3))
+						})
 						pos: #pos
 					}
 					isFinal: false
@@ -390,8 +271,8 @@
 											}])
 											pos: #pos
 										}, {
-											expr: EConst(CIdent(nep_x))
-											pos: #pos
+											expr: null <- expected value
+											pos: null <- expected value
 										}])
 										pos: #pos
 									}])
@@ -449,8 +330,8 @@
 											}])
 											pos: #pos
 										}, {
-											expr: EConst(CIdent(nep_y))
-											pos: #pos
+											expr: null <- expected value
+											pos: null <- expected value
 										}])
 										pos: #pos
 									}])
@@ -508,8 +389,8 @@
 											}])
 											pos: #pos
 										}, {
-											expr: EConst(CIdent(nep_name))
-											pos: #pos
+											expr: null <- expected value
+											pos: null <- expected value
 										}])
 										pos: #pos
 									}])
@@ -532,8 +413,8 @@
 								}])
 								pos: #pos
 							}, {
-								expr: EConst(CIdent(markup))
-								pos: #pos
+								expr: null <- expected value
+								pos: null <- expected value
 							}, {
 								expr: ECall({
 									expr: EConst(CIdent(createText))
@@ -586,29 +467,12 @@
 	meta: []
 	name: cool
 	pos: #pos
-}, {
-	access: [APublic]
-	doc: null
-	kind: FProp(default, set, TPath({
-		name: Dynamic
-		pack: []
-		params: []
-		sub: null
-	}), null)
-	meta: null
-	name: nep_name
-	pos: #pos
-}, {
-	access: [APrivate]
-	doc: null
-	kind: FFun({
-		args: null <- expected value
-		expr: null
-		params: null
-		ret: null
-	})
-	meta: null
-	name: set_nep_name
-	pos: #pos
 }]
-line 605: expected value
+line 274: expected value
+line 275: expected value
+line 333: expected value
+line 334: expected value
+line 392: expected value
+line 393: expected value
+line 416: expected value
+line 417: expected value

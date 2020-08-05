@@ -20,7 +20,7 @@ HelloWorld.prototype = {
 			y = new_y;
 			neptune_platform_html_HtmlPlatform.updateTextNode(nep_y,y);
 		};
-		var q = 3;
+		var q = 203;
 		var click = function() {
 			set_x(x + 1 + q);
 			set_y(y - 2);

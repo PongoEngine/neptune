@@ -68,6 +68,12 @@ class NeptuneMacro
         return transformedFields.concat(fields);
     }
 
+    /**
+     * Transform meta markup to dom expressions.
+     * @param scope 
+     * @param e 
+     * @return Expr
+     */
     private static function compileMarkup(scope :Scope, e :Expr) : Expr
     {
         var xml = switch e.expr {
@@ -86,6 +92,12 @@ class NeptuneMacro
         return handleTree(scope, result);
     }
 
+    /**
+     * Transform a tree of nodes to dom expressions.
+     * @param scope 
+     * @param node 
+     * @return Expr
+     */
     private static function handleTree(scope :Scope, node :DomAST) : Expr
     {
         return switch node {
@@ -127,6 +139,12 @@ class NeptuneMacro
         }
     }
 
+    /**
+     * Add attributes to an element.
+     * @param scope 
+     * @param attr 
+     * @return Expr -> Expr
+     */
     private static function handleAttr(scope :Scope, attr :Attr) : Expr -> Expr
     {
         return switch attr.value {
@@ -154,7 +172,13 @@ class NeptuneMacro
         }
     }
 
-
+    /**
+     * Update expressions in place for dom manipulation. Also save expressions
+     * that will be inserted after all scope level expressions have been updated.
+     * @param scope 
+     * @param expr 
+     * @return Expr
+     */
     private static function handleDomExpr(scope :Scope, expr :Expr) : Expr
     {
         return switch expr.expr {
@@ -185,6 +209,12 @@ class NeptuneMacro
         }
     }
 
+    /**
+     * Get the type of field or expression. It will be used to determine the type 
+     * expressions that are generated to create the html elements.
+     * @param expr 
+     * @return ItemType
+     */
     private static function getItemType(ident :String, scope :Scope) : ItemType
     {
         return switch scope.getItem(ident) {
@@ -197,6 +227,12 @@ class NeptuneMacro
         }
     }
 
+    /**
+     * Get the type of expression. It will be used to determine the type expressions
+     * that are generated to create the html elements.
+     * @param expr 
+     * @return ItemType
+     */
     private static function getExprItemType(expr :Expr) : ItemType
     {
         return switch expr.expr {
