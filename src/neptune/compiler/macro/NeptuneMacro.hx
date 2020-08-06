@@ -42,7 +42,7 @@ class NeptuneMacro
             .map(transformField.bind(compileMarkup, scope, assignments));
         assignments.transform();
 
-        #if debugScope
+        #if debugFields
             var printer = new Printer();
             var module = "\n\n--Start--\n";
             for(field in transformedFields) {

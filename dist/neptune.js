@@ -4,40 +4,41 @@ var HelloWorld = function() {
 };
 HelloWorld.prototype = {
 	cool: function() {
-		var set_isLeft = function(val) {
-		};
-		var set_x = function(val) {
-		};
 		var isLeft = true;
 		var x = 0;
+		var var_6 = window.document.createTextNode(x);
+		var var_1 = window.document.createTextNode(x);
+		var set_x = function(new_x) {
+			x = new_x;
+			var_1.textContent = x;
+			var_6.textContent = x;
+		};
 		var var_0 = window.document.createElement("h2");
 		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("left")]);
-		var var_1 = window.document.createElement("h4");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("right")]);
-		var onClick = function() {
-			set_isLeft(!isLeft);
+		var updateX = function() {
 			set_x(x + 1);
 		};
-		var var_5 = window.document.createTextNode(x);
-		set_x = function(new_x) {
-			x = new_x;
-			var_5.textContent = x;
-		};
-		var var_3 = var_0;
-		var var_4 = var_1;
-		var var_2 = isLeft ? var_3 : var_4;
-		set_isLeft = function(new_isLeft) {
+		var var_2 = window.document.createElement("h4");
+		neptune_platform_html_HtmlPlatform.addChildren(var_2,[window.document.createTextNode("right "),var_1]);
+		var_2.onclick = updateX;
+		var var_4 = var_0;
+		var var_5 = var_2;
+		var var_3 = isLeft ? var_4 : var_5;
+		var set_isLeft = function(new_isLeft) {
 			isLeft = new_isLeft;
-			neptune_platform_html_HtmlPlatform.updateParent(isLeft,var_3,var_4);
+			neptune_platform_html_HtmlPlatform.updateParent(isLeft,var_4,var_5);
 		};
-		var var_7 = window.document.createElement("div");
+		var onClick = function() {
+			set_isLeft(!isLeft);
+		};
+		var var_8 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
 		var tmp1 = window.document.createTextNode(" ");
-		var var_6 = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_6,[var_5]);
-		neptune_platform_html_HtmlPlatform.addChildren(var_7,[tmp,var_2,tmp1,var_6,window.document.createTextNode(" ")]);
+		var var_7 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_7,[var_6]);
 		var_7.onclick = onClick;
-		return var_7;
+		neptune_platform_html_HtmlPlatform.addChildren(var_8,[tmp,var_3,tmp1,var_7,window.document.createTextNode(" ")]);
+		return var_8;
 	}
 };
 var Main = function() { };

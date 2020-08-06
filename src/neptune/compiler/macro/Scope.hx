@@ -93,38 +93,28 @@ class Scope
         for(dep in _newScopeExprs.keyValueIterator()) {
             var ident = dep.key;
             var initUpdates = dep.value;
+            var initializers :Array<Expr> = [];
             var updates :Array<Expr> = [];
             for(initUpdate in initUpdates) {
-                block.pushExpr(initUpdate.initializer);
+                initializers.push(initUpdate.initializer);
                 updates.push(initUpdate.updater);
             }
             var setter = createSetter(ident, createUpdateFunc(updates));
-            var placeholder = ExprUtils.createDefFuncAnon(ExprUtils.createDefBlock([]).toExpr(), ["val"]).toExpr()
-                .createDefVar(setter.name)
-                .toExpr();
-                
-            block.unshift(placeholder);
-            block.pushExpr(setter.expr);
+            ScopeUtils.insertExprs(block, initializers, setter);
         }
     }
 
-    public static function createSetter(ident :String, updateExpr :Expr) : {name :String, expr :Expr}
+    public static function createSetter(ident :String, updateExpr :Expr) : Expr
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
             .toExpr();
 
-        var blockExpr = [assignmentExpr, updateExpr]
+        return [assignmentExpr, updateExpr]
             .createDefBlock()
+            .toExpr()
+            .createDefFunc('set_${ident}', [argName])
             .toExpr();
-
-        var name = 'set_${ident}';
-        var anon = blockExpr.createDefFuncAnon([argName])
-            .toExpr();
-        var expr = Binop.OpAssign.createDefBinop(name.createDefIdent().toExpr(), anon)
-            .toExpr();
-            
-        return {name: name, expr: expr};
     }
 
     private function createUpdateFunc(updates :Array<Expr>) : Expr

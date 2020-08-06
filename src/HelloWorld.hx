@@ -13,17 +13,21 @@ class HelloWorld implements Neptune
         var isLeft = true;
         var x = 0;
         var left = <h2>left</h2>;
-        var right = <h4>right</h4>;
 
-        function onClick() {
-            isLeft = !isLeft;
+        function updateX() {
             x = x + 1;
         }
 
+        var right = <h4 onclick={updateX}>right {x}</h4>;
+
+        function onClick() {
+            isLeft = !isLeft;
+        }
+
         return 
-            <div onclick={onClick}>
+            <div>
                 {isLeft ? left : right}
-                <h1>{x}</h1>
+                <h1 onclick={onClick}>{x}</h1>
             </div>;
     }
 }
