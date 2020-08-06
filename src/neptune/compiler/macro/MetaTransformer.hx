@@ -26,7 +26,7 @@ import haxe.macro.Expr;
 
 class MetaTransformer
 {
-    public static function transformField(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, field :Field) : Field
+    public static function transformField(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, field :Field) : Field
     {
         return switch field.kind {
             case FFun(f): {
@@ -62,7 +62,7 @@ class MetaTransformer
         }
     }
 
-    public static function transformExpr(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, expr :Expr) : Expr
+    public static function transformExpr(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, expr :Expr) : Expr
     {
         if(expr == null) return null;
         var updatedExpr = switch expr.expr {
@@ -215,7 +215,7 @@ class MetaTransformer
         return updatedExpr;
     }
     
-    private static function transformCase(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, case_ :Case) : Case
+    private static function transformCase(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, case_ :Case) : Case
     {
         return {
             values: case_.values.map(transformExpr.bind(fn, scope, assignments)),
@@ -224,7 +224,7 @@ class MetaTransformer
         };
     }
     
-    private static function transformCatch(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, catch_ :Catch) : Catch
+    private static function transformCatch(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, catch_ :Catch) : Catch
     {
         return {
             name: catch_.name,
@@ -233,7 +233,7 @@ class MetaTransformer
         };
     }
 
-    private static function transformFunction(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, function_ :Function) : Function
+    private static function transformFunction(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, function_ :Function) : Function
     {
         var childScope = scope.createChild();
         var func = {
@@ -251,7 +251,7 @@ class MetaTransformer
         return func;
     }
 
-    private static function transformFunctionArgs(fn :Scope -> Expr -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg
+    private static function transformFunctionArgs(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg
     {
         scope.addItem(arg.name, SExpr(arg.value));
         return {

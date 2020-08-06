@@ -123,41 +123,6 @@ class Scope
             .toExpr();
     }
 
-    private static function createSetterFn(name :String) : Function
-    {
-        var arg = {
-            name: "val",
-            opt: false,
-            type: null,
-            value: null,
-            meta: null
-        };
-
-        var ident = name.substring(4).createDefIdent()
-            .toExpr();
-        var val = "val".createDefIdent()
-            .toExpr();
-        var binop = Binop.OpAssign.createDefBinop(ident, val)
-            .toExpr();
-        var returnExpr = ident.createDefReturn()
-            .toExpr();
-
-        var updateFunc = [name.createDefIdent().toExpr(), val]
-            .createDefCall("updateTextNode")
-            .toExpr();
-
-        var block = [binop, updateFunc, returnExpr]
-            .createDefBlock()
-            .toExpr();
-
-        return {
-            args: [arg],
-            ret: null,
-            expr: block,
-            params: []
-        };
-    }
-
     public function createChild() : Scope
     {
         var c = new Scope();
