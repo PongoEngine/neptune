@@ -236,19 +236,12 @@ class MetaTransformer
     private static function transformFunction(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, function_ :Function) : Function
     {
         var childScope = scope.createChild();
-        var func = {
+        return {
             args: function_.args.map(transformFunctionArgs.bind(fn, childScope, assignments)),
             ret: function_.ret,
             expr: transformExpr(fn, childScope, assignments, function_.expr),
             params: function_.params
         };
-
-        switch func.expr.expr {
-            case EBlock(exprs): childScope.insertScopedExprs(exprs);
-            case _: throw "not imlemented";
-        }
-
-        return func;
     }
 
     private static function transformFunctionArgs(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg

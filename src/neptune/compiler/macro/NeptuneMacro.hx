@@ -27,7 +27,7 @@ import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
-using neptune.compiler.macro.Utils;
+using neptune.compiler.macro.ExprUtils;
 using haxe.macro.ExprTools;
 using StringTools;
 
@@ -182,6 +182,10 @@ class NeptuneMacro
                             case Element:
                                 expr;
                         }
+                    case CFloat(_), CInt(_):
+                        var initializer = [expr.cloneExpr()]
+                            .createDefCall("createText");
+                        expr.updateDef(initializer);
                     case _:
                         throw "not implmented yet";
                 }
@@ -208,7 +212,6 @@ class NeptuneMacro
                     .createDefVar(ident)
                     .toExpr();
 
-                var right = ident.createDefIdent().toExpr();
                 var updater = [econd, left, right]
                     .createDefCall("updateParent")
                     .toExpr();

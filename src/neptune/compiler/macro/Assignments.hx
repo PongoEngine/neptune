@@ -23,7 +23,7 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
-using neptune.compiler.macro.Utils;
+using neptune.compiler.macro.ExprUtils;
 
 class Assignments
 {

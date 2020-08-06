@@ -25,7 +25,7 @@ package neptune.compiler.macro;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 
-class Utils
+class ExprUtils
 {
     public static function cleanWhitespace(str :String) : String
     {

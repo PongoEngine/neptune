@@ -10,28 +10,16 @@ class HelloWorld implements Neptune
 
     public function cool() : Node
     {
-        var x = 0;
-        var y = 0;
-        var textValue = "sage";
+        var isLeft = true;
         function onClick() {
-            x = x + 1;
+            isLeft = !isLeft;
         }
-
-        function onClickY() {
-            y = y + 1;
-        }
-
-        var m3 = <button>{x}</button>;
-        var markup1 = <button onclick={onClick}>Update X {x},{y}</button>;
-        var markup2 = <button onclick={onClickY}>Update Y {x},{y}</button>;
+        // var left = <p>left</p>;
+        // var right = <p>right</p>;
 
         return 
-            <div class="taco">
-                <h1>x: {x}</h1>
-                <h2>y: {y}</h2>
-                {markup1}
-                {markup2}
-                <p>{textValue}</p>
+            <div onclick={onClick}>
+                {isLeft ? 0 : 1}
             </div>;
     }
 }

@@ -23,7 +23,7 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
-using neptune.compiler.macro.Utils;
+using neptune.compiler.macro.ExprUtils;
 
 enum ScopeItem
 {
@@ -89,16 +89,20 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(dep in _newScopeExprs.keyValueIterator()) {
-            var ident = dep.key;
-            var initUpdates = dep.value;
-            var index = getExprIndex(ident, block);
-            var updates :Array<Expr> = [];
-            for(initUpdate in initUpdates) {
-                block.insert(index++, initUpdate.initializer);
-                updates.push(initUpdate.updater);
+        if(!_hasInserted) {
+            for(dep in _newScopeExprs.keyValueIterator()) {
+                var ident = dep.key;
+                var initUpdates = dep.value;
+                var index = ScopeUtils.getExprIndex(ident, block);
+                var updates :Array<Expr> = [];
+                for(initUpdate in initUpdates) {
+                    block.insert(index++, initUpdate.initializer);
+                    updates.push(initUpdate.updater);
+                }
+                block.insert(index++, createSetter(ident, createUpdateFunc(updates)));
             }
-            block.insert(index++, createSetter(ident, createUpdateFunc(updates)));
+    
+            _hasInserted = true;
         }
     }
 
@@ -130,37 +134,9 @@ class Scope
         return c;
     }
 
-    //wasteful
-    private function getExprIndex(ident :String, block :Array<Expr>) : Int
-    {
-        var index = 1;
-        for(item in block) {
-            switch item.expr {
-                case EVars(vars):
-                    if(varsContainsIdent(ident, vars)) {
-                        return index;
-                    }
-                case _:
-            }
-            index++;
-        }
-
-        return 0;
-    }
-
-    //wasteful
-    private function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
-    {
-        for(v in vars) {
-            if(v.name == ident) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private var _scopeItems :Map<String, ScopeItem>;
     private var _parentScope :Scope = null;
+    private var _hasInserted = false;
     private var _newScopeExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
 }
 #end
