@@ -13,23 +13,17 @@ class HelloWorld implements Neptune
         var x = 0;
         var y = 0;
         var textValue = "sage";
-        var isX = false;
-        function incrementX() {
+        function onClick() {
             x = x + 1;
         }
 
-        function incrementY() {
+        function onClickY() {
             y = y + 1;
         }
 
-        function flipIsX() {
-            isX = !isX;
-        }
-
         var m3 = <button>{x}</button>;
-        var markup1 = <button onclick={incrementX}>Update X {x},{y}</button>;
-        var markup2= <button onclick={flipIsX}>Flip X</button>;
-        var markup3= <p>{ isX ? x : y }</p>;
+        var markup1 = <button onclick={onClick}>Update X {x},{y}</button>;
+        var markup2 = <button onclick={onClickY}>Update Y {x},{y}</button>;
 
         return 
             <div class="taco">
@@ -37,7 +31,6 @@ class HelloWorld implements Neptune
                 <h2>y: {y}</h2>
                 {markup1}
                 {markup2}
-                {markup3}
                 <p>{textValue}</p>
             </div>;
     }
