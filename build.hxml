@@ -2,6 +2,6 @@
 -D analyzer-optimize
 --dce full
 -main Main
-# -D debugScope
+-D debugScope
 # -D js-es=6
 --js dist/neptune.js

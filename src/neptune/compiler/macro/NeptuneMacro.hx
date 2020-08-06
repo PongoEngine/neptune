@@ -27,6 +27,7 @@ import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
+import haxe.macro.Printer;
 using neptune.compiler.macro.ExprUtils;
 using haxe.macro.ExprTools;
 using StringTools;
@@ -41,6 +42,16 @@ class NeptuneMacro
             .map(transformField.bind(compileMarkup, scope, assignments));
         assignments.transform();
 
+        #if debugScope
+            var printer = new Printer();
+            var module = "\n\n--Start--\n";
+            for(field in transformedFields) {
+                module += printer.printField(field) + "\n";
+            }
+            module += "\n--End--\n";
+            trace(module);
+        #end
+    
         return transformedFields;
     }
 
@@ -205,40 +216,28 @@ class NeptuneMacro
                     case _: throw "not implemented yet";
                 }
 
-                var ident = createIdent();
-                // var leftVar = left.createDefVar("__left__").toExpr();
-                // var rightVar = right.createDefVar("__right__").toExpr();
-                // var leftIdent = "__left__".createDefIdent().toExpr();
-                // var rightIdent = "__right__".createDefIdent().toExpr();
-                // var creater = [econd, leftIdent, rightIdent]
-                //     .createDefCall("ternary")
-                //     .toExpr();
+                var ternaryIdent = createIdent();
+                var leftIdent = createIdent();
+                var rightIdent = createIdent();
 
-                var creater = [econd, "__left__".createDefIdent().toExpr(), "__right__".createDefIdent().toExpr()]
+                var ternary = [econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()]
                     .createDefCall("ternary")
                     .toExpr();
 
                 var initializer = [
-                    {name:"__left__", e: left},
-                    {name:"__right__", e: right},
-                    {name:ident, e:creater}
+                    {name:leftIdent, e: left},
+                    {name:rightIdent, e: right},
+                    {name:ternaryIdent, e:ternary}
                 ]
                     .createDefVars()
                     .toExpr();
 
-                // var initializer = [leftVar, rightVar, creater]
-                //     .createDefBlock()
-                //     .toExpr()
-                //     .createDefVar(ident)
-                //     .toExpr();
-
-
-                var updater = [econd, "__left__".createDefIdent().toExpr(), "__right__".createDefIdent().toExpr()]
+                var updater = [econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()]
                     .createDefCall("updateParent")
                     .toExpr();
 
                 scope.addScopedExpr(s, initializer, updater);
-                expr.updateDef(ident.createDefIdent());
+                expr.updateDef(ternaryIdent.createDefIdent());
             }
             case _:
                 throw "not implmented yet";

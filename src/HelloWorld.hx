@@ -11,15 +11,19 @@ class HelloWorld implements Neptune
     public function cool() : Node
     {
         var isLeft = true;
+        var x = 0;
+        var left = <h2>left</h2>;
+        var right = <h4>right</h4>;
+
         function onClick() {
             isLeft = !isLeft;
+            x = x + 1;
         }
-        // var left = <p>left</p>;
-        // var right = <p>right</p>;
 
         return 
             <div onclick={onClick}>
-                {isLeft ? 0 : 1}
+                {isLeft ? left : right}
+                <h1>{x}</h1>
             </div>;
     }
 }

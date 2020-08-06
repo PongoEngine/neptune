@@ -101,10 +101,16 @@ class ExprUtils
         });
     }
 
-    public static function createDefFuncAnon(body :Expr) : ExprDef
+    public static function createDefFuncAnon(body :Expr, args :Array<String>) : ExprDef
     {
         return EFunction(FunctionKind.FAnonymous, {
-            args: [],
+            args: args.map(a -> {
+                name: a,
+                opt: false,
+                type: null,
+                value: null,
+                meta: null
+            }),
             ret: null,
             expr: body
         });

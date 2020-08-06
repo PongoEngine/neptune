@@ -26,20 +26,26 @@ import haxe.macro.Expr;
 
 class ScopeUtils
 {
-    public static function getLastIndex(block :Array<Expr>) : Int
+    public static function pushExpr(block :Array<Expr>, expr :Expr) : Void
     {
-        if(block.length <= 1) {
-            return 0;
+        if(block.length == 0) {
+            block.push(expr);
         }
 
         var lastIndex = block.length - 1;
-        return switch block[lastIndex].expr {
-            case EReturn(e): lastIndex - 1;
-            case _: lastIndex;
+        switch block[lastIndex].expr {
+            case EReturn(e): {
+                var last = block[lastIndex];
+                block[lastIndex] = expr;
+                block.push(last);
+            }
+            case _: {
+                block.push(expr);
+            }
         }
     }
 
-    // private static function getExprIndex(ident :String, block :Array<Expr>) : Int
+    // public static function getExprIndex(ident :String, block :Array<Expr>) : Int
     // {
     //     var index = 1;
     //     for(item in block) {

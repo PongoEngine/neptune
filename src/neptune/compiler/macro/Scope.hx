@@ -21,10 +21,10 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import haxe.macro.Printer;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
+using neptune.compiler.macro.ScopeUtils;
 
 enum ScopeItem
 {
@@ -90,30 +90,25 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        if(!_hasInserted) {
-            for(dep in _newScopeExprs.keyValueIterator()) {
-                var ident = dep.key;
-                var initUpdates = dep.value;
-                // var index = ScopeUtils.getExprIndex(ident, block);
-                var index = ScopeUtils.getLastIndex(block);
-                var updates :Array<Expr> = [];
-                for(initUpdate in initUpdates) {
-                    block.insert(index++, initUpdate.initializer);
-                    updates.push(initUpdate.updater);
-                }
-                block.insert(index++, createSetter(ident, createUpdateFunc(updates)));
+        for(dep in _newScopeExprs.keyValueIterator()) {
+            var ident = dep.key;
+            var initUpdates = dep.value;
+            var updates :Array<Expr> = [];
+            for(initUpdate in initUpdates) {
+                block.pushExpr(initUpdate.initializer);
+                updates.push(initUpdate.updater);
             }
-
-            #if debugScope
-            var printer = new Printer();
-            trace("\n\n--Start--\n" + printer.printExprs(block, "\n") + "\n--End--\n");
-            #end
-    
-            _hasInserted = true;
+            var setter = createSetter(ident, createUpdateFunc(updates));
+            var placeholder = ExprUtils.createDefFuncAnon(ExprUtils.createDefBlock([]).toExpr(), ["val"]).toExpr()
+                .createDefVar(setter.name)
+                .toExpr();
+                
+            block.unshift(placeholder);
+            block.pushExpr(setter.expr);
         }
     }
 
-    public static function createSetter(ident :String, updateExpr :Expr) : Expr
+    public static function createSetter(ident :String, updateExpr :Expr) : {name :String, expr :Expr}
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
@@ -123,13 +118,18 @@ class Scope
             .createDefBlock()
             .toExpr();
 
-        return blockExpr.createDefFunc('set_${ident}', [argName])
+        var name = 'set_${ident}';
+        var anon = blockExpr.createDefFuncAnon([argName])
             .toExpr();
+        var expr = Binop.OpAssign.createDefBinop(name.createDefIdent().toExpr(), anon)
+            .toExpr();
+            
+        return {name: name, expr: expr};
     }
 
     private function createUpdateFunc(updates :Array<Expr>) : Expr
     {
-        return [updates.createDefBlock().toExpr().createDefFuncAnon().toExpr()]
+        return [updates.createDefBlock().toExpr().createDefFuncAnon([]).toExpr()]
             .createDefCall("runUpdates")
             .toExpr();
     }
@@ -143,7 +143,6 @@ class Scope
 
     private var _scopeItems :Map<String, ScopeItem>;
     private var _parentScope :Scope = null;
-    private var _hasInserted = false;
     private var _newScopeExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
 }
 #end
