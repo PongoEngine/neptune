@@ -12,13 +12,13 @@ class HelloWorld implements Neptune
     {
         var isLeft = true;
         var x = 0;
-        var left = <h2>left</h2>;
+        var left = <h2>This is a heading</h2>;
 
         function updateX() {
             x = x + 1;
         }
 
-        var right = <h4 onclick={updateX}>right {x}</h4>;
+        var right = <div><button onclick={updateX}>Increment X</button></div>;
 
         function onClick() {
             isLeft = !isLeft;
@@ -26,8 +26,9 @@ class HelloWorld implements Neptune
 
         return 
             <div>
+                <button onclick={onClick}>Toggle Child</button>
                 {isLeft ? left : right}
-                <h1 onclick={onClick}>{x}</h1>
+                <h1>{x}</h1>
             </div>;
     }
 }
