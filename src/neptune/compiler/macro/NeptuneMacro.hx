@@ -206,13 +206,34 @@ class NeptuneMacro
                 }
 
                 var ident = createIdent();
-                var initializer = [econd, left, right]
+                // var leftVar = left.createDefVar("__left__").toExpr();
+                // var rightVar = right.createDefVar("__right__").toExpr();
+                // var leftIdent = "__left__".createDefIdent().toExpr();
+                // var rightIdent = "__right__".createDefIdent().toExpr();
+                // var creater = [econd, leftIdent, rightIdent]
+                //     .createDefCall("ternary")
+                //     .toExpr();
+
+                var creater = [econd, "__left__".createDefIdent().toExpr(), "__right__".createDefIdent().toExpr()]
                     .createDefCall("ternary")
-                    .toExpr()
-                    .createDefVar(ident)
                     .toExpr();
 
-                var updater = [econd, left, right]
+                var initializer = [
+                    {name:"__left__", e: left},
+                    {name:"__right__", e: right},
+                    {name:ident, e:creater}
+                ]
+                    .createDefVars()
+                    .toExpr();
+
+                // var initializer = [leftVar, rightVar, creater]
+                //     .createDefBlock()
+                //     .toExpr()
+                //     .createDefVar(ident)
+                //     .toExpr();
+
+
+                var updater = [econd, "__left__".createDefIdent().toExpr(), "__right__".createDefIdent().toExpr()]
                     .createDefCall("updateParent")
                     .toExpr();
 

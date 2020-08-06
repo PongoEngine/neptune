@@ -38,6 +38,11 @@ class ExprUtils
         return EVars([{name:name, type: null, expr: e}]);
     }
 
+    public static function createDefVars(vars :Array<{name :String, e :Expr}>) : ExprDef
+    {
+        return EVars(vars.map(item -> {{name:item.name, type: null, expr: item.e, isFinal: false}}));
+    }
+
     public static function createDefString(str :String) : ExprDef
     {
         return EConst(CString(str));

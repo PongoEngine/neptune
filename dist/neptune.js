@@ -5,12 +5,12 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	cool: function() {
 		var isLeft = true;
-		var left = window.document.createTextNode(0);
-		var right = window.document.createTextNode(1);
-		var var_0 = isLeft ? left : right;
+		var __left__ = window.document.createTextNode(0);
+		var __right__ = window.document.createTextNode(1);
+		var var_0 = isLeft ? __left__ : __right__;
 		var set_isLeft = function(new_isLeft) {
 			isLeft = new_isLeft;
-			neptune_platform_html_HtmlPlatform.updateParent(isLeft,window.document.createTextNode(0),window.document.createTextNode(1));
+			neptune_platform_html_HtmlPlatform.updateParent(isLeft,__left__,__right__);
 		};
 		var onClick = function() {
 			set_isLeft(!isLeft);

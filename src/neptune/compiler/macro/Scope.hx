@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Printer;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
@@ -93,7 +94,8 @@ class Scope
             for(dep in _newScopeExprs.keyValueIterator()) {
                 var ident = dep.key;
                 var initUpdates = dep.value;
-                var index = ScopeUtils.getExprIndex(ident, block);
+                // var index = ScopeUtils.getExprIndex(ident, block);
+                var index = ScopeUtils.getLastIndex(block);
                 var updates :Array<Expr> = [];
                 for(initUpdate in initUpdates) {
                     block.insert(index++, initUpdate.initializer);
@@ -101,6 +103,11 @@ class Scope
                 }
                 block.insert(index++, createSetter(ident, createUpdateFunc(updates)));
             }
+
+            #if debugScope
+            var printer = new Printer();
+            trace("\n\n--Start--\n" + printer.printExprs(block, "\n") + "\n--End--\n");
+            #end
     
             _hasInserted = true;
         }

@@ -39,32 +39,32 @@ class ScopeUtils
         }
     }
 
-    public static function getExprIndex(ident :String, block :Array<Expr>) : Int
-    {
-        var index = 1;
-        for(item in block) {
-            switch item.expr {
-                case EVars(vars):
-                    if(varsContainsIdent(ident, vars)) {
-                        return index;
-                    }
-                case _:
-            }
-            index++;
-        }
+    // private static function getExprIndex(ident :String, block :Array<Expr>) : Int
+    // {
+    //     var index = 1;
+    //     for(item in block) {
+    //         switch item.expr {
+    //             case EVars(vars):
+    //                 if(varsContainsIdent(ident, vars)) {
+    //                     return index;
+    //                 }
+    //             case _:
+    //         }
+    //         index++;
+    //     }
 
-        return 0;
-    }
+    //     return 0;
+    // }
 
-    //wasteful
-    private static function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
-    {
-        for(v in vars) {
-            if(v.name == ident) {
-                return true;
-            }
-        }
-        return false;
-    }
+    // //wasteful
+    // private static function varsContainsIdent(ident :String, vars :Array<Var>) : Bool
+    // {
+    //     for(v in vars) {
+    //         if(v.name == ident) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 }
 #end
