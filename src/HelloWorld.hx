@@ -33,7 +33,8 @@ class HelloWorld implements Neptune
             </div>;
     }
 
-    //this is just a quick stub for inline styles
+    //this is just a quick stub for styles
+    //future plans are to scope styles to module
     var style =
         <style>
             html, body {
