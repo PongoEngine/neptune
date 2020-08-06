@@ -343,7 +343,7 @@ class DepGraph<T>
      * @param result An array in which the results will be populated
      * @param circular A boolean to allow circular dependencies
      */
-    public static function createDFS<T>(edges :Map<String, T>, leavesOnly :Bool, result :Array<String>, circular :Bool) : String -> Void
+    public static function createDFS(edges :Map<String, Array<String>>, leavesOnly :Bool, result :Array<String>, circular :Bool) : String -> Void
     {
         var visited = new Map<String, Bool>();
 
