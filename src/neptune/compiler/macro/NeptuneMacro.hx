@@ -36,10 +36,10 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var scope = new Scope();
-        var setter = new Setter();
+        var assignments = new Assignments();
         var transformedFields = Context.getBuildFields()
-            .map(transformField.bind(compileMarkup, scope, setter));
-        setter.transformAssignments();
+            .map(transformField.bind(compileMarkup, scope, assignments));
+        assignments.transform();
 
         return transformedFields;
     }
@@ -90,23 +90,24 @@ class NeptuneMacro
                     .createDefArrayDecl()
                     .toExpr();
 
+                var ident = createIdent();
                 var element = [tag.createDefString().toExpr()]
                     .createDefCall("createElement")
                     .toExpr()
-                    .createDefVar("elem")
+                    .createDefVar(ident)
                     .toExpr();
                 
-                var addChildren = ["elem".createDefIdent().toExpr(), cExpr]
+                var addChildren = [ident.createDefIdent().toExpr(), cExpr]
                     .createDefCall("addChildren")
                     .toExpr();
 
                 var addAttrs = attrs
                     .map(handleAttr.bind(scope))
-                    .map(f -> f("elem".createDefIdent().toExpr()))
+                    .map(f -> f(ident.createDefIdent().toExpr()))
                     .createDefArrayDecl()
                     .toExpr();
 
-                var ident = "elem".createDefIdent().toExpr();
+                var ident = ident.createDefIdent().toExpr();
 
                 [element, addChildren, addAttrs, ident]
                     .createDefBlock()
@@ -186,6 +187,35 @@ class NeptuneMacro
                 }
             case EMeta(s, e):
                 compileMarkup(scope, e);
+            case ETernary(econd, eif, eelse): {
+                var left = handleDomExpr(scope, eif);
+                var right = handleDomExpr(scope, eelse);
+
+                var s = switch econd.expr {
+                    case EConst(c): {
+                        switch c {
+                            case CIdent(s): s;
+                            case _: throw "not implemented yet";
+                        }
+                    }
+                    case _: throw "not implemented yet";
+                }
+
+                var ident = createIdent();
+                var initializer = [econd, left, right]
+                    .createDefCall("ternary")
+                    .toExpr()
+                    .createDefVar(ident)
+                    .toExpr();
+
+                var right = ident.createDefIdent().toExpr();
+                var updater = [econd, left, right]
+                    .createDefCall("updateParent")
+                    .toExpr();
+
+                scope.addScopedExpr(s, initializer, updater);
+                expr.updateDef(ident.createDefIdent());
+            }
             case _:
                 throw "not implmented yet";
         }

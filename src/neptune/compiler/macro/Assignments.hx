@@ -25,14 +25,14 @@ package neptune.compiler.macro;
 import haxe.macro.Expr;
 using neptune.compiler.macro.Utils;
 
-class Setter
+class Assignments
 {
     public function new() : Void
     {
         _assignments = [];
     }
     
-    public function saveAssignment(expr :Expr) : Void
+    public function save(expr :Expr) : Void
     {
         switch expr.expr {
             case EBinop(op, e1, e2): 
@@ -59,7 +59,7 @@ class Setter
     /**
      * Transform all assigment type expressions to use setters in place
      */
-    public function transformAssignments() : Void
+    public function transform() : Void
     {
         for(assignment in _assignments) {
             switch assignment.expr {
@@ -85,20 +85,6 @@ class Setter
                     throw "not implemented yet";
             }
         }
-    }
-
-    public static function createSetter(ident :String, updateExpr :Expr) : Expr
-    {
-        var argName = 'new_${ident}';
-        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
-            .toExpr();
-
-        var blockExpr = [assignmentExpr, updateExpr]
-            .createDefBlock()
-            .toExpr();
-
-        return blockExpr.createDefFunc('set_${ident}', [argName])
-            .toExpr();
     }
 
     private var _assignments :Array<Expr>;

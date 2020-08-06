@@ -76,6 +76,11 @@ class Utils
         return EReturn(e);
     }
 
+    public static function createDefField(e :Expr, field :String) : ExprDef
+    {
+        return EField(e, field);
+    }
+
     public static function createDefFunc(body :Expr, name :String, args :Array<String>) : ExprDef
     {
         return EFunction(FunctionKind.FNamed(name), {

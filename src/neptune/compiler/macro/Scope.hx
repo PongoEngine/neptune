@@ -21,7 +21,6 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import haxe.macro.Context;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.Utils;
@@ -37,22 +36,22 @@ class Scope
 
     public function new() : Void
     {
-        _items = new Map<String, ScopeItem>();
-        _newExprs = [];
+        _scopeItems = new Map<String, ScopeItem>();
+        _newScopeExprs = [];
     }
 
     public function addItem(name :String, item :ScopeItem) : Void
     {
-        _items.set(name, item);
+        _scopeItems.set(name, item);
     }
 
     public function exists(name :String) : Bool
     {
-        if(_items.exists(name)) {
+        if(_scopeItems.exists(name)) {
             return true;
         }
-        else if(_parent != null) {
-            return _parent.exists(name);
+        else if(_parentScope != null) {
+            return _parentScope.exists(name);
         }
         else {
             return false;
@@ -61,11 +60,11 @@ class Scope
 
     public function getItem(name :String) : Null<ScopeItem>
     {
-        if(_items.exists(name)) {
-            return _items.get(name);
+        if(_scopeItems.exists(name)) {
+            return _scopeItems.get(name);
         }
-        else if(_parent != null) {
-            return _parent.getItem(name);
+        else if(_parentScope != null) {
+            return _parentScope.getItem(name);
         }
         else {
             return null;
@@ -74,14 +73,14 @@ class Scope
 
     public function addScopedExpr(ident :String, initializer :Expr, updater :Expr) : Void
     {
-        if(_items.exists(ident)) {
-            if(!_newExprs.exists(ident)) {
-                _newExprs.set(ident, []);
+        if(_scopeItems.exists(ident)) {
+            if(!_newScopeExprs.exists(ident)) {
+                _newScopeExprs.set(ident, []);
             }
-            _newExprs.get(ident).push({initializer: initializer, updater: updater});
+            _newScopeExprs.get(ident).push({initializer: initializer, updater: updater});
         }
-        else if(_parent != null) {
-            _parent.addScopedExpr(ident, initializer, updater);
+        else if(_parentScope != null) {
+            _parentScope.addScopedExpr(ident, initializer, updater);
         }
         else {
             throw "err";
@@ -90,17 +89,31 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(dep in _newExprs.keyValueIterator()) {
+        for(dep in _newScopeExprs.keyValueIterator()) {
             var ident = dep.key;
-            var exprs = dep.value;
+            var initUpdates = dep.value;
             var index = getExprIndex(ident, block);
             var updates :Array<Expr> = [];
-            for(expr in exprs) {
-                block.insert(index++, expr.initializer);
-                updates.push(expr.updater);
+            for(initUpdate in initUpdates) {
+                block.insert(index++, initUpdate.initializer);
+                updates.push(initUpdate.updater);
             }
-            block.insert(index++, Setter.createSetter(ident, createUpdateFunc(updates)));
+            block.insert(index++, createSetter(ident, createUpdateFunc(updates)));
         }
+    }
+
+    public static function createSetter(ident :String, updateExpr :Expr) : Expr
+    {
+        var argName = 'new_${ident}';
+        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
+            .toExpr();
+
+        var blockExpr = [assignmentExpr, updateExpr]
+            .createDefBlock()
+            .toExpr();
+
+        return blockExpr.createDefFunc('set_${ident}', [argName])
+            .toExpr();
     }
 
     private function createUpdateFunc(updates :Array<Expr>) : Expr
@@ -119,7 +132,6 @@ class Scope
             value: null,
             meta: null
         };
-
 
         var ident = name.substring(4).createDefIdent()
             .toExpr();
@@ -149,7 +161,7 @@ class Scope
     public function createChild() : Scope
     {
         var c = new Scope();
-        c._parent = this;
+        c._parentScope = this;
         return c;
     }
 
@@ -182,8 +194,8 @@ class Scope
         return false;
     }
 
-    private var _items :Map<String, ScopeItem>;
-    private var _parent :Scope = null;
-    private var _newExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
+    private var _scopeItems :Map<String, ScopeItem>;
+    private var _parentScope :Scope = null;
+    private var _newScopeExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
 }
 #end

@@ -30,53 +30,70 @@ class HtmlPlatform
 {
     public static inline function createElement(tagname :String) : Element
     {
-      return document.createElement(tagname);
+        return document.createElement(tagname);
     }
 
     public static inline function createText(text :Dynamic) : Text
     {
-      return document.createTextNode(text);
+        return document.createTextNode(text);
+    }
+
+    public static inline function ternary(condition :Bool, left :Node, right :Node) : Node
+    {
+        return condition ? left : right;
     }
 
     public static inline function updateTextNode(node :Text, value :Dynamic) : Text
     {
-      node.textContent = value;
-      return node;
+        node.textContent = value;
+        return node;
+    }
+
+    public static function updateParent(condition :Bool, left :Node, right :Node) : Void
+    {
+        if(condition) {
+            var parent = right.parentNode;
+            parent.replaceChild(left, right);
+        }
+        else {
+            var parent = left.parentNode;
+            parent.replaceChild(right, left);
+        }
     }
 
     public static inline function runUpdates(update :Void -> Void) : Void
     {
-      update();
+        update();
     }
 
     public static function addChildren(element :Element, children :Array<Node>) : Element
     {
-      for(child in children) {
+        for(child in children) {
         addChild(element, child);
-      }
-      return element;
+        }
+        return element;
     }
 
-    public static function addAttr(element :Element, name :String, value :Dynamic) : Element
+    public static inline function addAttr(element :Element, name :String, value :Dynamic) : Element
     {
-      element.setAttribute(name, value);
-      return element;
+        element.setAttribute(name, value);
+        return element;
     }
 
     public static inline function onclick(element :Element, value :Dynamic) : Element
     {
-      element.onclick = value;
-      return element;
+        element.onclick = value;
+        return element;
     }
 
-    public inline static function addChild(element :Element, child :Node) : Element
+    public static inline function addChild(element :Element, child :Node) : Element
     {
-      element.appendChild(child);
-      return element;
+        element.appendChild(child);
+        return element;
     }
 
-    public inline static function removeChild(element :Element, child :Node) : Void
+    public static inline function removeChild(element :Element, child :Node) : Void
     {
-      element.removeChild(child);
+        element.removeChild(child);
     }
 }
