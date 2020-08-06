@@ -27,8 +27,10 @@ import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
+import haxe.ds.Option;
 import haxe.macro.Printer;
 using neptune.compiler.macro.ExprUtils;
+using neptune.compiler.macro.NStringUtils;
 using haxe.macro.ExprTools;
 using StringTools;
 
@@ -36,9 +38,17 @@ class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
+        var fields = Context.getBuildFields();
+        
+        switch getStyle(fields) {
+            case Some(v):
+                sys.io.File.saveContent("./dist/style.css", v);
+            case None:
+        }
+
         var scope = new Scope();
         var assignments = new Assignments();
-        var transformedFields = Context.getBuildFields()
+        var transformedFields = fields
             .map(transformField.bind(compileMarkup, scope, assignments));
         assignments.transform();
 
@@ -53,6 +63,44 @@ class NeptuneMacro
         #end
     
         return transformedFields;
+    }
+
+    private static function getStyle(fields :Array<Field>) : Option<String>
+    {
+        for(field in fields) {
+            if(field.name == "style") {
+                fields.remove(field);
+                switch field.kind {
+                    case FVar(t, e):
+                        switch e.expr {
+                            case EMeta(s, e): switch e.expr {
+                                case EConst(c): switch c {
+                                    case CString(s, kind): 
+                                        return transformStyle(s);
+                                    case _: 
+                                        throw "not valid css";
+                                }
+                                case _: 
+                                    throw "not valid css";
+                            }
+                            case _: 
+                                throw "not valid css";
+                        }
+                    case _: 
+                        throw "not valid css";
+                }
+            }
+        }
+        return None;
+    }
+
+    private static function transformStyle(style :String) : Option<String>
+    {
+        var str = style.cleanWhitespaceCompletely();
+
+        var reg = ~/<style>(.*)<\/style>/gm;
+        var hasMatch = reg.match(str);
+        return hasMatch ? Some(reg.matched(1)) : None;
     }
 
     /**

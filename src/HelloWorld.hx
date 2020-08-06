@@ -4,6 +4,7 @@ import neptune.Neptune;
 
 class HelloWorld implements Neptune 
 {
+    
     public function new() : Void
     {
     }
@@ -31,4 +32,16 @@ class HelloWorld implements Neptune
                 <h1>{x}</h1>
             </div>;
     }
+
+    //this is just a quick stub for inline styles
+    var style =
+        <style>
+            html, body {
+                text-align: center;
+                margin: 0;
+            }
+            button {
+                color : #ff0000;
+            }
+        </style>
 }
