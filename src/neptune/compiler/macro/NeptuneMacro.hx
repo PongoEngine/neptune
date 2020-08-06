@@ -27,6 +27,7 @@ import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
+import neptune.compiler.macro.DepGraph;
 import haxe.ds.Option;
 import haxe.macro.Printer;
 using neptune.compiler.macro.ExprUtils;
