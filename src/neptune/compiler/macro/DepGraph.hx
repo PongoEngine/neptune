@@ -25,34 +25,39 @@ package neptune.compiler.macro;
 
 #if macro
 
+using Lambda;
+
 typedef Options = {
     circular: Bool
 }
 
-//   export class DepGraphCycleError extends Error {
-//     cyclePath: String[];
-//   }
-
 class DepGraph<T>
 {
-    public function new(opts: Options) : Void
-    {
+    public var nodes : Map<String, T>;
+    public var outgoingEdges : Map<String, Array<String>>;
+    public var incomingEdges : Map<String, Array<String>>;
+    public var circular : Bool;
 
-    }
-
-
+    private var _length :Int;
 
     /**
      * Creates an instance of DepGraph with optional Options.
      */
-    // constructor(opts?: Options);
+    public function new(opts: Options) : Void
+    {
+        this.nodes = new Map<String, T>(); // Node -> Node/Data (treated like a Set)
+        this.outgoingEdges = new Map<String, Array<String>>(); // Node -> [Dependency Node]
+        this.incomingEdges = new Map<String, Array<String>>(); // Node -> [Dependant Node]
+        this.circular = opts.circular; // Allows circular deps
+        _length = 0;
+    }
 
     /**
      * The number of nodes in the graph.
      */
     public function size(): Int
     {
-        return 0;
+        return _length;
     }
 
     /**
@@ -60,9 +65,16 @@ class DepGraph<T>
      * @param {string} name
      * @param data
      */
-    public function addNode(name: String, data: T): Void
+    public function addNode(node: String, data: T): Void
     {
-
+        if (!this.hasNode(node)) {
+            // Checking the arguments length allows the user to add a node with undefined data
+            // this.nodes[node] = data;
+            this.nodes.set(node, data);
+            this.outgoingEdges[node] = [];
+            this.incomingEdges[node] = [];
+            _length++;
+        }
     }
 
     /**
@@ -71,7 +83,31 @@ class DepGraph<T>
      */
     public function removeNode(name: String): Void
     {
+        if (this.hasNode(name)) {
+            this.nodes.remove(name);
+            this.incomingEdges.remove(name);
+            this.outgoingEdges.remove(name);
 
+            for(edge in this.incomingEdges) {
+                for(item in edge) {
+                    var idx = edge.indexOf(name);
+                    if(idx >= 0) {
+                        edge.splice(idx, 1);
+                    }
+                }
+            }
+
+            for(edge in this.outgoingEdges) {
+                for(item in edge) {
+                    var idx = edge.indexOf(name);
+                    if(idx >= 0) {
+                        edge.splice(idx, 1);
+                    }
+                }
+            }
+
+            _length--;
+        }
     }
 
     /**
@@ -80,7 +116,7 @@ class DepGraph<T>
      */
     public function hasNode(name: String): Bool
     {
-        return false;
+        return this.nodes.exists(name);
     }
 
     /**
@@ -89,7 +125,11 @@ class DepGraph<T>
      */
     public function getNodeData(name: String): T
     {
-        return null;
+        if (this.hasNode(name)) {
+            return this.nodes.get(name);
+        } else {
+            throw "Node does not exist: " + name;
+        }
     }
 
     /**
@@ -99,7 +139,11 @@ class DepGraph<T>
      */
     public function setNodeData(name: String, data: T): Void
     {
-
+        if (this.hasNode(name)) {
+            this.nodes.set(name, data);
+        } else {
+            throw "Node does not exist: " + name;
+        }
     }
 
     /**
@@ -109,7 +153,18 @@ class DepGraph<T>
      */
     public function addDependency(from: String, to: String): Void
     {
-
+        if (!this.hasNode(from)) {
+            throw "Node does not exist: " + from;
+        }
+        if (!this.hasNode(to)) {
+            throw "Node does not exist: " + to;
+        }
+        if (this.outgoingEdges.get(from).indexOf(to) == -1) {
+            this.outgoingEdges.get(from).push(to);
+        }
+        if (this.incomingEdges.get(to).indexOf(from) == -1) {
+            this.incomingEdges.get(to).push(from);
+        }
     }
 
     /**
@@ -119,7 +174,20 @@ class DepGraph<T>
      */
     public function removeDependency(from: String, to: String): Void
     {
+        var idx = 0;
+        if (this.hasNode(from)) {
+            idx = this.outgoingEdges.get(from).indexOf(to);
+            if (idx >= 0) {
+                this.outgoingEdges.get(from).splice(idx, 1);
+            }
+        }
 
+        if (this.hasNode(to)) {
+            idx = this.incomingEdges.get(to).indexOf(from);
+            if (idx >= 0) {
+                this.incomingEdges.get(to).splice(idx, 1);
+            }
+        }
     }
 
     /**
@@ -128,7 +196,16 @@ class DepGraph<T>
      */
     public function clone(): DepGraph<T>
     {
-        return null;
+        var result = new DepGraph({circular: this.circular});
+        
+        var keys = this.nodes.keys();
+        for(key in keys) {
+            result.nodes.set(key, this.nodes.get(key));
+            result.incomingEdges.set(key, this.incomingEdges.get(key).slice(0));
+            result.outgoingEdges.set(key, this.outgoingEdges.get(key).slice(0));
+        }
+
+        return result;
     }
 
     /**
@@ -138,7 +215,28 @@ class DepGraph<T>
      */
     public function dependenciesOf(name: String, leavesOnly: Bool): Array<String>
     {
-        return [];
+        if (this.hasNode(name)) {
+            var result = [];
+
+            var DFS = createDFS(
+                this.outgoingEdges,
+                leavesOnly,
+                result,
+                this.circular
+            );
+
+            DFS(name);
+
+            var idx = result.indexOf(name);
+            if (idx >= 0) {
+                result.splice(idx, 1);
+            }
+
+            return result;
+        } 
+        else {
+            throw "Node does not exist: " + name;
+        }
     }
 
     /**
@@ -148,7 +246,27 @@ class DepGraph<T>
      */
     public function dependantsOf(name: String, leavesOnly: Bool): Array<String>
     {
-        return [];
+        if (this.hasNode(name)) {
+            var result = [];
+
+            var DFS = createDFS(
+                this.incomingEdges,
+                leavesOnly,
+                result,
+                this.circular
+            );
+
+            DFS(name);
+
+            var idx = result.indexOf(name);
+            if (idx >= 0) {
+                result.splice(idx, 1);
+            }
+            return result;
+        } 
+        else {
+            throw "Node does not exist: " + name;
+        }
     }
 
     /**
@@ -157,7 +275,128 @@ class DepGraph<T>
      */
     public function overallOrder(leavesOnly: Bool): Array<String>
     {
-        return [];
+        var self = this;
+        var result = [];
+        var keys = [];
+        for(key in this.nodes.keys()) {
+            keys.push(key);
+        }
+
+        if (keys.length == 0) {
+            return result; // Empty graph
+        } 
+        else {
+            if (!this.circular) {
+                // Look for cycles - we run the DFS starting at all the nodes in case there
+                // are several disconnected subgraphs inside this dependency graph.
+                var CycleDFS = createDFS(this.outgoingEdges, false, [], this.circular);
+                keys.foreach(key -> {
+                    CycleDFS(key);
+                    return true;
+                });
+            }
+
+            var DFS = createDFS(
+                this.outgoingEdges,
+                leavesOnly,
+                result,
+                this.circular
+            );
+
+            // Find all potential starting points (nodes with nothing depending on them) an
+            // run a DFS starting at these points to get the order
+            keys
+                .filter(function(node) {
+                    return self.incomingEdges[node].length == 0;
+                })
+                .foreach(n -> {
+                    DFS(n);
+                    return true;
+                });
+
+            // If we're allowing cycles - we need to run the DFS against any remaining
+            // nodes that did not end up in the initial result (as they are part of a
+            // subgraph that does not have a clear starting point)
+            if (this.circular) {
+                keys
+                    .filter(function(node) {
+                        return result.indexOf(node) == -1;
+                    })
+                    .foreach(n -> {
+                        DFS(n);
+                        return true;
+                    });
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     * Helper for creating a Topological Sort using Depth-First-Search on a set of edges.
+     *
+     * Detects cycles and throws an Error if one is detected (unless the "circular"
+     * parameter is "true" in which case it ignores them).
+     *
+     * @param edges The set of edges to DFS through
+     * @param leavesOnly Whether to only return "leaf" nodes (ones who have no edges)
+     * @param result An array in which the results will be populated
+     * @param circular A boolean to allow circular dependencies
+     */
+    public static function createDFS<T>(edges :Map<String, T>, leavesOnly :Bool, result :Array<String>, circular :Bool) : String -> Void
+    {
+        var visited = new Map<String, Bool>();
+
+        return function(start) {
+            if (visited.get(start)) {
+                return;
+            }
+
+            var inCurrentPath = new Map<String, Bool>();
+            var currentPath :Array<String> = [];
+            var todo :Array<{node :Dynamic, processed :Bool}> = []; // used as a stack
+            todo.push({ node: start, processed: false });
+
+            while (todo.length > 0) {
+                // var current = todo[todo.length - 1]; // peek at the todo stack
+                // var processed = current.processed;
+                // var node = current.node;
+                // if (!processed) {
+                // // Haven't visited edges yet (visiting phase)
+                // if (visited[node]) {
+                // todo.pop();
+                // continue;
+                // } else if (inCurrentPath[node]) {
+                // // It's not a DAG
+                // if (circular) {
+                // todo.pop();
+                // // If we're tolerating cycles, don't revisit the node
+                // continue;
+                // }
+                // currentPath.push(node);
+                // throw new DepGraphCycleError(currentPath);
+                // }
+
+                // inCurrentPath[node] = true;
+                // currentPath.push(node);
+                // var nodeEdges = edges[node];
+                // // (push edges onto the todo stack in reverse order to be order-compatible with the old DFS implementation)
+                // for (var i = nodeEdges.length - 1; i >= 0; i--) {
+                // todo.push({ node: nodeEdges[i], processed: false });
+                // }
+                // current.processed = true;
+                // } else {
+                // // Have visited edges (stack unrolling phase)
+                // todo.pop();
+                // currentPath.pop();
+                // inCurrentPath[node] = false;
+                // visited[node] = true;
+                // if (!leavesOnly || edges[node].length === 0) {
+                // result.push(node);
+                // }
+                // }
+            }
+        };
     }
 
 }
