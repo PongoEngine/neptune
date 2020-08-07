@@ -31,8 +31,7 @@ class Scope
     public function new() : Void
     {
         _scopeExprs = new Map<String, Expr>();
-        _initializers = [];
-        _setters = [];
+        _newExprs = [];
     }
 
     public function addItem(name :String, expr :Expr) : Void
@@ -72,7 +71,8 @@ class Scope
             case EVars(vars): for(var_ in vars) {
                 var deps = [];
                 addDeps(var_.expr, deps);
-                _initializers.push({var_: var_, deps: deps});
+                var expr = EVars([var_]).toExpr();
+                _newExprs.push({expr: expr, deps: deps});
             }
             case _: throw "err";
         }
@@ -89,16 +89,14 @@ class Scope
             case _: 
                 throw "err";
         }
-        _setters.push({ident: ident, expr: expr, deps: deps});
+        
+        _newExprs.push({expr: createSetter(ident, expr), deps: deps});
     }
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(initializer in _initializers) {
-            insertInitializerIntoBlock(initializer, block);
-        }
-        for(setter in _setters) {
-            insertSetterIntoBlock(setter, block);
+        for(expr in _newExprs) {
+            insertIntoBlock(expr, block);
         }
     }
 
@@ -109,25 +107,7 @@ class Scope
         return c;
     }
 
-    private function insertInitializerIntoBlock(initializer :{var_:Var, deps :Array<String>}, block :Array<Expr>) : Void
-    {
-        var index = 0;
-        for(blockItem in block) {
-            switch blockItem.expr {
-                case EVars(vars): for(var_ in vars) {
-                    initializer.deps.remove(var_.name);
-                }
-                case _:
-            }
-            index++;
-            if(initializer.deps.length == 0) {
-                block.insert(index, EVars([initializer.var_]).toExpr());
-                return;
-            }
-        }
-    }
-
-    private function insertSetterIntoBlock(setter :{ident :String, expr:Expr, deps :Array<String>}, block :Array<Expr>) : Void
+    private function insertIntoBlock(setter :{expr:Expr, deps :Array<String>}, block :Array<Expr>) : Void
     {
         var index = 0;
         for(blockItem in block) {
@@ -139,8 +119,7 @@ class Scope
             }
             index++;
             if(setter.deps.length == 0) {
-                var setterExpr = createSetter(setter.ident, setter.expr);
-                block.insert(index, setterExpr);
+                block.insert(index, setter.expr);
                 return;
             }
         }
@@ -184,7 +163,6 @@ class Scope
 
     private var _parentScope :Scope = null;
     private var _scopeExprs : Map<String, Expr>;
-    private var _initializers :Array<{var_:Var, deps :Array<String>}>;
-    private var _setters :Array<{ident :String, expr:Expr, deps :Array<String>}>;
+    private var _newExprs :Array<{expr:Expr, deps :Array<String>}>;
 }
 #end
