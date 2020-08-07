@@ -22,14 +22,13 @@ package neptune.compiler.macro;
 */
 
 #if macro
+import haxe.macro.Printer;
+import neptune.compiler.macro.DepGraph;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
-import neptune.compiler.macro.DepGraph;
-import haxe.ds.Option;
-import haxe.macro.Printer;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.NStringUtils;
 using haxe.macro.ExprTools;

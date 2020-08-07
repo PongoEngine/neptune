@@ -65,11 +65,10 @@ class DepGraph<T>
      * @param {string} name
      * @param data
      */
-    public function addNode(node: String, data: T): Void
+    public function addNode(node: String, ?data: T): Void
     {
         if (!this.hasNode(node)) {
             // Checking the arguments length allows the user to add a node with undefined data
-            // this.nodes[node] = data;
             this.nodes.set(node, data);
             this.outgoingEdges[node] = [];
             this.incomingEdges[node] = [];
@@ -213,7 +212,7 @@ class DepGraph<T>
      * @param {string} name
      * @param {boolean} leavesOnly
      */
-    public function dependenciesOf(name: String, leavesOnly: Bool): Array<String>
+    public function dependenciesOf(name: String, leavesOnly: Bool = false): Array<String>
     {
         if (this.hasNode(name)) {
             var result = [];
@@ -244,7 +243,7 @@ class DepGraph<T>
      * @param {string} name
      * @param {boolean} leavesOnly
      */
-    public function dependantsOf(name: String, leavesOnly: Bool): Array<String>
+    public function dependantsOf(name: String, leavesOnly: Bool = false): Array<String>
     {
         if (this.hasNode(name)) {
             var result = [];
@@ -273,7 +272,7 @@ class DepGraph<T>
      * Construct the overall processing order for the dependency graph. If leavesOnly is true, only nodes that do not depend on any other nodes will be returned.
      * @param {boolean} leavesOnly
      */
-    public function overallOrder(leavesOnly: Bool): Array<String>
+    public function overallOrder(leavesOnly: Bool = false): Array<String>
     {
         var self = this;
         var result = [];
@@ -348,6 +347,7 @@ class DepGraph<T>
         var visited = new Map<String, Bool>();
 
         return function(start) {
+
             if (visited.get(start)) {
                 return;
             }
@@ -358,43 +358,51 @@ class DepGraph<T>
             todo.push({ node: start, processed: false });
 
             while (todo.length > 0) {
-                // var current = todo[todo.length - 1]; // peek at the todo stack
-                // var processed = current.processed;
-                // var node = current.node;
-                // if (!processed) {
-                // // Haven't visited edges yet (visiting phase)
-                // if (visited[node]) {
-                // todo.pop();
-                // continue;
-                // } else if (inCurrentPath[node]) {
-                // // It's not a DAG
-                // if (circular) {
-                // todo.pop();
-                // // If we're tolerating cycles, don't revisit the node
-                // continue;
-                // }
-                // currentPath.push(node);
-                // throw new DepGraphCycleError(currentPath);
-                // }
+                var current = todo[todo.length - 1]; // peek at the todo stack
+                var processed = current.processed;
+                var node = current.node;
+                if (!processed) {
+                    // Haven't visited edges yet (visiting phase)
+                    if (visited[node]) {
+                        todo.pop();
+                        continue;
+                    } 
+                    else if (inCurrentPath[node]) {
+                        // It's not a DAG
+                        if (circular) {
+                            todo.pop();
+                            // If we're tolerating cycles, don't revisit the node
+                            continue;
+                        }
+                        currentPath.push(node);
+                        // throw new DepGraphCycleError(currentPath);
+                        throw 'DepGraphCycleError ${currentPath}';
+                    }
 
-                // inCurrentPath[node] = true;
-                // currentPath.push(node);
-                // var nodeEdges = edges[node];
-                // // (push edges onto the todo stack in reverse order to be order-compatible with the old DFS implementation)
-                // for (var i = nodeEdges.length - 1; i >= 0; i--) {
-                // todo.push({ node: nodeEdges[i], processed: false });
-                // }
-                // current.processed = true;
-                // } else {
-                // // Have visited edges (stack unrolling phase)
-                // todo.pop();
-                // currentPath.pop();
-                // inCurrentPath[node] = false;
-                // visited[node] = true;
-                // if (!leavesOnly || edges[node].length === 0) {
-                // result.push(node);
-                // }
-                // }
+                    inCurrentPath[node] = true;
+                    currentPath.push(node);
+                    var nodeEdges = edges[node];
+
+                    // (push edges onto the todo stack in reverse order to be order-compatible with the old DFS implementation)
+                    // for
+                    var i = nodeEdges.length - 1;
+                    while(i >= 0) {
+                        todo.push({ node: nodeEdges[i], processed: false });
+                        i--;
+                    } 
+                    current.processed = true;
+                } 
+                else {
+                    // Have visited edges (stack unrolling phase)
+                    todo.pop();
+                    currentPath.pop();
+                    inCurrentPath[node] = false;
+                    visited[node] = true;
+
+                    if (!leavesOnly || edges[node].length == 0) {
+                        result.push(node);
+                    }
+                }
             }
         };
     }

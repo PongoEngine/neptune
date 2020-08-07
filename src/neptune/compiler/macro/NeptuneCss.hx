@@ -32,7 +32,7 @@ class NeptuneCss
     {
         switch getStyle(fields) {
             case Some(v):
-                sys.io.File.saveContent("./dist/style.css", v);
+                // sys.io.File.saveContent("./dist/style.css", v);
             case None:
         }
     }
