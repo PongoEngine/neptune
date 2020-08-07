@@ -81,10 +81,10 @@ class Scope
         _newExprs.push({expr: createSetter(ident, expr), deps: deps});
     }
 
-    public function insertScopedExprs(block :Array<Expr>) : Void
+    public function insertScopedExprs() : Void
     {
         for(expr in _newExprs) {
-            insertIntoBlock(expr, block);
+            insertIntoBlock(expr);
         }
     }
 
@@ -96,10 +96,10 @@ class Scope
     }
 
     //TODO: does not take scope into account. Will need to work on this.
-    private function insertIntoBlock(setter :{expr:Expr, deps :Array<String>}, block :Array<Expr>) : Void
+    private function insertIntoBlock(setter :{expr:Expr, deps :Array<String>}) : Void
     {
         var index = 0;
-        for(blockItem in block) {
+        for(blockItem in _block) {
             switch blockItem.expr {
                 case EVars(vars): for(var_ in vars) {
                     setter.deps.remove(var_.name);
@@ -108,7 +108,7 @@ class Scope
             }
             index++;
             if(setter.deps.length == 0) {
-                block.insert(index, setter.expr);
+                _block.insert(index, setter.expr);
                 return;
             }
         }

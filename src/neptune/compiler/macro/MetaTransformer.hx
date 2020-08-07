@@ -59,7 +59,7 @@ class MetaTransformer
             case EBlock(exprs):
                 var child = scope.createChild(exprs);
                 exprs.map(transformExpr.bind(fn, child, assignments));
-                child.insertScopedExprs(exprs);
+                child.insertScopedExprs();
                 expr.expr = EBlock(exprs);
             case EBreak: 
             case ECall(e, params): 
@@ -133,8 +133,6 @@ class MetaTransformer
     
     private static function transformCatch(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, catch_ :Catch) : Catch
     {
-        catch_.name = catch_.name;
-        catch_.type = catch_.type;
         catch_.expr = transformExpr(fn, scope, assignments, catch_.expr);
         return catch_;
     }
@@ -142,20 +140,14 @@ class MetaTransformer
     private static function transformFunction(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, function_ :Function) : Function
     {
         function_.args = function_.args.map(transformFunctionArgs.bind(fn, scope, assignments));
-        function_.ret = function_.ret;
         function_.expr = transformExpr(fn, scope, assignments, function_.expr);
-        function_.params = function_.params;
         return function_;
     }
 
     private static function transformFunctionArgs(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg
     {
         scope.addScopedItem(arg.name, arg.value);
-        arg.name = arg.name;
-        arg.opt = arg.opt;
-        arg.type = arg.type;
         arg.value = transformExpr(fn, scope, assignments, arg.value);
-        arg.meta = arg.meta;
         return arg;
     }
 }
