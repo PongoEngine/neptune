@@ -26,24 +26,31 @@ import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.ScopeUtils;
 
-enum ScopeItem
-{
-    SField(field :Field);
-    SExpr(expr :Expr);
-}
-
 class Scope
 {
 
     public function new() : Void
     {
-        _scopeItems = new Map<String, ScopeItem>();
-        _newScopeExprs = [];
+        _scopeItems = new Map<String, Expr>();
+        _deps = new DepGraph<Array<NeptuneItem>>();
     }
 
-    public function addItem(name :String, item :ScopeItem) : Void
+    public function addItem(name :String, expr :Expr) : Void
     {
-        _scopeItems.set(name, item);
+        _scopeItems.set(name, expr);
+    }
+
+    public function getItem(name :String) : Null<Expr>
+    {
+        if(_scopeItems.exists(name)) {
+            return _scopeItems.get(name);
+        }
+        else if(_parentScope != null) {
+            return _parentScope.getItem(name);
+        }
+        else {
+            return null;
+        }
     }
 
     public function exists(name :String) : Bool
@@ -59,26 +66,13 @@ class Scope
         }
     }
 
-    public function getItem(name :String) : Null<ScopeItem>
-    {
-        if(_scopeItems.exists(name)) {
-            return _scopeItems.get(name);
-        }
-        else if(_parentScope != null) {
-            return _parentScope.getItem(name);
-        }
-        else {
-            return null;
-        }
-    }
-
     public function addScopedExpr(ident :String, initializer :Expr, updater :Expr) : Void
     {
         if(_scopeItems.exists(ident)) {
-            if(!_newScopeExprs.exists(ident)) {
-                _newScopeExprs.set(ident, []);
+            if(!_deps.hasNode(ident)) {
+                _deps.addNode(ident, []);
             }
-            _newScopeExprs.get(ident).push({initializer: initializer, updater: updater});
+            _deps.getNodeData(ident).push({initializer: initializer, updater: updater});
         }
         else if(_parentScope != null) {
             _parentScope.addScopedExpr(ident, initializer, updater);
@@ -90,7 +84,7 @@ class Scope
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(dep in _newScopeExprs.keyValueIterator()) {
+        for(dep in _deps.keyValueIterator()) {
             var ident = dep.key;
             var initUpdates = dep.value;
             var initializers :Array<Expr> = [];
@@ -131,8 +125,10 @@ class Scope
         return c;
     }
 
-    private var _scopeItems :Map<String, ScopeItem>;
+    private var _scopeItems :Map<String, Expr>;
     private var _parentScope :Scope = null;
-    private var _newScopeExprs :Map<String, Array<{initializer:Expr, updater:Expr}>>;
+    private var _deps : DepGraph<Array<NeptuneItem>>;
 }
+
+typedef NeptuneItem = {initializer:Expr, updater:Expr};
 #end

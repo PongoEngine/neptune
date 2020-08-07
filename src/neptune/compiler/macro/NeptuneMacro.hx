@@ -179,8 +179,11 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        switch getItemType(s, scope) {
-                            case Text: {
+                        switch scope.getItem(s).expr {
+                            case EMeta(s, e):
+                                expr;
+
+                            case _: {
                                 var ident = createIdent();
 
                                 var initializer = [s.createDefIdent().toExpr()]
@@ -196,13 +199,9 @@ class NeptuneMacro
                                 scope.addScopedExpr(s, initializer, updater);
                                 expr.updateDef(ident.createDefIdent());
                             }
-                            case Element:
-                                expr;
                         }
-                    case CFloat(_), CInt(_):
-                        var initializer = [expr.cloneExpr()]
-                            .createDefCall("createText");
-                        expr.updateDef(initializer);
+
+                                
                     case _:
                         throw "not implmented yet";
                 }
@@ -255,44 +254,6 @@ class NeptuneMacro
     {
         return 'var_${_identIndex++}';
     }
-
-    /**
-     * Get the type of field or expression. It will be used to determine the type 
-     * expressions that are generated to create the html elements.
-     * @param expr 
-     * @return ItemType
-     */
-    private static function getItemType(ident :String, scope :Scope) : ItemType
-    {
-        return switch scope.getItem(ident) {
-            case SField(field): switch field.kind {
-                case FVar(t, e): throw "not implemented yet";
-                case FFun(f): throw "not implemented yet";
-                case FProp(get, set, t, e): throw "not implemented yet";
-            }
-            case SExpr(expr): getExprItemType(expr);
-        }
-    }
-
-    /**
-     * Get the type of expression. It will be used to determine the type expressions
-     * that are generated to create the html elements.
-     * @param expr 
-     * @return ItemType
-     */
-    private static function getExprItemType(expr :Expr) : ItemType
-    {
-        return switch expr.expr {
-            case EMeta(s, e): Element;
-            case _: Text;
-        }
-    }
-}
-
-enum ItemType
-{
-    Text;
-    Element;
 }
 
 #end

@@ -21,7 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-//built using https://github.com/jriecken/dependency-graph
+//ported https://github.com/jriecken/dependency-graph
 
 #if macro
 
@@ -43,13 +43,18 @@ class DepGraph<T>
     /**
      * Creates an instance of DepGraph with optional Options.
      */
-    public function new(opts: Options) : Void
+    public function new(?opts: Options) : Void
     {
         this.nodes = new Map<String, T>(); // Node -> Node/Data (treated like a Set)
         this.outgoingEdges = new Map<String, Array<String>>(); // Node -> [Dependency Node]
         this.incomingEdges = new Map<String, Array<String>>(); // Node -> [Dependant Node]
-        this.circular = opts.circular; // Allows circular deps
+        this.circular = opts == null ? false : opts.circular; // Allows circular deps
         _length = 0;
+    }
+
+    public inline function keyValueIterator() : KeyValueIterator<String, T>
+    {
+        return nodes.keyValueIterator();
     }
 
     /**
@@ -65,7 +70,7 @@ class DepGraph<T>
      * @param {string} name
      * @param data
      */
-    public function addNode(node: String, ?data: T): Void
+    public function addNode(node: String, data: T): Void
     {
         if (!this.hasNode(node)) {
             // Checking the arguments length allows the user to add a node with undefined data
