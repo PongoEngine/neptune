@@ -78,6 +78,7 @@ class Scope
         }
     }
 
+    //The goal here is to remove the need for ident
     public function addSetter(ident :String, expr :Expr) : Void
     {
         var deps = [];
