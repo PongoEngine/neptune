@@ -41,7 +41,7 @@ class NeptuneMacro
         
         NeptuneCss.handleStyle(fields);
 
-        var scope = new Scope();
+        var scope = new Scope([]);
         var assignments = new Assignments();
         var transformedFields = fields
             .map(transformField.bind(compileMarkup, scope, assignments));

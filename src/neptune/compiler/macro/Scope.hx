@@ -27,10 +27,11 @@ using neptune.compiler.macro.ExprUtils;
 
 class Scope
 {
-    public function new() : Void
+    public function new(block :Array<Expr>) : Void
     {
         _scopeExprs = new Map<String, Expr>();
         _newExprs = [];
+        _block = block;
     }
 
     public function addScopedItem(name :String, expr :Expr) : Void
@@ -87,9 +88,9 @@ class Scope
         }
     }
 
-    public function createChild() : Scope
+    public function createChild(block :Array<Expr>) : Scope
     {
-        var c = new Scope();
+        var c = new Scope(block);
         c._parentScope = this;
         return c;
     }
@@ -145,5 +146,6 @@ class Scope
     private var _parentScope :Scope = null;
     private var _scopeExprs : Map<String, Expr>;
     private var _newExprs :Array<{expr:Expr, deps :Array<String>}>;
+    private var _block :Array<Expr>;
 }
 #end
