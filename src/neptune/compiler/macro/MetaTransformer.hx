@@ -40,7 +40,7 @@ class MetaTransformer
                 };
                 }
             case FVar(t, e):
-                scope.addItem(field.name, e);
+                scope.addScopedItem(field.name, e);
                 {
                     name: field.name,
                     doc: field.doc,
@@ -50,7 +50,7 @@ class MetaTransformer
                     meta: field.meta
                 };
             case FProp(get, set, t, e):
-                scope.addItem(field.name, e);
+                scope.addScopedItem(field.name, e);
                 {
                     name: field.name,
                     doc: field.doc,
@@ -196,7 +196,7 @@ class MetaTransformer
                 {
                     pos: expr.pos,
                     expr: EVars(vars.map(v -> {
-                        scope.addItem(v.name, v.expr);
+                        scope.addScopedItem(v.name, v.expr);
                         return {
                             name: v.name,
                             type: v.type,
@@ -246,7 +246,7 @@ class MetaTransformer
 
     private static function transformFunctionArgs(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg
     {
-        scope.addItem(arg.name, arg.value);
+        scope.addScopedItem(arg.name, arg.value);
         return {
             name: arg.name,
             opt: arg.opt,

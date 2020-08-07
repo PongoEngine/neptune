@@ -27,12 +27,6 @@ import haxe.macro.Context;
 
 class ExprUtils
 {
-    public static function cleanWhitespace(str :String) : String
-    {
-        var reg = ~/\s\s+/g;
-        return reg.replace(str, " ");
-    }
-
     public static function createDefVar(e :Expr, name :String) : ExprDef
     {
         return EVars([{name:name, type: null, expr: e}]);

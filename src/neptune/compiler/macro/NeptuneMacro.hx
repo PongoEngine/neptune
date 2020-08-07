@@ -160,7 +160,6 @@ class NeptuneMacro
                         .createDefCall("addAttr")
                         .toExpr();
                 }
-                
             }
         }
     }
@@ -178,7 +177,7 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        switch scope.getItem(s).expr {
+                        switch scope.getScopedItem(s).expr {
                             case EMeta(s, e):
                                 expr;
 

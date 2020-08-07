@@ -27,41 +27,27 @@ using neptune.compiler.macro.ExprUtils;
 
 class Scope
 {
-
     public function new() : Void
     {
         _scopeExprs = new Map<String, Expr>();
         _newExprs = [];
     }
 
-    public function addItem(name :String, expr :Expr) : Void
+    public function addScopedItem(name :String, expr :Expr) : Void
     {
         _scopeExprs.set(name, expr);
     }
 
-    public function getItem(name :String) : Null<Expr>
+    public function getScopedItem(name :String) : Null<Expr>
     {
         if(_scopeExprs.exists(name)) {
             return _scopeExprs.get(name);
         }
         else if(_parentScope != null) {
-            return _parentScope.getItem(name);
+            return _parentScope.getScopedItem(name);
         }
         else {
             return null;
-        }
-    }
-
-    public function exists(name :String) : Bool
-    {
-        if(_scopeExprs.exists(name)) {
-            return true;
-        }
-        else if(_parentScope != null) {
-            return _parentScope.exists(name);
-        }
-        else {
-            return false;
         }
     }
 
@@ -126,26 +112,6 @@ class Scope
         }
     }
 
-    private static function createSetter(ident :String, updateExpr :Expr) : Expr
-    {
-        var argName = 'new_${ident}';
-        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
-            .toExpr();
-
-        return [assignmentExpr, updateExpr]
-            .createDefBlock()
-            .toExpr()
-            .createDefFunc('set_${ident}', [argName])
-            .toExpr();
-    }
-
-    private function createUpdateFunc(updates :Array<Expr>) : Expr
-    {
-        return [updates.createDefBlock().toExpr().createDefFuncAnon([]).toExpr()]
-            .createDefCall("runUpdates")
-            .toExpr();
-    }
-
     private function addDeps(expr :Expr, deps :Array<String>) : Void
     {
         switch expr.expr {
@@ -160,6 +126,19 @@ class Scope
             case _:
                 throw "not implemented yet";
         }
+    }
+
+    private function createSetter(ident :String, updateExpr :Expr) : Expr
+    {
+        var argName = 'new_${ident}';
+        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
+            .toExpr();
+
+        return [assignmentExpr, updateExpr]
+            .createDefBlock()
+            .toExpr()
+            .createDefFunc('set_${ident}', [argName])
+            .toExpr();
     }
 
     private var _parentScope :Scope = null;
