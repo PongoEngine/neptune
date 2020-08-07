@@ -94,6 +94,7 @@ class Scope
         return c;
     }
 
+    //TODO: does not take scope into account. Will need to work on this.
     private function insertIntoBlock(setter :{expr:Expr, deps :Array<String>}, block :Array<Expr>) : Void
     {
         var index = 0;
