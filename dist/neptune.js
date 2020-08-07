@@ -13,6 +13,7 @@ HelloWorld.prototype = {
 		};
 		var var_0 = window.document.createElement("h2");
 		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("This is a heading")]);
+		var var_5 = var_0;
 		var updateX = function() {
 			set_x(x + 1);
 		};
@@ -21,13 +22,12 @@ HelloWorld.prototype = {
 		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("Increment X")]);
 		var_1.onclick = updateX;
 		neptune_platform_html_HtmlPlatform.addChildren(var_2,[var_1]);
-		var var_5 = var_0;
 		var var_6 = var_2;
-		var var_4 = isLeft ? var_5 : var_6;
 		var set_isLeft = function(new_isLeft) {
 			isLeft = new_isLeft;
 			neptune_platform_html_HtmlPlatform.updateParent(isLeft,var_5,var_6);
 		};
+		var var_4 = isLeft ? var_5 : var_6;
 		var onClick = function() {
 			set_isLeft(!isLeft);
 		};

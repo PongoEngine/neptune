@@ -24,26 +24,26 @@ package neptune.compiler.macro;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.ScopeUtils;
 
 class Scope
 {
 
     public function new() : Void
     {
-        _scopeItems = new Map<String, Expr>();
-        _deps = new DepGraph<Array<NeptuneItem>>();
+        _scopeExprs = new Map<String, Expr>();
+        _initializers = [];
+        _setters = [];
     }
 
     public function addItem(name :String, expr :Expr) : Void
     {
-        _scopeItems.set(name, expr);
+        _scopeExprs.set(name, expr);
     }
 
     public function getItem(name :String) : Null<Expr>
     {
-        if(_scopeItems.exists(name)) {
-            return _scopeItems.get(name);
+        if(_scopeExprs.exists(name)) {
+            return _scopeExprs.get(name);
         }
         else if(_parentScope != null) {
             return _parentScope.getItem(name);
@@ -55,7 +55,7 @@ class Scope
 
     public function exists(name :String) : Bool
     {
-        if(_scopeItems.exists(name)) {
+        if(_scopeExprs.exists(name)) {
             return true;
         }
         else if(_parentScope != null) {
@@ -66,39 +66,87 @@ class Scope
         }
     }
 
-    public function addScopedExpr(ident :String, initializer :Expr, updater :Expr) : Void
+    public function addInitializer(expr :Expr) : Void
     {
-        if(_scopeItems.exists(ident)) {
-            if(!_deps.hasNode(ident)) {
-                _deps.addNode(ident, []);
+        switch expr.expr {
+            case EVars(vars): for(var_ in vars) {
+                var deps = [];
+                addDeps(var_.expr, deps);
+                _initializers.push({var_: var_, deps: deps});
             }
-            _deps.getNodeData(ident).push({initializer: initializer, updater: updater});
+            case _: throw "err";
         }
-        else if(_parentScope != null) {
-            _parentScope.addScopedExpr(ident, initializer, updater);
+    }
+
+    public function addSetter(ident :String, expr :Expr) : Void
+    {
+        var deps = [];
+        switch expr.expr {
+            case ECall(e, params): 
+                for(param in params) {
+                    addDeps(param, deps);
+                }
+            case _: 
+                throw "err";
         }
-        else {
-            throw "err";
-        }
+        _setters.push({ident: ident, expr: expr, deps: deps});
     }
 
     public function insertScopedExprs(block :Array<Expr>) : Void
     {
-        for(dep in _deps.keyValueIterator()) {
-            var ident = dep.key;
-            var initUpdates = dep.value;
-            var initializers :Array<Expr> = [];
-            var updates :Array<Expr> = [];
-            for(initUpdate in initUpdates) {
-                initializers.push(initUpdate.initializer);
-                updates.push(initUpdate.updater);
-            }
-            var setter = createSetter(ident, createUpdateFunc(updates));
-            ScopeUtils.insertExprs(block, initializers, setter);
+        for(initializer in _initializers) {
+            insertInitializerIntoBlock(initializer, block);
+        }
+        for(setter in _setters) {
+            insertSetterIntoBlock(setter, block);
         }
     }
 
-    public static function createSetter(ident :String, updateExpr :Expr) : Expr
+    public function createChild() : Scope
+    {
+        var c = new Scope();
+        c._parentScope = this;
+        return c;
+    }
+
+    private function insertInitializerIntoBlock(initializer :{var_:Var, deps :Array<String>}, block :Array<Expr>) : Void
+    {
+        var index = 0;
+        for(blockItem in block) {
+            switch blockItem.expr {
+                case EVars(vars): for(var_ in vars) {
+                    initializer.deps.remove(var_.name);
+                }
+                case _:
+            }
+            index++;
+            if(initializer.deps.length == 0) {
+                block.insert(index, EVars([initializer.var_]).toExpr());
+                return;
+            }
+        }
+    }
+
+    private function insertSetterIntoBlock(setter :{ident :String, expr:Expr, deps :Array<String>}, block :Array<Expr>) : Void
+    {
+        var index = 0;
+        for(blockItem in block) {
+            switch blockItem.expr {
+                case EVars(vars): for(var_ in vars) {
+                    setter.deps.remove(var_.name);
+                }
+                case _:
+            }
+            index++;
+            if(setter.deps.length == 0) {
+                var setterExpr = createSetter(setter.ident, setter.expr);
+                block.insert(index, setterExpr);
+                return;
+            }
+        }
+    }
+
+    private static function createSetter(ident :String, updateExpr :Expr) : Expr
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
@@ -118,17 +166,25 @@ class Scope
             .toExpr();
     }
 
-    public function createChild() : Scope
+    private function addDeps(expr :Expr, deps :Array<String>) : Void
     {
-        var c = new Scope();
-        c._parentScope = this;
-        return c;
+        switch expr.expr {
+            case EConst(c): switch c {
+                case CIdent(s): deps.push(s);
+                case _: throw "not implemented yet";
+            }
+            case ECall(e, params):
+                for(param in params) {
+                    addDeps(param, deps);
+                }
+            case _:
+                throw "not implemented yet";
+        }
     }
 
-    private var _scopeItems :Map<String, Expr>;
     private var _parentScope :Scope = null;
-    private var _deps : DepGraph<Array<NeptuneItem>>;
+    private var _scopeExprs : Map<String, Expr>;
+    private var _initializers :Array<{var_:Var, deps :Array<String>}>;
+    private var _setters :Array<{ident :String, expr:Expr, deps :Array<String>}>;
 }
-
-typedef NeptuneItem = {initializer:Expr, updater:Expr};
 #end

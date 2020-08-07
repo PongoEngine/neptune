@@ -23,7 +23,6 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Printer;
-import neptune.compiler.macro.DepGraph;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Scanner;
@@ -196,7 +195,8 @@ class NeptuneMacro
                                     .createDefCall("updateTextNode")
                                     .toExpr();
 
-                                scope.addScopedExpr(s, initializer, updater);
+                                scope.addInitializer(initializer);
+                                scope.addSetter(s, updater);
                                 expr.updateDef(ident.createDefIdent());
                             }
                         }
@@ -241,7 +241,8 @@ class NeptuneMacro
                     .createDefCall("updateParent")
                     .toExpr();
 
-                scope.addScopedExpr(s, initializer, updater);
+                scope.addInitializer(initializer);
+                scope.addSetter(s, updater);
                 expr.updateDef(ternaryIdent.createDefIdent());
             }
             case _:
