@@ -29,27 +29,14 @@ class Scope
 {
     public function new(block :Array<Expr>) : Void
     {
-        _scopeExprs = new Map<String, Expr>();
+        _scopeExprs = new Map<String, Bool>();
         _newExprs = [];
         _block = block;
     }
 
-    public function addScopedItem(name :String, expr :Expr) : Void
+    public function addScopedItem(name :String, isMarkup :Bool) : Void
     {
-        _scopeExprs.set(name, expr);
-    }
-
-    public function getScopedItem(name :String) : Null<Expr>
-    {
-        if(_scopeExprs.exists(name)) {
-            return _scopeExprs.get(name);
-        }
-        else if(_parentScope != null) {
-            return _parentScope.getScopedItem(name);
-        }
-        else {
-            return null;
-        }
+        _scopeExprs.set(name, isMarkup);
     }
 
     public function addInitializer(expr :Expr) : Void
@@ -93,6 +80,19 @@ class Scope
         var c = new Scope(block);
         c._parentScope = this;
         return c;
+    }
+
+    public function isMeta(name :String) : Bool
+    {
+        if(_scopeExprs.exists(name)) {
+            return _scopeExprs.get(name);
+        }
+        else if(_parentScope != null) {
+            return _parentScope.isMeta(name);
+        }
+        else {
+            throw "err";
+        }
     }
 
     //TODO: does not take scope into account. Will need to work on this.
@@ -144,7 +144,7 @@ class Scope
     }
 
     private var _parentScope :Scope = null;
-    private var _scopeExprs : Map<String, Expr>;
+    private var _scopeExprs : Map<String, Bool>;
     private var _newExprs :Array<{expr:Expr, deps :Array<String>}>;
     private var _block :Array<Expr>;
 }

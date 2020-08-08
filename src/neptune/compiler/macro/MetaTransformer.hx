@@ -33,11 +33,11 @@ class MetaTransformer
                 field.kind = FFun(transformFunction(fn, scope, assignments, f));
                 field;
             case FVar(t, e):
-                scope.addScopedItem(field.name, e);
+                scope.addScopedItem(field.name, false);
                 field.kind = FVar(t, transformExpr(fn, scope, assignments, e));
                 field;
             case FProp(get, set, t, e):
-                scope.addScopedItem(field.name, e);
+                scope.addScopedItem(field.name, false);
                 field.kind = FProp(get, set, t, transformExpr(fn, scope, assignments, e));
                 field;
         }
@@ -113,7 +113,8 @@ class MetaTransformer
                 expr.expr = EUntyped(transformExpr(fn, scope, assignments, e));
             case EVars(vars):
                 for(v in vars) {
-                    scope.addScopedItem(v.name, v.expr);
+                    var isMeta = v.expr.expr.getName() == "EMeta";
+                    scope.addScopedItem(v.name, isMeta);
                     v.expr.expr = transformExpr(fn, scope, assignments, v.expr).expr;
                 }
             case EWhile(econd, e, normalWhile): 
@@ -146,7 +147,7 @@ class MetaTransformer
 
     private static function transformFunctionArgs(fn :(scope :Scope, expr :Expr) -> Expr, scope :Scope, assignments :Assignments, arg :FunctionArg) : FunctionArg
     {
-        scope.addScopedItem(arg.name, arg.value);
+        scope.addScopedItem(arg.name, false);
         arg.value = transformExpr(fn, scope, assignments, arg.value);
         return arg;
     }

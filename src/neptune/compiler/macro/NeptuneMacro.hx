@@ -177,30 +177,26 @@ class NeptuneMacro
             case EConst(c):
                 switch c {
                     case CIdent(s):
-                        switch scope.getScopedItem(s).expr {
-                            case EMeta(s, e):
-                                expr;
-
-                            case _: {
-                                var ident = createIdent();
-
-                                var initializer = [s.createDefIdent().toExpr()]
-                                    .createDefCall("createText")
-                                    .toExpr()
-                                    .createDefVar(ident)
-                                    .toExpr();
-                                    
-                                var updater = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
-                                    .createDefCall("updateTextNode")
-                                    .toExpr();
-
-                                scope.addInitializer(initializer);
-                                scope.addSetter(s, updater);
-                                expr.updateDef(ident.createDefIdent());
-                            }
+                        if(scope.isMeta(s)){
+                            expr;
                         }
+                        else {
+                            var ident = createIdent();
 
+                            var initializer = [s.createDefIdent().toExpr()]
+                                .createDefCall("createText")
+                                .toExpr()
+                                .createDefVar(ident)
+                                .toExpr();
                                 
+                            var updater = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
+                                .createDefCall("updateTextNode")
+                                .toExpr();
+
+                            scope.addInitializer(initializer);
+                            scope.addSetter(s, updater);
+                            expr.updateDef(ident.createDefIdent());
+                        }
                     case _:
                         throw "not implmented yet";
                 }
