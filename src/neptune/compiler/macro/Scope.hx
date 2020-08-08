@@ -94,8 +94,6 @@ class Scope
 
     public function insertScopedExprs() : Void
     {
-        // _setters.
-
         for(expr in _newExprs) {
             insertIntoBlock(expr);
         }
