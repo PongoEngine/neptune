@@ -4,6 +4,7 @@ class Main {
 	static function main() {
 		var helloWorld = new HelloWorld();
 		var template = helloWorld.template();
-		Browser.document.body.appendChild(template);
+		trace(template);
+		// Browser.document.body.appendChild(template);
 	}
 }

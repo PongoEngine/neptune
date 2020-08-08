@@ -9,15 +9,9 @@ class HelloWorld implements Neptune
     {
     }
 
-    public function template() : Node
+    public function template() : String
     {
-        var name = "Jeremy";
-
-        function subTemplate() {
-            return <h2>{name}</h2>;
-        }
-
         return 
-            <div>Hello {name}</div>;
+            <div>Hello</div>;
     }
 }

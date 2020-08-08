@@ -22,58 +22,31 @@ package neptune.compiler.macro;
 */
 
 #if macro
-
+import haxe.macro.Context;
 import haxe.macro.Expr;
-import neptune.util.Set;
+import neptune.compiler.dom.Scanner;
+import neptune.compiler.dom.Parser;
+using neptune.compiler.macro.ExprUtils;
 
-class ExprDeps
+class CompileString
 {
-    public var expr :Expr;
-
-    public function new(expr :Expr, deps :Array<String>) : Void
+    public static function run(expr :Expr) : DomAST
     {
-        this.expr = expr;
-        _deps = new Set<String>();
-        for(dep in deps) {
-            this.addDep(dep);
+        var str :String = switch expr.expr {
+            case EConst(c): switch c {
+                case CString(s, kind):
+                    s;
+                case _:
+                    throw "err";
+            }
+            case _: 
+                throw "err";
         }
-    }
 
-    public function getDeps() : Array<String>
-    {
-        var deps = [];
-        for(dep in _deps) {
-            deps.push(dep);
-        }
-        return deps;
+        var start = Context.getPosInfos(expr.pos).min;
+        var filename = Context.getPosInfos(Context.currentPos()).file;
+        return Parser.parse(new Scanner(filename, str, start));
     }
-
-    public inline function addDep(name :String) : Void
-    {
-        _deps.set(name);
-    }
-
-    public inline function removeDep(name :String) : Void
-    {
-        _deps.remove(name);
-    }
-
-    public inline function existsDep(name :String) : Bool
-    {
-        return _deps.exists(name);
-    }
-
-    public inline function isSatisfied() : Bool
-    {
-        return _deps.length == 0;
-    }
-
-    public inline function length() : Int
-    {
-        return _deps.length;
-    }
-
-    private var _deps :Set<String>;
 }
 
 #end

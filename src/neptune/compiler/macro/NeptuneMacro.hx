@@ -22,235 +22,158 @@ package neptune.compiler.macro;
 */
 
 #if macro
-import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import neptune.compiler.dom.Scanner;
-import neptune.compiler.dom.Parser;
-import neptune.compiler.macro.MetaTransformer.transformField;
-using neptune.compiler.macro.ExprUtils;
-using neptune.util.NStringUtils;
-using haxe.macro.ExprTools;
-using StringTools;
 
 class NeptuneMacro
 {
     macro static public function fromInterface():Array<Field> 
     {
         var fields = Context.getBuildFields();
+        for(field in fields) {
+            handleField(field);
+        }
         
-        NeptuneCss.handleStyle(fields);
-
-        var scope = new Scope([]);
-        var assignments = new Assignments();
-        var transformedFields = fields
-            .map(transformField.bind(compileMarkup, scope, assignments));
-        assignments.transform();
-
-        #if debugFields
-            var printer = new Printer();
-            var module = "\n\n--Start--\n";
-            for(field in transformedFields) {
-                module += printer.printField(field) + "\n";
-            }
-            module += "\n--End--\n";
-            trace(module);
-        #end
-    
-        return transformedFields;
+        return fields;
     }
 
-    /**
-     * Transform meta markup to dom expressions.
-     * @param scope 
-     * @param e 
-     * @return Expr
-     */
-    private static function compileMarkup(scope :Scope, e :Expr) : Expr
+    private static function handleField(field :Field) : Void
     {
-        var xml = switch e.expr {
-            case EConst(c): switch c {
-                case CString(s, _): s;
-                case _: throw "err";
-            }
-            case _:
-                throw "err";
-        }
-
-        var start = Context.getPosInfos(e.pos).min;
-        var filename = Context.getPosInfos(Context.currentPos()).file;
-        var result = Parser.parse(new Scanner(filename, xml, start));
-
-        return handleTree(scope, result);
-    }
-
-    /**
-     * Transform a tree of nodes to dom expressions.
-     * @param scope 
-     * @param node 
-     * @return Expr
-     */
-    private static function handleTree(scope :Scope, node :DomAST) : Expr
-    {
-        return switch node {
-            case DomText(string):
-                [string.cleanWhitespace().createDefString().toExpr()]
-                    .createDefCall("createText")
-                    .toExpr();
-
-            case DomExpr(expr):
-                handleDomExpr(scope, expr); 
-                
-            case DomElement(tag, attrs, children): {
-                var cExpr = children.map(handleTree.bind(scope))
-                    .createDefArrayDecl()
-                    .toExpr();
-
-                var ident = createIdent();
-                var element = [tag.createDefString().toExpr()]
-                    .createDefCall("createElement")
-                    .toExpr()
-                    .createDefVar(ident)
-                    .toExpr();
-                
-                var addChildren = [ident.createDefIdent().toExpr(), cExpr]
-                    .createDefCall("addChildren")
-                    .toExpr();
-
-                var addAttrs = attrs
-                    .map(handleAttr.bind(scope))
-                    .map(f -> f(ident.createDefIdent().toExpr()))
-                    .createDefArrayDecl()
-                    .toExpr();
-
-                var ident = ident.createDefIdent().toExpr();
-
-                [element, addChildren, addAttrs, ident]
-                    .createDefBlock()
-                    .toExpr();
-            }
+        switch field.kind {
+            case FVar(t, e):
+                handleExpr(e);
+            case FFun(f):
+                handleFunction(f);
+            case FProp(get, set, t, e):
+                handleExpr(e);
         }
     }
 
-    /**
-     * Add attributes to an element.
-     * @param scope 
-     * @param attr 
-     * @return Expr -> Expr
-     */
-    private static function handleAttr(scope :Scope, attr :Attr) : Expr -> Expr
+    private static function handleExpr(expr :Expr) : Void
     {
-        return switch attr.value {
-            case AttrText(value): (element) -> {
-                var attrName = attr.name.createDefString().toExpr();
-                var attrValue = value.createDefString().toExpr();
-                return [element, attrName, attrValue]
-                    .createDefCall("addAttr")
-                    .toExpr();
-            }
-            case AttrExpr(expr): (element) -> {
-                if(attr.name == "onclick") {
-                    return [element, expr]
-                        .createDefCall("onclick")
-                        .toExpr();
-                }
-                else {
-                    var attrName = attr.name.createDefString().toExpr();
-                    return [element, attrName, expr]
-                        .createDefCall("addAttr")
-                        .toExpr();
-                }
-            }
-        }
-    }
+        if(expr == null) return;
+        switch expr.expr {
+            case EArray(e1, e2):
+                handleExpr(e1);
+                handleExpr(e2);
 
-    /**
-     * Update expressions in place for dom manipulation. Also save expressions
-     * that will be inserted after all scope level expressions have been updated.
-     * @param scope 
-     * @param expr 
-     * @return Expr
-     */
-    private static function handleDomExpr(scope :Scope, expr :Expr) : Expr
-    {
-        return switch expr.expr {
-            case EConst(c):
-                switch c {
-                    case CIdent(s):
-                        if(scope.isMeta(s)){
-                            expr;
-                        }
-                        else {
-                            var ident = createIdent();
+            case EArrayDecl(values):
+                for(value in values)
+                    handleExpr(value);
 
-                            var initializer = [s.createDefIdent().toExpr()]
-                                .createDefCall("createText")
-                                .toExpr()
-                                .createDefVar(ident)
-                                .toExpr();
-                                
-                            var updater = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
-                                .createDefCall("updateTextNode")
-                                .toExpr();
+            case EBinop(op, e1, e2):
+                handleExpr(e1);
+                handleExpr(e2);
 
-                            scope.addInitializer(initializer);
-                            scope.addSetter(s, updater);
-                            expr.updateDef(ident.createDefIdent());
-                        }
-                    case _:
-                        throw "not implmented yet";
-                }
-            case EMeta(s, e):
-                compileMarkup(scope, e);
-            case ETernary(econd, eif, eelse): {
-                var left = handleDomExpr(scope, eif);
-                var right = handleDomExpr(scope, eelse);
+            case EBlock(exprs):
+                for(expr in exprs)
+                    handleExpr(expr);
 
-                var s = switch econd.expr {
-                    case EConst(c): {
-                        switch c {
-                            case CIdent(s): s;
-                            case _: throw "not implemented yet";
-                        }
-                    }
-                    case _: throw "not implemented yet";
-                }
+            case EBreak:
 
-                var ternaryIdent = createIdent();
-                var leftIdent = createIdent();
-                var rightIdent = createIdent();
-
-                var ternary = [econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()]
-                    .createDefCall("ternary")
-                    .toExpr();
-
-                var initializer = [
-                    {name:leftIdent, e: left},
-                    {name:rightIdent, e: right},
-                    {name:ternaryIdent, e:ternary}
-                ]
-                    .createDefVars()
-                    .toExpr();
-
-                var updater = [econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()]
-                    .createDefCall("updateParent")
-                    .toExpr();
-
-                scope.addInitializer(initializer);
-                scope.addSetter(s, updater);
-                expr.updateDef(ternaryIdent.createDefIdent());
-            }
             case ECall(e, params):
-                expr;
-            case _:
-                throw "not implmented yet";
+                for(param in params)
+                    handleExpr(param);
+
+            case ECast(e, t):
+                handleExpr(e);
+
+            case ECheckType(e, t):
+
+            case EConst(c):
+
+            case EContinue:
+
+            case EDisplay(e, displayKind):
+
+            case EDisplayNew(t):
+
+            case EField(e, field):
+            
+            case EFor(it, expr):
+                handleExpr(expr);
+
+            case EFunction(kind, f):
+                handleFunction(f);
+
+            case EIf(econd, eif, eelse):
+                handleExpr(econd);
+                handleExpr(eif);
+                handleExpr(eelse);
+
+            case EMeta(s, e):
+                var domTree = CompileString.run(e);
+                expr.expr = e.expr;
+
+            case ENew(t, params):
+                for(param in params) {
+                    handleExpr(param);
+                }
+                
+            case EObjectDecl(fields):
+                for(field in fields) {
+                    handleExpr(field.expr);
+                }
+
+            case EParenthesis(e):
+                handleExpr(e);
+
+            case EReturn(e):
+                handleExpr(e);
+
+            case ESwitch(e, cases, edef):
+                handleExpr(e);
+                for(case_ in cases) {
+                    handleExpr(case_.expr);
+                    handleExpr(case_.guard);
+                    for(value in case_.values) {
+                        handleExpr(value);
+                    }
+                }
+                handleExpr(edef);
+
+            case ETernary(econd, eif, eelse):
+                handleExpr(econd);    
+                handleExpr(eif);    
+                handleExpr(eelse);    
+
+            case EThrow(e):
+                handleExpr(e);
+
+            case ETry(e, catches):
+                handleExpr(e);
+                for(catch_ in catches) {
+                    handleExpr(catch_.expr);
+                }
+
+            case EUnop(op, postFix, e):
+                handleExpr(e);   
+
+            case EWhile(econd, e, normalWhile):
+                handleExpr(econd);
+                handleExpr(e);
+
+            case EVars(vars):
+                for(var_ in vars) {
+                    handleExpr(var_.expr);
+                }
+
+            case EUntyped(e):
+                handleExpr(e);
         }
     }
 
-    private static var _identIndex = 0;
-    private static function createIdent() : String
+    private static function handleFunction(function_ :Function) : Void
     {
-        return 'var_${_identIndex++}';
+        for(arg in function_.args) {
+            handleFunctionArg(arg);
+        }
+        handleExpr(function_.expr);
+    }
+
+    private static function handleFunctionArg(arg :FunctionArg) : Void
+    {
+        handleExpr(arg.value);
     }
 }
 
