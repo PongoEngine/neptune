@@ -38,10 +38,9 @@ class Set<T:{}>
 
     public function set(item :T) : Void
     {
-        if(_map.exists(item)) {
-            throw "err";
+        if(!_map.exists(item)) {
+            this.length++;
         }
-        this.length++;
         _map.set(item, true);
     }
 

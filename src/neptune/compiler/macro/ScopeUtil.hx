@@ -64,13 +64,13 @@ class ScopeUtil
         }
     }
 
-    public static function createSetter(ident :String, updateExpr :Expr) : Expr
+    public static function createSetter(ident :String, updates :Array<Expr>) : Expr
     {
         var argName = 'new_${ident}';
         var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
             .toExpr();
 
-        return [assignmentExpr, updateExpr]
+        return [assignmentExpr, updates.createDefArrayDecl().toExpr()]
             .createDefBlock()
             .toExpr()
             .createDefFunc('set_${ident}', [argName])

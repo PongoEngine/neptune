@@ -36,6 +36,7 @@ class HelloWorld implements Neptune
                 <button onclick={onClick}>Toggle Child</button>
                 {isLeft ? left : right}
                 <h1>{x} {y}</h1>
+                <h2>{x} This is a heading2 {x}</h2>
             </div>;
     }
 

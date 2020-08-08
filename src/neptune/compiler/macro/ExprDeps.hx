@@ -39,6 +39,15 @@ class ExprDeps
         }
     }
 
+    public function getDeps() : Array<String>
+    {
+        var deps = [];
+        for(dep in _deps) {
+            deps.push(dep);
+        }
+        return deps;
+    }
+
     public inline function addDep(name :String) : Void
     {
         _deps.set(name);

@@ -6,10 +6,14 @@ HelloWorld.prototype = {
 	cool: function() {
 		var isLeft = true;
 		var x = 0;
+		var var_11 = window.document.createTextNode(x);
+		var var_10 = window.document.createTextNode(x);
 		var var_7 = window.document.createTextNode(x);
 		var set_x = function(new_x) {
 			x = new_x;
 			var_7.textContent = x;
+			var_10.textContent = x;
+			var_11.textContent = x;
 		};
 		var y = 0;
 		var var_8 = window.document.createTextNode(y);
@@ -38,7 +42,7 @@ HelloWorld.prototype = {
 		var onClick = function() {
 			set_isLeft(!isLeft);
 		};
-		var var_10 = window.document.createElement("div");
+		var var_13 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
 		var var_3 = window.document.createElement("button");
 		neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode("Toggle Child")]);
@@ -47,8 +51,11 @@ HelloWorld.prototype = {
 		var tmp2 = window.document.createTextNode(" ");
 		var var_9 = window.document.createElement("h1");
 		neptune_platform_html_HtmlPlatform.addChildren(var_9,[var_7,window.document.createTextNode(" "),var_8]);
-		neptune_platform_html_HtmlPlatform.addChildren(var_10,[tmp,var_3,tmp1,var_4,tmp2,var_9,window.document.createTextNode(" ")]);
-		return var_10;
+		var tmp3 = window.document.createTextNode(" ");
+		var var_12 = window.document.createElement("h2");
+		neptune_platform_html_HtmlPlatform.addChildren(var_12,[var_10,window.document.createTextNode(" This is a heading2 "),var_11]);
+		neptune_platform_html_HtmlPlatform.addChildren(var_13,[tmp,var_3,tmp1,var_4,tmp2,var_9,tmp3,var_12,window.document.createTextNode(" ")]);
+		return var_13;
 	}
 };
 var Main = function() { };

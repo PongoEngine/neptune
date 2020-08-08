@@ -31,6 +31,7 @@ class Scope
     {
         _scopeExprs = new Map<String, Bool>();
         _newExprs = [];
+        _setters = new Map<String, Array<ExprDeps>>();
         _block = block;
     }
 
@@ -62,7 +63,10 @@ class Scope
                 for(param in params) {
                     ScopeUtil.addDeps(param, deps);
                 }
-                _newExprs.push(new ExprDeps(ScopeUtil.createSetter(ident, expr), deps));
+                if(!_setters.exists(ident)) {
+                    _setters.set(ident, []);
+                }
+                _setters.get(ident).push(new ExprDeps(expr, deps));
             case _: 
                 throw "err";
         }
@@ -90,12 +94,35 @@ class Scope
 
     public function insertScopedExprs() : Void
     {
+        // _setters.
+
         for(expr in _newExprs) {
+            insertIntoBlock(expr);
+        }
+        for(expr in combineSetters()) {
             insertIntoBlock(expr);
         }
     }
 
-    //TODO: does not take scope into account. Will need to work on this.
+    private function combineSetters() : Array<ExprDeps>
+    {
+        var setterDeps :Array<ExprDeps> = [];
+        for(setter in _setters.keyValueIterator()) {
+            var ident = setter.key;
+            var exprs = [];
+            var deps = [];
+            for(dep in setter.value) {
+                exprs.push(dep.expr);
+                deps = deps.concat(dep.getDeps());
+            }
+
+            var expr = ScopeUtil.createSetter(ident, exprs);
+            setterDeps.push(new ExprDeps(expr, deps));
+        }
+
+        return setterDeps;
+    }
+
     private function insertIntoBlock(newExpr :ExprDeps) : Void
     {
         var index = ScopeUtil.getInsertIndex(newExpr, _block);
@@ -110,6 +137,7 @@ class Scope
     private var _parentScope :Scope = null;
     private var _scopeExprs : Map<String, Bool>;
     private var _newExprs :Array<ExprDeps>;
+    private var _setters :Map<String, Array<ExprDeps>>;
     private var _block :Array<Expr>;
 }
 
