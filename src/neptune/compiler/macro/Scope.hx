@@ -44,7 +44,7 @@ class Scope
         switch expr.expr {
             case EVars(vars): for(var_ in vars) {
                 var deps = [];
-                addDeps(var_.expr, deps);
+                ScopeUtil.addDeps(var_.expr, deps);
                 var expr = EVars([var_]).toExpr();
                 _newExprs.push(new ExprDeps(expr, deps));
             }
@@ -60,9 +60,9 @@ class Scope
             case ECall(e, params): 
                 var deps = [];
                 for(param in params) {
-                    addDeps(param, deps);
+                    ScopeUtil.addDeps(param, deps);
                 }
-                _newExprs.push(new ExprDeps(createSetter(ident, expr), deps));
+                _newExprs.push(new ExprDeps(ScopeUtil.createSetter(ident, expr), deps));
             case _: 
                 throw "err";
         }
@@ -96,56 +96,15 @@ class Scope
     }
 
     //TODO: does not take scope into account. Will need to work on this.
-    private function insertIntoBlock(setter :ExprDeps) : Void
+    private function insertIntoBlock(newExpr :ExprDeps) : Void
     {
-        var index = 0;
-        for(blockItem in _block) {
-            switch blockItem.expr {
-                case EVars(vars): for(var_ in vars) {
-                    if(setter.existsDep(var_.name)) {
-                        setter.removeDep(var_.name);
-                    }
-                    else {
-                        // trace(var_.name);
-                    }
-                }
-                case _:
-            }
-            index++;
-            if(setter.isSatisfied()) {
-                _block.insert(index, setter.expr);
-                return;
-            }
-        }
+        var index = ScopeUtil.getInsertIndex(newExpr, _block);
+        _block.insert(index, newExpr.expr);
     }
 
-    private function addDeps(expr :Expr, deps :Array<String>) : Void
+    private function filterOutOfScopes() : Void
     {
-        switch expr.expr {
-            case EConst(c): switch c {
-                case CIdent(s): deps.push(s);
-                case _: throw "not implemented yet";
-            }
-            case ECall(e, params):
-                for(param in params) {
-                    addDeps(param, deps);
-                }
-            case _:
-                throw "not implemented yet";
-        }
-    }
-
-    private function createSetter(ident :String, updateExpr :Expr) : Expr
-    {
-        var argName = 'new_${ident}';
-        var assignmentExpr = OpAssign.createDefBinop(ident.createDefIdent().toExpr(), argName.createDefIdent().toExpr())
-            .toExpr();
-
-        return [assignmentExpr, updateExpr]
-            .createDefBlock()
-            .toExpr()
-            .createDefFunc('set_${ident}', [argName])
-            .toExpr();
+        
     }
 
     private var _parentScope :Scope = null;

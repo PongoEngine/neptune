@@ -36,7 +36,6 @@ class HelloWorld implements Neptune
                 <button onclick={onClick}>Toggle Child</button>
                 {isLeft ? left : right}
                 <h1>{x} {y}</h1>
-                {nestedFunc()}
             </div>;
     }
 

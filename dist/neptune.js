@@ -35,11 +35,6 @@ HelloWorld.prototype = {
 			neptune_platform_html_HtmlPlatform.updateParent(isLeft,var_6,var_7);
 		};
 		var var_5 = isLeft ? var_6 : var_7;
-		var nestedFunc = function() {
-			var var_3 = window.document.createElement("h1");
-			neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode("Hi")]);
-			return var_3;
-		};
 		var onClick = function() {
 			set_isLeft(!isLeft);
 		};
@@ -52,7 +47,7 @@ HelloWorld.prototype = {
 		var tmp2 = window.document.createTextNode(" ");
 		var var_10 = window.document.createElement("h1");
 		neptune_platform_html_HtmlPlatform.addChildren(var_10,[var_8,window.document.createTextNode(" "),var_9]);
-		neptune_platform_html_HtmlPlatform.addChildren(var_11,[tmp,var_4,tmp1,var_5,tmp2,var_10,window.document.createTextNode(" "),nestedFunc(),window.document.createTextNode(" ")]);
+		neptune_platform_html_HtmlPlatform.addChildren(var_11,[tmp,var_4,tmp1,var_5,tmp2,var_10,window.document.createTextNode(" ")]);
 		return var_11;
 	}
 };

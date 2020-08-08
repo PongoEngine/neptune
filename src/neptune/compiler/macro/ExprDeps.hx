@@ -59,6 +59,11 @@ class ExprDeps
         return _deps.length == 0;
     }
 
+    public inline function length() : Int
+    {
+        return _deps.length;
+    }
+
     private var _deps :Set<String>;
 }
 
