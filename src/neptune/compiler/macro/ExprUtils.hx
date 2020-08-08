@@ -24,9 +24,16 @@ package neptune.compiler.macro;
 #if macro
 import haxe.macro.Expr;
 import haxe.macro.Context;
+import haxe.macro.Printer;
 
 class ExprUtils
 {
+    public static function print(e :Expr) : Void
+    {
+        var p = new Printer("  ");
+        trace('\n${p.printExpr(e)}\n');
+    }
+
     public static function createDefVar(e :Expr, name :String) : ExprDef
     {
         return EVars([{name:name, type: null, expr: e}]);

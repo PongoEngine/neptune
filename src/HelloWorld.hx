@@ -9,9 +9,15 @@ class HelloWorld implements Neptune
     {
     }
 
-    public function template() : String
+    public function template() : Node
     {
+        var x = 20;
+        function onClick() {
+            x += 1;
+            trace(x);
+        }
+
         return 
-            <div>Hello</div>;
+            <div onclick={onClick}>Hello2 {x}</div>;
     }
 }

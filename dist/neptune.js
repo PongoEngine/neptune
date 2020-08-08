@@ -4,12 +4,21 @@ var HelloWorld = function() {
 };
 HelloWorld.prototype = {
 	template: function() {
-		return "<div>Hello</div>";
+		var x = 20;
+		var onClick = function() {
+			x += 1;
+			console.log("src/HelloWorld.hx:17:",x);
+		};
+		var var_0 = window.document.createElement("div");
+		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Hello2 "),window.document.createTextNode(x)]);
+		var_0.onclick = onClick;
+		return var_0;
 	}
 };
 var Main = function() { };
 Main.main = function() {
-	console.log("src/Main.hx:7:",new HelloWorld().template());
+	var template = new HelloWorld().template();
+	window.document.body.appendChild(template);
 };
 var haxe_iterators_ArrayIterator = function(array) {
 	this.current = 0;
@@ -22,6 +31,12 @@ haxe_iterators_ArrayIterator.prototype = {
 	,next: function() {
 		return this.array[this.current++];
 	}
+};
+var neptune_platform_html_HtmlPlatform = function() { };
+neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
+	var _g = 0;
+	while(_g < children.length) element.appendChild(children[_g++]);
+	return element;
 };
 Main.main();
 })({});
