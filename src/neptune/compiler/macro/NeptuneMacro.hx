@@ -21,8 +21,11 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import haxe.macro.Printer;
+
 #if macro
+import neptune.compiler.macro.scope.Scope;
+import neptune.compiler.macro.scope.Scope.BlockScope;
+import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
@@ -31,11 +34,10 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var fields = Context.getBuildFields();
-        var scope = new Scope([]);
+        var scope = new BlockScope([]);
         for(field in fields) {
             handleField(field, scope);
         }
-        scope.completeBlock();
         
         return fields;
     }

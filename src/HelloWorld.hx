@@ -14,7 +14,6 @@ class HelloWorld implements Neptune
         var x = 20;
         function onClick() {
             x = x + 1;
-            trace(x);
         }
 
         return 

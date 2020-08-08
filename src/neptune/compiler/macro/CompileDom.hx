@@ -24,6 +24,7 @@ package neptune.compiler.macro;
 #if macro
 import haxe.macro.Expr;
 import neptune.compiler.dom.Parser;
+import neptune.compiler.macro.scope.Scope;
 using neptune.compiler.macro.ExprUtils;
 using neptune.util.NStringUtils;
 

@@ -1,4 +1,4 @@
-package neptune.compiler.macro;
+package neptune.compiler.macro.scope;
 
 /*
 * Copyright (c) 2020 Jeremy Meltingtallow
@@ -25,24 +25,32 @@ package neptune.compiler.macro;
 import haxe.macro.Expr;
 import neptune.compiler.dom.Parser.DomAST;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.ScopeUtil;
+using neptune.compiler.macro.scope.ScopeUtil;
 using neptune.compiler.macro.Assignment;
 
-class Scope
+interface Scope
+{
+    function createChild(block :Array<Expr>) : Scope;
+    function addVar(expr :Expr) : Void;
+    function addUpdate(expr :Expr) : Void;
+    function addAssignment(expr :Expr) : Void;
+    function run(dom :DomAST) : ExprDef;
+    function completeBlock() : Void;
+}
+
+class BlockScope implements Scope
 {
     public function new(block :Array<Expr>) : Void
     {
         _block = block;
-        _children = [];
         _assignments = [];
         _updates = [];
     }
 
     public function createChild(block :Array<Expr>) : Scope
     {
-        var c = new Scope(block);
+        var c = new BlockScope(block);
         c._parent = this;
-        _children.push(c);
         return c;
     }
 
@@ -73,10 +81,9 @@ class Scope
         }
     }
 
-    public function addAssignment(expr :Expr) : Void
+    public inline function addAssignment(expr :Expr) : Void
     {
-        var assignment = expr.saveAssignment();
-        _assignments.push(assignment);
+        _assignments.push(expr.saveAssignment());
     }
 
     public function run(dom :DomAST) : ExprDef
@@ -86,16 +93,17 @@ class Scope
 
     public function completeBlock() : Void
     {
-        // trace(_assignments.length, _updates.length);
-
-        for(c in _children) {
-            c.completeBlock();
+        for(assignment in _assignments) {
+            var index = assignment.deps.getInsertIndex(_block);
+            var setter = assignment.createSetter();
+            setter.print();
+            // _block.insert(index, setter);
+            // _block.push(setter);
         }
+        // _block.insert(0, ["Hi".createDefString().toExpr()].createDefCall("trace").toExpr());
     }
 
     private var _parent :Scope;
-    private var _children :Array<Scope>;
-
     private var _block :Array<Expr>;
     private var _updates :Array<{expr :Expr, deps :Array<String>}>;
     private var _assignments :Array<Assignment>;

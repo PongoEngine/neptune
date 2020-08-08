@@ -1,4 +1,4 @@
-package neptune.compiler.macro;
+package neptune.compiler.macro.scope;
 
 /*
 * Copyright (c) 2020 Jeremy Meltingtallow

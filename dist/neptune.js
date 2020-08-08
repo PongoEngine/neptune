@@ -8,7 +8,6 @@ HelloWorld.prototype = {
 		var var_0 = window.document.createTextNode(x);
 		var onClick = function() {
 			x += 1;
-			console.log("src/HelloWorld.hx:17:",x);
 		};
 		var var_1 = window.document.createElement("div");
 		neptune_platform_html_HtmlPlatform.addChildren(var_1,[var_0]);

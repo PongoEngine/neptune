@@ -24,15 +24,23 @@ package neptune.compiler.macro;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.ScopeUtil;
+using neptune.compiler.macro.scope.ScopeUtil;
 
 class Assignment
 {
+    public var deps (default, null) :Array<String>;
+
     public function new(ident :String, expr :Expr, deps :Array<String>) : Void
     {
         _ident = ident;
         _expr = expr;
-        _deps = deps;
+        this.deps = deps;
+    }
+
+    public function createSetter() : Expr
+    {
+        return _expr.createDefFunc('set_${_ident}', ["hi"])
+            .toExpr();
     }
 
     public static function saveAssignment(expr :Expr) : Assignment
@@ -60,6 +68,5 @@ class Assignment
 
     private var _ident :String;
     private var _expr :Expr;
-    private var _deps :Array<String>;
 }
 #end
