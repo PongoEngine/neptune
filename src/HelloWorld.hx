@@ -23,9 +23,9 @@ class HelloWorld implements Neptune
 
         var right = <div><button onclick={updateX}>Increment X</button></div>;
 
-        function nestedFunc() {
-            return <h1>Hi</h1>;
-        }
+        // function nestedFunc() {
+        //     return <h1>{x} Hi</h1>;
+        // }
 
         function onClick() {
             isLeft = !isLeft;

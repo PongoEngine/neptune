@@ -99,12 +99,12 @@ class Scope
     private function insertIntoBlock(newExpr :ExprDeps) : Void
     {
         var index = ScopeUtil.getInsertIndex(newExpr, _block);
-        _block.insert(index, newExpr.expr);
-    }
-
-    private function filterOutOfScopes() : Void
-    {
-        
+        if(index != -1) {
+            _block.insert(index, newExpr.expr);
+        }
+        else {
+            _parentScope.insertIntoBlock(newExpr);
+        }
     }
 
     private var _parentScope :Scope = null;

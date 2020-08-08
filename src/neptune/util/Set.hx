@@ -31,6 +31,11 @@ class Set<T:{}>
         this.length = 0;
     }
 
+    public function iterator() : Iterator<T>
+    {
+        return _map.keys();
+    }
+
     public function set(item :T) : Void
     {
         if(_map.exists(item)) {

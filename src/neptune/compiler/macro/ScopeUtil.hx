@@ -45,7 +45,7 @@ class ScopeUtil
                 break;
             }
         }
-        return index;
+        return newExpr.isSatisfied() ? index : -1;
     }
 
     public static function addDeps(expr :Expr, deps :Array<String>) : Void
