@@ -35,6 +35,7 @@ class NeptuneMacro
         for(field in fields) {
             handleField(field, scope);
         }
+        scope.completeBlock();
         
         return fields;
     }
@@ -78,8 +79,9 @@ class NeptuneMacro
                 }
 
             case EBlock(exprs):
+                var child = scope.createChild(exprs);
                 for(expr in exprs)
-                    handleExpr(expr, scope.createChild(exprs));
+                    handleExpr(expr, child);
 
             case EBreak:
 

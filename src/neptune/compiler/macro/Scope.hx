@@ -23,48 +23,60 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
-import haxe.macro.Printer;
 import neptune.compiler.dom.Parser.DomAST;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.ScopeUtil;
+using neptune.compiler.macro.Assignment;
 
 class Scope
 {
     public function new(block :Array<Expr>) : Void
     {
         _block = block;
+        _children = [];
         _assignments = [];
+        _updates = [];
     }
 
     public function createChild(block :Array<Expr>) : Scope
     {
         var c = new Scope(block);
         c._parent = this;
+        _children.push(c);
         return c;
     }
 
-    public function addInstruction(expr :Expr) : Void
+    public function addVar(expr :Expr) : Void
     {
         switch expr.expr {
             case EVars(vars): for(var_ in vars) {
-                var deps = [].addDeps(var_.expr);
+                var deps = [].findDeps(var_.expr);
                 var index = deps.getInsertIndex(_block);
                 _block.insert(index, expr);
             }
             case _:
                 throw "impossible";
         }
+    }
 
-        #if debugBlock
-        var printer = new Printer();
-        var blockStr = "\n\n" + printer.printExprs(_block, "\n") + "\n\n";
-        trace(blockStr);
-        #end
+    public function addUpdate(expr :Expr) : Void
+    {
+        switch expr.expr {
+            case ECall(e, params): 
+                var deps = [];
+                for(param in params) {
+                    deps.findDeps(param);
+                }
+                _updates.push({expr: expr, deps: deps});
+            case _:
+                throw "impossible";
+        }
     }
 
     public function addAssignment(expr :Expr) : Void
     {
-        _assignments.push(expr);
+        var assignment = expr.saveAssignment();
+        _assignments.push(assignment);
     }
 
     public function run(dom :DomAST) : ExprDef
@@ -72,9 +84,21 @@ class Scope
         return CompileDom.handleTree(this, dom).expr;
     }
 
+    public function completeBlock() : Void
+    {
+        // trace(_assignments.length, _updates.length);
+
+        for(c in _children) {
+            c.completeBlock();
+        }
+    }
+
     private var _parent :Scope;
+    private var _children :Array<Scope>;
+
     private var _block :Array<Expr>;
-    private var _assignments :Array<Expr>;
+    private var _updates :Array<{expr :Expr, deps :Array<String>}>;
+    private var _assignments :Array<Assignment>;
 }
 
 #end

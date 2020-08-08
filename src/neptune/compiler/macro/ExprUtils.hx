@@ -31,7 +31,7 @@ class ExprUtils
     public static function print(e :Expr) : Void
     {
         var p = new Printer("  ");
-        trace('\n${p.printExpr(e)}\n');
+        trace('\n${p.printExpr(e)}');
     }
 
     public static function createDefVar(e :Expr, name :String) : ExprDef

@@ -26,21 +26,26 @@ import haxe.macro.Expr;
 
 class ScopeUtil
 {
-    public static function addDeps(deps :Array<String>, expr :Expr) : Array<String>
+    public static function findDeps(deps :Array<String>, expr :Expr) : Array<String>
     {
         switch expr.expr {
             case EConst(c): switch c {
                 case CIdent(s): deps.push(s);
-                case _: throw "not implemented yet";
+                case _:
             }
             case ECall(e, params):
                 for(param in params) {
-                    addDeps(deps, param);
+                    findDeps(deps, param);
                 }
             case ETernary(econd, eif, eelse):
-                addDeps(deps, econd);
-                addDeps(deps, eif);
-                addDeps(deps, eelse);
+                findDeps(deps, econd);
+                findDeps(deps, eif);
+                findDeps(deps, eelse);
+            case EBinop(op, e1, e2):
+                findDeps(deps, e1);
+                findDeps(deps, e2);
+            case EUnop(op, postFix, e):
+                findDeps(deps, e);
             case _:
                 throw "not implemented yet";
         }

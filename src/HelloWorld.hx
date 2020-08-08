@@ -12,15 +12,12 @@ class HelloWorld implements Neptune
     public function template() : Node
     {
         var x = 20;
-        var y = 0;
-        var isX = true;
         function onClick() {
-            x += 1;
-            y -= 1;
-            isX = !isX;
+            x = x + 1;
+            trace(x);
         }
 
         return 
-            <div onclick={onClick}>{isX ? x : y}</div>;
+            <div onclick={onClick}>{x}</div>;
     }
 }
