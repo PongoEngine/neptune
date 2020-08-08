@@ -29,7 +29,7 @@ import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.MetaTransformer.transformField;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.NStringUtils;
+using neptune.util.NStringUtils;
 using haxe.macro.ExprTools;
 using StringTools;
 
@@ -240,6 +240,8 @@ class NeptuneMacro
                 scope.addSetter(s, updater);
                 expr.updateDef(ternaryIdent.createDefIdent());
             }
+            case ECall(e, params):
+                expr;
             case _:
                 throw "not implmented yet";
         }

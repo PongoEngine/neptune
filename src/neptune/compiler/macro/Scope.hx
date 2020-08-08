@@ -23,6 +23,7 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
+import neptune.util.Set;
 using neptune.compiler.macro.ExprUtils;
 
 class Scope
@@ -46,7 +47,7 @@ class Scope
                 var deps = [];
                 addDeps(var_.expr, deps);
                 var expr = EVars([var_]).toExpr();
-                _newExprs.push({expr: expr, deps: deps});
+                _newExprs.push(new ExprDeps(expr, deps));
             }
             case _: throw "err";
         }
@@ -55,23 +56,16 @@ class Scope
     //The goal here is to remove the need for ident
     public function addSetter(ident :String, expr :Expr) : Void
     {
-        var deps = [];
         switch expr.expr {
             case ECall(e, params): 
+                var deps = [];
                 for(param in params) {
                     addDeps(param, deps);
                 }
-            case _: 
+                // _newExprs.push({expr: createSetter(ident, expr), deps: deps});
+                _newExprs.push(new ExprDeps(createSetter(ident, expr), deps));
+                case _: 
                 throw "err";
-        }
-        
-        _newExprs.push({expr: createSetter(ident, expr), deps: deps});
-    }
-
-    public function insertScopedExprs() : Void
-    {
-        for(expr in _newExprs) {
-            insertIntoBlock(expr);
         }
     }
 
@@ -95,19 +89,26 @@ class Scope
         }
     }
 
+    public function insertScopedExprs() : Void
+    {
+        for(expr in _newExprs) {
+            insertIntoBlock(expr);
+        }
+    }
+
     //TODO: does not take scope into account. Will need to work on this.
-    private function insertIntoBlock(setter :{expr:Expr, deps :Array<String>}) : Void
+    private function insertIntoBlock(setter :ExprDeps) : Void
     {
         var index = 0;
         for(blockItem in _block) {
             switch blockItem.expr {
                 case EVars(vars): for(var_ in vars) {
-                    setter.deps.remove(var_.name);
+                    setter.removeDep(var_.name);
                 }
                 case _:
             }
             index++;
-            if(setter.deps.length == 0) {
+            if(setter.isSatisfied()) {
                 _block.insert(index, setter.expr);
                 return;
             }
@@ -145,7 +146,52 @@ class Scope
 
     private var _parentScope :Scope = null;
     private var _scopeExprs : Map<String, Bool>;
-    private var _newExprs :Array<{expr:Expr, deps :Array<String>}>;
+    private var _newExprs :Array<ExprDeps>;
     private var _block :Array<Expr>;
 }
+
+class ExprDeps
+{
+    public var expr :Expr;
+
+    public function new(expr :Expr, deps :Array<String>) : Void
+    {
+        this.expr = expr;
+        _deps = new Map<String, Bool>();
+        _length = 0;
+        for(dep in deps) {
+            this.addDep(dep);
+        }
+    }
+
+    public function addDep(name :String) : Void
+    {
+        if(_deps.exists(name)) {
+            throw "err";
+        }
+        _deps.set(name, true);
+        _length++;
+    }
+
+    public function removeDep(name :String) : Void
+    {
+        // if(!_deps.exists(name)) {
+        //     throw "err";
+        // }
+        // _deps.remove(name);
+        // _length--;
+        if(_deps.remove(name)) {
+            _length--;
+        }
+    }
+
+    public function isSatisfied() : Bool
+    {
+        return _length == 0;
+    }
+
+    private var _deps :Map<String, Bool>;
+    private var _length :Int;
+}
+
 #end

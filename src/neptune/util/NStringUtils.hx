@@ -1,4 +1,4 @@
-package neptune.compiler.macro;
+package neptune.util;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -21,8 +21,6 @@ package neptune.compiler.macro;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#if macro
-
 class NStringUtils
 {
     public static function cleanWhitespace(str :String) : String
@@ -37,4 +35,3 @@ class NStringUtils
         return reg.replace(str, "");
     }
 }
-#end

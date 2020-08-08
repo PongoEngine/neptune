@@ -23,6 +23,10 @@ class HelloWorld implements Neptune
 
         var right = <div><button onclick={updateX}>Increment X</button></div>;
 
+        function nestedFunc() {
+            return <h1>Hi</h1>;
+        }
+
         function onClick() {
             isLeft = !isLeft;
         }
@@ -32,6 +36,7 @@ class HelloWorld implements Neptune
                 <button onclick={onClick}>Toggle Child</button>
                 {isLeft ? left : right}
                 <h1>{x} {y}</h1>
+                {nestedFunc()}
             </div>;
     }
 

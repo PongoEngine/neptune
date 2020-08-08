@@ -24,7 +24,7 @@ package neptune.compiler.macro;
 #if macro
 import haxe.macro.Expr;
 import haxe.ds.Option;
-using neptune.compiler.macro.NStringUtils;
+using neptune.util.NStringUtils;
 
 class NeptuneCss
 {
