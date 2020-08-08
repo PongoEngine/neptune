@@ -100,7 +100,33 @@ class CompileDom
 
     private static function handleDomExpr(scope :Scope, expr :Expr) : Expr
     {
-        return [expr].createDefCall("createText").toExpr();
+        return switch expr.expr {
+            case EConst(c): switch c {
+                case CIdent(s):
+                    var ident = createIdent();
+                    var createTextVar = [expr].createDefCall("createText").toExpr()
+                        .createDefVar(ident)
+                        .toExpr();
+                    scope.addInstruction(createTextVar);
+                    
+                    ident.createDefIdent().toExpr();
+                case _:
+                    throw "not implemented yet";
+            }
+            case ETernary(econd, eif, eelse):
+                var left = handleDomExpr(scope, eif);
+                var right = handleDomExpr(scope, eelse);
+                var ident = createIdent();
+
+                var createTernaryVar = ETernary(econd, left, right).toExpr()
+                    .createDefVar(ident)
+                    .toExpr();
+                scope.addInstruction(createTernaryVar);
+
+                ident.createDefIdent().toExpr();
+            case _: 
+                throw "not implemented yet";
+        }
     }
 
     private static var _identIndex = 0;

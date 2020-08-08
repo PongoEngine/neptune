@@ -117,20 +117,6 @@ class ExprUtils
         });
     }
 
-    public static function cloneExpr(e :Expr) : Expr
-    {
-        return {
-            pos: e.pos,
-            expr: e.expr
-        }
-    }
-
-    public static function updateDef(e :Expr, def :ExprDef) : Expr
-    {
-        e.expr = def;
-        return e;
-    }
-
     public static function toExpr(e :ExprDef) : Expr
     {
         return {

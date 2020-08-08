@@ -23,58 +23,48 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
-import haxe.macro.Printer;
-import neptune.compiler.dom.Parser.DomAST;
-using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.ScopeUtil;
 
-class Scope
+class ScopeUtil
 {
-    public function new(block :Array<Expr>) : Void
-    {
-        _block = block;
-        _assignments = [];
-    }
-
-    public function createChild(block :Array<Expr>) : Scope
-    {
-        var c = new Scope(block);
-        c._parent = this;
-        return c;
-    }
-
-    public function addInstruction(expr :Expr) : Void
+    public static function addDeps(deps :Array<String>, expr :Expr) : Array<String>
     {
         switch expr.expr {
-            case EVars(vars): for(var_ in vars) {
-                var deps = [].addDeps(var_.expr);
-                var index = deps.getInsertIndex(_block);
-                _block.insert(index, expr);
+            case EConst(c): switch c {
+                case CIdent(s): deps.push(s);
+                case _: throw "not implemented yet";
             }
+            case ECall(e, params):
+                for(param in params) {
+                    addDeps(deps, param);
+                }
+            case ETernary(econd, eif, eelse):
+                addDeps(deps, econd);
+                addDeps(deps, eif);
+                addDeps(deps, eelse);
             case _:
-                throw "impossible";
+                throw "not implemented yet";
         }
-
-        #if debugBlock
-        var printer = new Printer();
-        var blockStr = "\n\n" + printer.printExprs(_block, "\n") + "\n\n";
-        trace(blockStr);
-        #end
+        return deps;
     }
 
-    public function addAssignment(expr :Expr) : Void
+    public static function getInsertIndex(deps :Array<String>, block :Array<Expr>) : Int
     {
-        _assignments.push(expr);
+        var index = 0;
+        for(blockItem in block) {
+            switch blockItem.expr {
+                case EVars(vars): 
+                    for(var_ in vars) {
+                        deps.remove(var_.name);
+                    }
+                case _:
+            }
+            index++;
+            if(deps.length == 0) {
+                break;
+            }
+        }
+        return deps.length == 0 ? index : -1;
     }
-
-    public function run(dom :DomAST) : ExprDef
-    {
-        return CompileDom.handleTree(this, dom).expr;
-    }
-
-    private var _parent :Scope;
-    private var _block :Array<Expr>;
-    private var _assignments :Array<Expr>;
 }
 
 #end

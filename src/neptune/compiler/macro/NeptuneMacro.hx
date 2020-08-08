@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Printer;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -48,6 +49,11 @@ class NeptuneMacro
             case FProp(get, set, t, e):
                 handleExpr(e, scope);
         }
+        #if debugFields
+        var printer = new Printer("  ");
+        var fieldStr = "\n" + printer.printField(field) + "\n\n";
+        trace(fieldStr);
+        #end
     }
 
     private static function handleExpr(expr :Expr, scope :Scope) : Void
