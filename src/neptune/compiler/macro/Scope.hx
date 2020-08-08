@@ -23,7 +23,6 @@ package neptune.compiler.macro;
 
 #if macro
 import haxe.macro.Expr;
-import neptune.util.Set;
 using neptune.compiler.macro.ExprUtils;
 
 class Scope
@@ -49,7 +48,8 @@ class Scope
                 var expr = EVars([var_]).toExpr();
                 _newExprs.push(new ExprDeps(expr, deps));
             }
-            case _: throw "err";
+            case _: 
+                throw "err";
         }
     }
 
@@ -62,9 +62,8 @@ class Scope
                 for(param in params) {
                     addDeps(param, deps);
                 }
-                // _newExprs.push({expr: createSetter(ident, expr), deps: deps});
                 _newExprs.push(new ExprDeps(createSetter(ident, expr), deps));
-                case _: 
+            case _: 
                 throw "err";
         }
     }
@@ -103,7 +102,12 @@ class Scope
         for(blockItem in _block) {
             switch blockItem.expr {
                 case EVars(vars): for(var_ in vars) {
-                    setter.removeDep(var_.name);
+                    if(setter.existsDep(var_.name)) {
+                        setter.removeDep(var_.name);
+                    }
+                    else {
+                        // trace(var_.name);
+                    }
                 }
                 case _:
             }
@@ -148,50 +152,6 @@ class Scope
     private var _scopeExprs : Map<String, Bool>;
     private var _newExprs :Array<ExprDeps>;
     private var _block :Array<Expr>;
-}
-
-class ExprDeps
-{
-    public var expr :Expr;
-
-    public function new(expr :Expr, deps :Array<String>) : Void
-    {
-        this.expr = expr;
-        _deps = new Map<String, Bool>();
-        _length = 0;
-        for(dep in deps) {
-            this.addDep(dep);
-        }
-    }
-
-    public function addDep(name :String) : Void
-    {
-        if(_deps.exists(name)) {
-            throw "err";
-        }
-        _deps.set(name, true);
-        _length++;
-    }
-
-    public function removeDep(name :String) : Void
-    {
-        // if(!_deps.exists(name)) {
-        //     throw "err";
-        // }
-        // _deps.remove(name);
-        // _length--;
-        if(_deps.remove(name)) {
-            _length--;
-        }
-    }
-
-    public function isSatisfied() : Bool
-    {
-        return _length == 0;
-    }
-
-    private var _deps :Map<String, Bool>;
-    private var _length :Int;
 }
 
 #end
