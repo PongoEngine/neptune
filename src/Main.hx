@@ -3,7 +3,7 @@ import js.Browser;
 class Main {
 	static function main() {
 		var helloWorld = new HelloWorld();
-		var template = helloWorld.cool();
+		var template = helloWorld.template();
 		Browser.document.body.appendChild(template);
 	}
 }

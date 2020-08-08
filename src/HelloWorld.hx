@@ -9,47 +9,15 @@ class HelloWorld implements Neptune
     {
     }
 
-    public function cool() : Node
+    public function template() : Node
     {
-        var isLeft = true;
-        var x = 0;
-        var y = 0;
-        var left = <h2>This is a heading</h2>;
+        var name = "Jeremy";
 
-        function updateX() {
-            x = x + 1;
-            y = y - 1;
-        }
-
-        var right = <div><button onclick={updateX}>Increment X</button></div>;
-
-        // function nestedFunc() {
-        //     return <h1>{x} Hi</h1>;
-        // }
-
-        function onClick() {
-            isLeft = !isLeft;
+        function subTemplate() {
+            return <h2>{name}</h2>;
         }
 
         return 
-            <div>
-                <button onclick={onClick}>Toggle Child</button>
-                {isLeft ? left : right}
-                <h1>{x} {y}</h1>
-                <h2>{x} This is a heading2 {x}</h2>
-            </div>;
+            <div>Hello {name}</div>;
     }
-
-    //this is just a quick stub for styles
-    //future plans are to scope styles to module
-    var style =
-        <style>
-            html, body {
-                text-align: center;
-                margin: 0;
-            }
-            button {
-                color : #ff0000;
-            }
-        </style>
 }
