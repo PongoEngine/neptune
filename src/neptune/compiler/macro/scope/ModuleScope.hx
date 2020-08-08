@@ -28,15 +28,45 @@ using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
 using neptune.compiler.macro.Assignment;
 
-interface Scope
+class ModuleScope implements Scope
 {
-    var parent :Scope;
-    function createChild(block :Array<Expr>) : Scope;
-    function addVar(expr :Expr) : Void;
-    function addUpdate(expr :Expr) : Void;
-    function addAssignment(expr :Expr) : Void;
-    function run(dom :DomAST) : ExprDef;
-    function completeBlock() : Void;
+    public var parent :Scope;
+
+    public function new(fields :Array<Field>) : Void
+    {
+    }
+
+    public function createChild(block :Array<Expr>) : Scope
+    {
+        var c = new BlockScope(block);
+        c.parent = this;
+        return c;
+    }
+
+    public function addVar(expr :Expr) : Void
+    {
+        throw "err";
+    }
+
+    public function addUpdate(expr :Expr) : Void
+    {
+        throw "err";
+    }
+
+    public inline function addAssignment(expr :Expr) : Void
+    {
+        throw "err";
+    }
+
+    public function run(dom :DomAST) : ExprDef
+    {
+        throw "err";
+    }
+
+    public function completeBlock() : Void
+    {
+        throw "err";
+    }
 }
 
 #end
