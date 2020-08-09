@@ -35,7 +35,7 @@ interface Scope
     function addAssignment(expr :Expr) : Void;
     function prepSetters() : Void;
     function completeSetters() : Void;
-    private function prepSetter(setter :{dep :String, expr :Expr}) : Void;
+    private function prepSetter(setter :String) : Void;
 }
 
 #end

@@ -28,7 +28,7 @@ using neptune.compiler.macro.scope.ScopeUtil;
 
 class AssignmentUtil
 {
-    public static function handleAssignment(assignment :Expr, setters :Map<String, {dep :String}>) : Void
+    public static function handleAssignment(assignment :Expr, setters :Map<String, Bool>) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):
@@ -38,7 +38,7 @@ class AssignmentUtil
                             case EConst(c): switch c {
                                 case CIdent(s):
                                     if(!setters.exists(s)) {
-                                        setters.set(s, {dep: s});
+                                        setters.set(s, true);
                                     }
                                     transformAssignment(assignment, e2, s);
                                 case _:

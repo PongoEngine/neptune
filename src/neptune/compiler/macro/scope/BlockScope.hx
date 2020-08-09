@@ -75,11 +75,11 @@ class BlockScope implements Scope
 
     public function prepSetters() : Void
     {
-        var setters = new Map<String, {dep :String, expr :Expr}>();
+        var setters = new Map<String, Bool>();
         for(assignment in _assignments) {
             AssignmentUtil.handleAssignment(assignment, setters);
         }
-        for(s in setters) {
+        for(s in setters.keys()) {
             prepSetter(s);
         }
     }
@@ -105,19 +105,19 @@ class BlockScope implements Scope
         }
     }
 
-    private function prepSetter(setter :{dep :String, expr :Expr}) : Void
+    private function prepSetter(setter :String) : Void
     {
         var deps = new Deps();
-        deps.set(setter.dep);
+        deps.set(setter);
         var index = deps.getInsertIndex(_block);
         if(index == -1) {
             this.parent.prepSetter(setter);
         }
         else {
-            if(_setters.exists(setter.dep)) {
+            if(_setters.exists(setter)) {
                 throw "already exists setter!";
             }
-            _setters.set(setter.dep, {expr: setter.expr, dep: setter.dep, updates: []});
+            _setters.set(setter, {updates: []});
         }
     }
 
@@ -125,7 +125,7 @@ class BlockScope implements Scope
     private var _assignments :Array<Expr>;
     private var _updates :Array<Expr>;
 
-    private var _setters :Map<String, {expr: Expr, dep :String, updates :Array<Expr>}>;
+    private var _setters :Map<String, {updates :Array<Expr>}>;
 }
 
 #end
