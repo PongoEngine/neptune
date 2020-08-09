@@ -30,7 +30,8 @@ interface Scope
 {
     var parent :Scope;
     function createChild(block :Array<Expr>) : Scope;
-    function addVar(expr :Expr) : Void;
+    function newVar(expr :Expr) : Void;
+    function trackVar(name :String) : Void;
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
     function complete() : Void;

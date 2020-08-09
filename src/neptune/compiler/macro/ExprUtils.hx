@@ -28,10 +28,10 @@ import haxe.macro.Printer;
 
 class ExprUtils
 {
-    public static function print(e :Expr) : Void
+    public static function print(e :Expr) : String
     {
         var p = new Printer("  ");
-        trace('\n${p.printExpr(e)}');
+        return '\n${p.printExpr(e)}';
     }
 
     public static function createDefVar(e :Expr, name :String) : ExprDef

@@ -187,6 +187,7 @@ class NeptuneMacro
 
             case EVars(vars):
                 for(var_ in vars) {
+                    scope.trackVar(var_.name);
                     handleExpr(var_.expr, scope, scopes);
                 }
 
