@@ -21,9 +21,10 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import haxe.macro.Context;
 #if macro
+import haxe.macro.Context;
 import haxe.macro.Expr;
+import neptune.compiler.dom.Scanner;
 import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.scope.Scope;
 using neptune.compiler.macro.ExprUtils;
@@ -31,6 +32,23 @@ using neptune.util.NStringUtils;
 
 class CompileDom
 {
+    public static function compileMeta(expr :Expr) : DomAST
+    {
+        var str :String = switch expr.expr {
+            case EConst(c): switch c {
+                case CString(s, kind):
+                    s;
+                case _:
+                    throw "err";
+            }
+            case _: 
+                throw "err";
+        }
+
+        var start = Context.getPosInfos(expr.pos).min;
+        var filename = Context.getPosInfos(Context.currentPos()).file;
+        return Parser.parse(new Scanner(filename, str, start));
+    }
 
     public static function handleTree(scope :Scope, node :DomAST) : Expr
     {
@@ -146,10 +164,11 @@ class CompileDom
                 expr;
 
             case EFor(it, expr):
-                var forBody = handleDomExpr(scope, expr);
-                var nodes = createNodes(it, forBody);
+                transformForLoop(it, handleDomExpr(scope, expr));
 
-                [nodes].createDefCall("createNodes").toExpr();
+            case EMeta(s, e):
+                var dom = CompileDom.compileMeta(e);
+                return CompileDom.handleTree(scope, dom);
 
             case _:
                 throw "not implemented yet";
@@ -162,17 +181,18 @@ class CompileDom
         return 'var_${_identIndex++}';
     }
 
-    private static function createNodes(it :Expr, expr :Expr) : Expr
+    private static function transformForLoop(it :Expr, expr :Expr) : Expr
     {
-        var nodesExpr = [].createDefArrayDecl().toExpr()
-            .createDefVar("nodes")
+        var frag = [].createDefCall("createFragment").toExpr()
+            .createDefVar("frag")
             .toExpr();
-        var nodeExpr = expr.createDefVar("node").toExpr();
-        var pushExpr = Context.parse("nodes.push(node)", Context.currentPos());
-        var blockExpr = [nodeExpr,pushExpr].createDefBlock().toExpr();
-        var forExpr = EFor(it, blockExpr).toExpr();
-        var returnExpr = "nodes".createDefIdent().toExpr();
-        var fullBlock = [nodesExpr, forExpr, returnExpr].createDefBlock().toExpr();
+
+        var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+        var callAppendChild = ECall(appendChild, [expr]).toExpr();
+            
+        var forExpr = EFor(it, callAppendChild).toExpr();
+        var returnExpr = "frag".createDefIdent().toExpr();
+        var fullBlock = [frag, forExpr, returnExpr].createDefBlock().toExpr();
 
         return fullBlock;
     }

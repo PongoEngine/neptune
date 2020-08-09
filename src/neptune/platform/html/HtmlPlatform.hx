@@ -21,10 +21,12 @@ package neptune.platform.html;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import js.html.DocumentFragment;
 import js.Browser.document;
 import js.html.Element;
 import js.html.Text;
 import js.html.Node;
+import js.html.NodeList;
 
 class HtmlPlatform
 {
@@ -38,13 +40,9 @@ class HtmlPlatform
         return document.createTextNode(text);
     }
 
-    public static function createNodes(nodes :Array<Dynamic>) : Node
+    public static inline function createFragment() : DocumentFragment
     {
-        var div = document.createDivElement();
-        for(node in nodes) {
-            div.appendChild(node);
-        }
-        return div;
+        return document.createDocumentFragment();
     }
 
     public static inline function ternary(condition :Bool, left :Node, right :Node) : Node

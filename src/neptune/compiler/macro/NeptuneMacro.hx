@@ -128,7 +128,7 @@ class NeptuneMacro
                 handleExpr(eelse, scope, scopes);
 
             case EMeta(s, e):
-                var dom = CompileString.run(e);
+                var dom = CompileDom.compileMeta(e);
                 var exprDef = CompileDom.handleTree(scope, dom).expr;
                 expr.expr = exprDef;
 

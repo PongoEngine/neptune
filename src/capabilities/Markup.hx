@@ -25,7 +25,7 @@ import js.html.Node;
 import neptune.platform.html.HtmlPlatform.*;
 import neptune.Neptune;
 
-class ForLoops implements Neptune 
+class Markup implements Neptune 
 {
     /**
      * Not completed
@@ -36,7 +36,7 @@ class ForLoops implements Neptune
         return 
             <div>
                 {
-                    for(i in 0...10) 'Loop '
+                    <h1>Markup</h1>
                 }
             </div>;
     }
