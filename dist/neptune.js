@@ -5,20 +5,20 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
-		var var_3 = neptune_platform_html_HtmlPlatform.createText(x);
+		var var_3 = window.document.createTextNode(x);
 		var set_x = function(val) {
 			x = val;
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_3,x);
+			var_3.textContent = x;
 		};
 		var isLeft = true;
 		var incrementX = function() {
 			set_x(x + 1);
 		};
-		var var_0 = neptune_platform_html_HtmlPlatform.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_0,[neptune_platform_html_HtmlPlatform.createText("Left")]);
+		var var_0 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Left")]);
 		var left = var_0;
-		var var_1 = neptune_platform_html_HtmlPlatform.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[neptune_platform_html_HtmlPlatform.createText("Right")]);
+		var var_1 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("Right")]);
 		var right = var_1;
 		var set_isLeft = function(val) {
 			isLeft = val;
@@ -28,19 +28,19 @@ HelloWorld.prototype = {
 		var toggleIsLeft = function() {
 			set_isLeft(!isLeft);
 		};
-		var var_7 = neptune_platform_html_HtmlPlatform.createElement("div");
-		var tmp = neptune_platform_html_HtmlPlatform.createText(" ");
-		var var_2 = neptune_platform_html_HtmlPlatform.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(var_2,[neptune_platform_html_HtmlPlatform.createText("Increment X")]);
-		neptune_platform_html_HtmlPlatform.onclick(var_2,incrementX);
-		var tmp1 = neptune_platform_html_HtmlPlatform.createText(" ");
-		var var_4 = neptune_platform_html_HtmlPlatform.createElement("h2");
+		var var_7 = window.document.createElement("div");
+		var tmp = window.document.createTextNode(" ");
+		var var_2 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(var_2,[window.document.createTextNode("Increment X")]);
+		var_2.onclick = incrementX;
+		var tmp1 = window.document.createTextNode(" ");
+		var var_4 = window.document.createElement("h2");
 		neptune_platform_html_HtmlPlatform.addChildren(var_4,[var_3]);
-		var tmp2 = neptune_platform_html_HtmlPlatform.createText(" ");
-		var var_5 = neptune_platform_html_HtmlPlatform.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(var_5,[neptune_platform_html_HtmlPlatform.createText("Toggle IsLeft")]);
-		neptune_platform_html_HtmlPlatform.onclick(var_5,toggleIsLeft);
-		neptune_platform_html_HtmlPlatform.addChildren(var_7,[tmp,var_2,tmp1,var_4,tmp2,var_5,neptune_platform_html_HtmlPlatform.createText(" "),var_6,neptune_platform_html_HtmlPlatform.createText(" ")]);
+		var tmp2 = window.document.createTextNode(" ");
+		var var_5 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(var_5,[window.document.createTextNode("Toggle IsLeft")]);
+		var_5.onclick = toggleIsLeft;
+		neptune_platform_html_HtmlPlatform.addChildren(var_7,[tmp,var_2,tmp1,var_4,tmp2,var_5,window.document.createTextNode(" "),var_6,window.document.createTextNode(" ")]);
 		return var_7;
 	}
 };
@@ -62,16 +62,6 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
-neptune_platform_html_HtmlPlatform.createElement = function(tagname) {
-	return window.document.createElement(tagname);
-};
-neptune_platform_html_HtmlPlatform.createText = function(text) {
-	return window.document.createTextNode(text);
-};
-neptune_platform_html_HtmlPlatform.updateTextNode = function(node,value) {
-	node.textContent = value;
-	return node;
-};
 neptune_platform_html_HtmlPlatform.updateParent = function(condition,left,right) {
 	if(condition) {
 		right.parentNode.replaceChild(left,right);
@@ -81,15 +71,7 @@ neptune_platform_html_HtmlPlatform.updateParent = function(condition,left,right)
 };
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
-	while(_g < children.length) neptune_platform_html_HtmlPlatform.addChild(element,children[_g++]);
-	return element;
-};
-neptune_platform_html_HtmlPlatform.onclick = function(element,value) {
-	element.onclick = value;
-	return element;
-};
-neptune_platform_html_HtmlPlatform.addChild = function(element,child) {
-	element.appendChild(child);
+	while(_g < children.length) element.appendChild(children[_g++]);
 	return element;
 };
 Main.main();
