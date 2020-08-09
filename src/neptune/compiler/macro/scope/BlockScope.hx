@@ -35,7 +35,7 @@ class BlockScope implements Scope
         _block = block;
         _assignments = [];
         _updates = [];
-        _setters = new Map<String, {expr: Expr -> Expr, dep :String, updates :Array<Expr>}>();
+        _setters = new Map<String, {expr: Array<Expr> -> Expr, dep :String, updates :Array<Expr>}>();
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -50,7 +50,7 @@ class BlockScope implements Scope
         switch expr.expr {
             case EVars(vars):
                 if(vars.length != 1) throw "err";
-                var deps = [].findDeps(vars[0].expr);
+                var deps = new Deps().findDeps(vars[0].expr);
                 var index = deps.getInsertIndex(_block);
                 _block.insert(index, expr);
             case _:
@@ -75,7 +75,7 @@ class BlockScope implements Scope
 
     public function prepSetters() : Void
     {
-        var setters = new Map<String, {dep :String, expr :Expr -> Expr}>();
+        var setters = new Map<String, {dep :String, expr :Array<Expr> -> Expr}>();
         for(assignment in _assignments) {
             AssignmentUtil.create(assignment, setters);
         }
@@ -100,15 +100,19 @@ class BlockScope implements Scope
         }
 
         for(setter in _setters) {
-            var index = [setter.dep].getInsertIndex(_block);
-            var updateExpr = setter.updates.createDefArrayDecl().toExpr();
-            _block.insert(index, setter.expr(updateExpr));
+            var fullSetter = setter.expr(setter.updates);
+            var deps = new Deps();
+            deps.findDeps(fullSetter);
+            var index = deps.getInsertIndex(_block);
+            _block.insert(index, setter.expr(setter.updates));
         }
     }
 
-    private function prepSetter(setter :{dep :String, expr :Expr -> Expr}) : Void
+    private function prepSetter(setter :{dep :String, expr :Array<Expr> -> Expr}) : Void
     {
-        var index = [setter.dep].getInsertIndex(_block);
+        var deps = new Deps();
+        deps.set(setter.dep);
+        var index = deps.getInsertIndex(_block);
         if(index == -1) {
             this.parent.prepSetter(setter);
         }
@@ -124,7 +128,7 @@ class BlockScope implements Scope
     private var _assignments :Array<Expr>;
     private var _updates :Array<{expr :Expr ,dep :Expr}>;
 
-    private var _setters :Map<String, {expr: Expr -> Expr, dep :String, updates :Array<Expr>}>;
+    private var _setters :Map<String, {expr: Array<Expr> -> Expr, dep :String, updates :Array<Expr>}>;
 }
 
 #end

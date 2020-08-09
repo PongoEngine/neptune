@@ -26,11 +26,12 @@ import haxe.macro.Expr;
 
 class ScopeUtil
 {
-    public static function findDeps(deps :Array<String>, expr :Expr) : Array<String>
+    public static function findDeps(deps :Deps, expr :Expr) : Deps
     {
+        if(expr == null) deps;
         switch expr.expr {
             case EConst(c): switch c {
-                case CIdent(s): deps.push(s);
+                case CIdent(s): deps.set(s);
                 case _:
             }
             case ECall(e, params):
@@ -46,13 +47,22 @@ class ScopeUtil
                 findDeps(deps, e2);
             case EUnop(op, postFix, e):
                 findDeps(deps, e);
+            case EFunction(kind, f):
+                findDeps(deps, f.expr);
+                for(arg in f.args) {
+                    deps.remove(arg.name);
+                }
+            case EBlock(exprs):
+                for(expr in exprs) {
+                    findDeps(deps, expr);
+                }
             case _:
                 throw "not implemented yet";
         }
         return deps;
     }
 
-    public static function getInsertIndex(deps :Array<String>, block :Array<Expr>) : Int
+    public static function getInsertIndex(deps :Deps, block :Array<Expr>) : Int
     {
         var index = 0;
         for(blockItem in block) {
@@ -64,11 +74,11 @@ class ScopeUtil
                 case _:
             }
             index++;
-            if(deps.length == 0) {
+            if(deps.isSatisfied()) {
                 break;
             }
         }
-        return deps.length == 0 ? index : -1;
+        return deps.isSatisfied() ? index : -1;
     }
 }
 

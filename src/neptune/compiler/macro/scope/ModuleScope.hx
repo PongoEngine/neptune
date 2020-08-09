@@ -65,7 +65,7 @@ class ModuleScope implements Scope
     {
     }
 
-    private function prepSetter(setter :{dep :String, expr :Expr -> Expr}) : Void
+    private function prepSetter(setter :{dep :String, expr :Array<Expr> -> Expr}) : Void
     {
         throw "err";
     }

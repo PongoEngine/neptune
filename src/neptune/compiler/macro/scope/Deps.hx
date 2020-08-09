@@ -1,4 +1,4 @@
-package neptune.util;
+package neptune.compiler.macro.scope;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -21,43 +21,45 @@ package neptune.util;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-class Set<T:{}>
+class Deps
 {
-    public var length :Int;
-
     public function new() : Void
     {
-        _map = new Map<T, Bool>();
-        this.length = 0;
+        _map = new Map<String, Bool>();
+        _length = 0;
     }
 
-    public function iterator() : Iterator<T>
+    public function set(item :String) : Void
     {
-        return _map.keys();
-    }
-
-    public function set(item :T) : Void
-    {
-        if(_map.exists(item)) {
-            throw "err";
+        if(!_map.exists(item)) {
+            _length++;
         }
-        this.length++;
         _map.set(item, true);
     }
 
-    public function remove(item :T) : Void
+    public function remove(item :String) : Void
     {
         if(!_map.exists(item)) {
             throw "err";
         }
-        this.length--;
+        _length--;
         _map.remove(item);
     }
 
-    public function exists(item :T) : Bool
+    public function isSatisfied() : Bool
     {
-        return _map.exists(item);
+        return _length == 0;
     }
 
-    private var _map :Map<T, Bool>;
+    public function toString() : String
+    {
+        var deps = [];
+        for(item in _map.keys()) {
+            deps.push(item);
+        }
+        return deps.toString();
+    }
+
+    private var _map :Map<String, Bool>;
+    private var _length :Int;
 }

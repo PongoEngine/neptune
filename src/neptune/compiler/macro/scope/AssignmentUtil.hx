@@ -28,7 +28,7 @@ using neptune.compiler.macro.scope.ScopeUtil;
 
 class AssignmentUtil
 {
-    public static function create(assignment :Expr, setters :Map<String, {dep :String, expr :Expr -> Expr}>) : Void
+    public static function create(assignment :Expr, setters :Map<String, {dep :String, expr :Array<Expr> -> Expr}>) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):
@@ -63,7 +63,7 @@ class AssignmentUtil
         assignment.expr = [e2].createDefCall('set_${ident}');
     }
 
-    private static function createSetter(ident :String) : Expr -> Expr
+    private static function createSetter(ident :String) : Array<Expr> -> Expr
     {
         var this_ = ident
             .createDefIdent()
@@ -71,9 +71,14 @@ class AssignmentUtil
         var that = 'new_${ident}'
             .createDefIdent()
             .toExpr();
-        return (expr) -> {
-            return OpAssign.createDefBinop(this_, that)
-                .toExpr()
+        return (updates) -> {
+            var assignmentExpr = OpAssign.createDefBinop(this_, that)
+                .toExpr();
+            updates.unshift(assignmentExpr);
+            var blockExpr = updates
+                .createDefBlock()
+                .toExpr();
+            return blockExpr
                 .createDefFunc('set_${ident}', ['new_${ident}'])
                 .toExpr();
         }

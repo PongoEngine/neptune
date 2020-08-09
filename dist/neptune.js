@@ -5,10 +5,12 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
+		var var_0 = window.document.createTextNode(x);
 		var set_x = function(new_x) {
 			x = new_x;
+			x = new_x;
+			var_0.textContent = x;
 		};
-		var var_0 = window.document.createTextNode(x);
 		var onClick = function() {
 			set_x(x + 1);
 		};
