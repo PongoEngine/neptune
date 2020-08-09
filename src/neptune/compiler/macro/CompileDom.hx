@@ -21,6 +21,7 @@ package neptune.compiler.macro;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Context;
 #if macro
 import haxe.macro.Expr;
 import neptune.compiler.dom.Parser;
@@ -122,8 +123,9 @@ class CompileDom
                         ident.createDefIdent().toExpr();
                     }
                 case _:
-                    throw "not implemented yet";
+                    [expr].createDefCall("createText").toExpr();
             }
+
             case ETernary(econd, eif, eelse):
                 var left = handleDomExpr(scope, eif);
                 var right = handleDomExpr(scope, eelse);
@@ -139,7 +141,17 @@ class CompileDom
                     
                 scope.addUpdate(update);
                 ident.createDefIdent().toExpr();
-            case _: 
+
+            case ECall(e, params):
+                expr;
+
+            case EFor(it, expr):
+                var forBody = handleDomExpr(scope, expr);
+                var nodes = createNodes(it, forBody);
+
+                [nodes].createDefCall("createNodes").toExpr();
+
+            case _:
                 throw "not implemented yet";
         }
     }
@@ -148,6 +160,21 @@ class CompileDom
     private static function createIdent() : String
     {
         return 'var_${_identIndex++}';
+    }
+
+    private static function createNodes(it :Expr, expr :Expr) : Expr
+    {
+        var nodesExpr = [].createDefArrayDecl().toExpr()
+            .createDefVar("nodes")
+            .toExpr();
+        var nodeExpr = expr.createDefVar("node").toExpr();
+        var pushExpr = Context.parse("nodes.push(node)", Context.currentPos());
+        var blockExpr = [nodeExpr,pushExpr].createDefBlock().toExpr();
+        var forExpr = EFor(it, blockExpr).toExpr();
+        var returnExpr = "nodes".createDefIdent().toExpr();
+        var fullBlock = [nodesExpr, forExpr, returnExpr].createDefBlock().toExpr();
+
+        return fullBlock;
     }
 }
 

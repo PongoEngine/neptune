@@ -2,8 +2,66 @@
 (function ($global) { "use strict";
 var Main = function() { };
 Main.main = function() {
-	var template = new roadmap_RoadMap().template();
+	var template = new capabilities_Capabilities().template();
 	window.document.body.appendChild(template);
+};
+var capabilities_Capabilities = function() {
+};
+capabilities_Capabilities.prototype = {
+	template: function() {
+		var x = 30;
+		var var_1 = window.document.createTextNode(x);
+		var set_x = function(val) {
+			x = val;
+			var_1.textContent = x;
+		};
+		var incrementX = function() {
+			set_x(x + 1);
+		};
+		var var_2 = window.document.createElement("div");
+		var tmp = window.document.createTextNode(" ");
+		var tmp1 = capabilities_StaticFunctions.render();
+		var tmp2 = window.document.createTextNode(" ");
+		var tmp3 = capabilities_Constant.render();
+		var tmp4 = window.document.createTextNode(" ");
+		var tmp5 = capabilities_ForLoops.render();
+		var tmp6 = window.document.createTextNode(" ");
+		var var_0 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Increment X")]);
+		var_0.onclick = incrementX;
+		neptune_platform_html_HtmlPlatform.addChildren(var_2,[tmp,tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,var_0,window.document.createTextNode(" "),var_1,window.document.createTextNode(" ")]);
+		return var_2;
+	}
+};
+var capabilities_Constant = function() { };
+capabilities_Constant.render = function() {
+	var var_4 = window.document.createElement("p");
+	neptune_platform_html_HtmlPlatform.addChildren(var_4,[window.document.createTextNode(" "),window.document.createTextNode("Hi"),window.document.createTextNode(" ")]);
+	return var_4;
+};
+var capabilities_ForLoops = function() { };
+capabilities_ForLoops.render = function() {
+	var var_5 = window.document.createElement("div");
+	var tmp = window.document.createTextNode(" ");
+	var nodes = [];
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	nodes.push(window.document.createTextNode("Loop "));
+	neptune_platform_html_HtmlPlatform.addChildren(var_5,[tmp,neptune_platform_html_HtmlPlatform.createNodes(nodes),window.document.createTextNode(" ")]);
+	return var_5;
+};
+var capabilities_StaticFunctions = function() { };
+capabilities_StaticFunctions.render = function() {
+	var var_3 = window.document.createElement("h1");
+	neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode("Render StaticFunctions")]);
+	return var_3;
 };
 var haxe_iterators_ArrayIterator = function(array) {
 	this.current = 0;
@@ -18,61 +76,16 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
-neptune_platform_html_HtmlPlatform.updateParent = function(condition,left,right) {
-	if(condition) {
-		right.parentNode.replaceChild(left,right);
-	} else {
-		left.parentNode.replaceChild(right,left);
-	}
+neptune_platform_html_HtmlPlatform.createNodes = function(nodes) {
+	var div = window.document.createElement("div");
+	var _g = 0;
+	while(_g < nodes.length) div.appendChild(nodes[_g++]);
+	return div;
 };
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);
 	return element;
-};
-var roadmap_RoadMap = function() {
-};
-roadmap_RoadMap.prototype = {
-	template: function() {
-		var x = 30;
-		var var_3 = window.document.createTextNode(x);
-		var set_x = function(val) {
-			x = val;
-			var_3.textContent = x;
-		};
-		var isLeft = true;
-		var incrementX = function() {
-			set_x(x + 1);
-		};
-		var var_0 = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Left")]);
-		var left = var_0;
-		var var_1 = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("Right")]);
-		var right = var_1;
-		var set_isLeft = function(val) {
-			isLeft = val;
-			neptune_platform_html_HtmlPlatform.updateParent(isLeft,left,right);
-		};
-		var var_6 = isLeft ? left : right;
-		var toggleIsLeft = function() {
-			set_isLeft(!isLeft);
-		};
-		var var_7 = window.document.createElement("div");
-		var tmp = window.document.createTextNode(" ");
-		var var_2 = window.document.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(var_2,[window.document.createTextNode("Increment X")]);
-		var_2.onclick = incrementX;
-		var tmp1 = window.document.createTextNode(" ");
-		var var_4 = window.document.createElement("h2");
-		neptune_platform_html_HtmlPlatform.addChildren(var_4,[var_3]);
-		var tmp2 = window.document.createTextNode(" ");
-		var var_5 = window.document.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(var_5,[window.document.createTextNode("Toggle IsLeft")]);
-		var_5.onclick = toggleIsLeft;
-		neptune_platform_html_HtmlPlatform.addChildren(var_7,[tmp,var_2,tmp1,var_4,tmp2,var_5,window.document.createTextNode(" "),var_6,window.document.createTextNode(" ")]);
-		return var_7;
-	}
 };
 Main.main();
 })({});

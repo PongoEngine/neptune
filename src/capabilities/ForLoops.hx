@@ -1,4 +1,4 @@
-package roadmap;
+package capabilities;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -25,34 +25,15 @@ import js.html.Node;
 import neptune.platform.html.HtmlPlatform.*;
 import neptune.Neptune;
 
-class RoadMap implements Neptune 
+class ForLoops implements Neptune 
 {
-    
-    public function new() : Void
+    public static function render() : Node
     {
-    }
-
-    public function template() : Node
-    {
-        var x = 30;
-        var isLeft = true;
-        function incrementX() {
-            x = x + 1;
-        }
-
-        var left = <h1>Left</h1>;
-        var right = <h1>Right</h1>;
-
-        function toggleIsLeft() {
-            isLeft = !isLeft;
-        }
-
         return 
             <div>
-                <button onclick={incrementX}>Increment X</button>
-                <h2>{x}</h2>
-                <button onclick={toggleIsLeft}>Toggle IsLeft</button>
-                {isLeft ? left : right}
+                {
+                    for(i in 0...10) 'Loop '
+                }
             </div>;
     }
 }

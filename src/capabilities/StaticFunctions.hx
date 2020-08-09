@@ -1,3 +1,5 @@
+package capabilities;
+
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
  *
@@ -19,12 +21,14 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import js.Browser;
+import js.html.Node;
+import neptune.platform.html.HtmlPlatform.*;
+import neptune.Neptune;
 
-class Main {
-	static function main() {
-		var helloWorld = new capabilities.Capabilities();
-		var template = helloWorld.template();
-		Browser.document.body.appendChild(template);
-	}
+class StaticFunctions implements Neptune 
+{
+    public static function render() : Node
+    {
+        return <h1>Render StaticFunctions</h1>;
+    }
 }

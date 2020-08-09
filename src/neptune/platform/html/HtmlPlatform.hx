@@ -38,6 +38,15 @@ class HtmlPlatform
         return document.createTextNode(text);
     }
 
+    public static function createNodes(nodes :Array<Dynamic>) : Node
+    {
+        var div = document.createDivElement();
+        for(node in nodes) {
+            div.appendChild(node);
+        }
+        return div;
+    }
+
     public static inline function ternary(condition :Bool, left :Node, right :Node) : Node
     {
         return condition ? left : right;
