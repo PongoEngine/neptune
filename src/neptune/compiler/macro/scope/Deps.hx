@@ -29,6 +29,11 @@ class Deps
         _length = 0;
     }
 
+    public function iterator() : Iterator<String>
+    {
+        return _map.keys();
+    }
+
     public function set(item :String) : Void
     {
         if(!_map.exists(item)) {

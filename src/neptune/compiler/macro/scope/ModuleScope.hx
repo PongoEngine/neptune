@@ -47,7 +47,7 @@ class ModuleScope implements Scope
         throw "err";
     }
 
-    public function addUpdate(expr :Expr, dep :Expr) : Void
+    public function addUpdate(expr :Expr) : Void
     {
         throw "err";
     }

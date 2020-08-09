@@ -31,7 +31,7 @@ interface Scope
     var parent :Scope;
     function createChild(block :Array<Expr>) : Scope;
     function addVar(expr :Expr) : Void;
-    function addUpdate(expr :Expr, dep :Expr) : Void;
+    function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
     function prepSetters() : Void;
     function completeSetters() : Void;
