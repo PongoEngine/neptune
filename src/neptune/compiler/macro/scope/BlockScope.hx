@@ -35,7 +35,7 @@ class BlockScope implements Scope
         _block = block;
         _assignments = [];
         _updates = [];
-        _setters = new Map<String, {expr: Expr, dep :String, updates :Array<Expr>}>();
+        _setters = new Map<String, Array<Expr>>();
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -91,13 +91,13 @@ class BlockScope implements Scope
             deps.findDeps(update);
             for(dep in deps) {
                 if(_setters.exists(dep)) {
-                    _setters.get(dep).updates.push(update);
+                    _setters.get(dep).push(update);
                 }
             }
         }
 
         for(setter in _setters.keyValueIterator()) {
-            var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value.updates);
+            var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value);
             var deps = new Deps();
             deps.findDeps(fullSetter);
             var index = deps.getInsertIndex(_block);
@@ -117,15 +117,14 @@ class BlockScope implements Scope
             if(_setters.exists(setter)) {
                 throw "already exists setter!";
             }
-            _setters.set(setter, {updates: []});
+            _setters.set(setter, []);
         }
     }
 
     private var _block :Array<Expr>;
     private var _assignments :Array<Expr>;
     private var _updates :Array<Expr>;
-
-    private var _setters :Map<String, {updates :Array<Expr>}>;
+    private var _setters :Map<String, Array<Expr>>;
 }
 
 #end
