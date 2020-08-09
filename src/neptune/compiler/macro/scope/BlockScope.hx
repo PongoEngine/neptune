@@ -88,9 +88,18 @@ class BlockScope implements Scope
             AssignmentUtil.create(assignment, setters);
         }
         for(s in setters) {
-            var index = s.deps.getInsertIndex(_block);
-            trace(index);
-            trace(s.expr.print());
+            addSetter(s);
+        }
+    }
+
+    private function addSetter(setter :{deps :Array<String>, expr :Expr}) : Void
+    {
+        var index = setter.deps.getInsertIndex(_block);
+        if(index == -1) {
+            this.parent.addSetter(setter);
+        }
+        else {
+            _block.insert(index, setter.expr);
         }
     }
 

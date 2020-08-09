@@ -35,6 +35,7 @@ interface Scope
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
     function complete() : Void;
+    private function addSetter(setter :{deps :Array<String>, expr :Expr}) : Void;
 }
 
 #end

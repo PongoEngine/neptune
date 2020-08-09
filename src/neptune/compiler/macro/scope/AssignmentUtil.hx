@@ -60,7 +60,7 @@ class AssignmentUtil
      */
     private static function transformAssignment(assignment :Expr, e2 :Expr, ident :String) : Void
     {
-        // assignment.expr = [e2].createDefCall('set_${ident}');
+        assignment.expr = [e2].createDefCall('set_${ident}');
     }
 
     private static function createSetter(ident :String) : Expr
