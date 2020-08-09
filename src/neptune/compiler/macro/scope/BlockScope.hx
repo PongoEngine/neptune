@@ -23,7 +23,6 @@ package neptune.compiler.macro.scope;
 
 #if macro
 import haxe.macro.Expr;
-import neptune.compiler.dom.Parser.DomAST;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
 using neptune.compiler.macro.Assignment;
@@ -36,7 +35,6 @@ class BlockScope implements Scope
     {
         _block = block;
         _assignments = [];
-        _updates = [];
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -49,11 +47,11 @@ class BlockScope implements Scope
     public function addVar(expr :Expr) : Void
     {
         switch expr.expr {
-            case EVars(vars): for(var_ in vars) {
-                var deps = [].findDeps(var_.expr);
+            case EVars(vars):
+                if(vars.length != 1) throw "err";
+                var deps = [].findDeps(vars[0].expr);
                 var index = deps.getInsertIndex(_block);
                 _block.insert(index, expr);
-            }
             case _:
                 throw "impossible";
         }
@@ -67,7 +65,6 @@ class BlockScope implements Scope
                 for(param in params) {
                     deps.findDeps(param);
                 }
-                _updates.push({expr: expr, deps: deps});
             case _:
                 throw "impossible";
         }
@@ -78,22 +75,7 @@ class BlockScope implements Scope
         _assignments.push(expr.saveAssignment());
     }
 
-    public function run(dom :DomAST) : ExprDef
-    {
-        return CompileDom.handleTree(this, dom).expr;
-    }
-
-    public function completeBlock() : Void
-    {
-        for(assignment in _assignments) {
-            var index = assignment.deps.getInsertIndex(_block);
-            var setter = assignment.createSetter();
-            setter.print();
-        }
-    }
-
     private var _block :Array<Expr>;
-    private var _updates :Array<{expr :Expr, deps :Array<String>}>;
     private var _assignments :Array<Assignment>;
 }
 

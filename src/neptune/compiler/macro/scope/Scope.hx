@@ -23,7 +23,6 @@ package neptune.compiler.macro.scope;
 
 #if macro
 import haxe.macro.Expr;
-import neptune.compiler.dom.Parser.DomAST;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
 using neptune.compiler.macro.Assignment;
@@ -35,8 +34,6 @@ interface Scope
     function addVar(expr :Expr) : Void;
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
-    function run(dom :DomAST) : ExprDef;
-    function completeBlock() : Void;
 }
 
 #end

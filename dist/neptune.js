@@ -4,7 +4,7 @@ var HelloWorld = function() {
 };
 HelloWorld.prototype = {
 	template: function() {
-		var x = 20;
+		var x = 30;
 		var var_0 = window.document.createTextNode(x);
 		var onClick = function() {
 			x += 1;

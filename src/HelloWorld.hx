@@ -11,7 +11,7 @@ class HelloWorld implements Neptune
 
     public function template() : Node
     {
-        var x = 20;
+        var x = 30;
         function onClick() {
             x = x + 1;
         }

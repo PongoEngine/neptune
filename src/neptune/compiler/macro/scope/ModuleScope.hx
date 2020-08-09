@@ -23,7 +23,6 @@ package neptune.compiler.macro.scope;
 
 #if macro
 import haxe.macro.Expr;
-import neptune.compiler.dom.Parser.DomAST;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
 using neptune.compiler.macro.Assignment;
@@ -54,16 +53,6 @@ class ModuleScope implements Scope
     }
 
     public inline function addAssignment(expr :Expr) : Void
-    {
-        throw "err";
-    }
-
-    public function run(dom :DomAST) : ExprDef
-    {
-        throw "err";
-    }
-
-    public function completeBlock() : Void
     {
         throw "err";
     }

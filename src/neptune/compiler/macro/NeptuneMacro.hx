@@ -28,6 +28,7 @@ import neptune.compiler.macro.scope.ModuleScope;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
+using neptune.compiler.macro.ExprUtils;
 
 class NeptuneMacro
 {
@@ -37,6 +38,14 @@ class NeptuneMacro
         var scope = new ModuleScope(fields);
         for(field in fields) {
             handleField(field, scope);
+        }
+
+        for(field in fields) {
+            #if debugFields
+            var printer = new Printer("  ");
+            var fieldStr = "\n" + printer.printField(field) + "\n\n";
+            trace(fieldStr);
+            #end
         }
         
         return fields;
@@ -52,11 +61,6 @@ class NeptuneMacro
             case FProp(get, set, t, e):
                 handleExpr(e, scope);
         }
-        #if debugFields
-        var printer = new Printer("  ");
-        var fieldStr = "\n" + printer.printField(field) + "\n\n";
-        trace(fieldStr);
-        #end
     }
 
     private static function handleExpr(expr :Expr, scope :Scope) : Void
@@ -119,7 +123,8 @@ class NeptuneMacro
 
             case EMeta(s, e):
                 var dom = CompileString.run(e);
-                expr.expr = scope.run(dom);
+                var exprDef = CompileDom.handleTree(scope, dom).expr;
+                expr.expr = exprDef;
 
             case ENew(t, params):
                 for(param in params) {
