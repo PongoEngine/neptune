@@ -16,7 +16,12 @@ class HelloWorld implements Neptune
             x = x + 1;
         }
 
+        var left = <h1>Left</h1>;
+        var right = <h1>Right</h1>;
+
         return 
-            <div onclick={onClick}>{x}</div>;
+            <div onclick={onClick}>
+                <h2>{x}</h2>
+            </div>;
     }
 }

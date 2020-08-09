@@ -5,19 +5,24 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
-		var var_0 = window.document.createTextNode(x);
+		var var_2 = window.document.createTextNode(x);
 		var set_x = function(new_x) {
 			x = new_x;
 			x = new_x;
-			var_0.textContent = x;
+			var_2.textContent = x;
 		};
 		var onClick = function() {
 			set_x(x + 1);
 		};
-		var var_1 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[var_0]);
-		var_1.onclick = onClick;
-		return var_1;
+		neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[window.document.createTextNode("Left")]);
+		neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[window.document.createTextNode("Right")]);
+		var var_4 = window.document.createElement("div");
+		var tmp = window.document.createTextNode(" ");
+		var var_3 = window.document.createElement("h2");
+		neptune_platform_html_HtmlPlatform.addChildren(var_3,[var_2]);
+		neptune_platform_html_HtmlPlatform.addChildren(var_4,[tmp,var_3,window.document.createTextNode(" ")]);
+		var_4.onclick = onClick;
+		return var_4;
 	}
 };
 var Main = function() { };
