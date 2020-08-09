@@ -28,7 +28,7 @@ using neptune.compiler.macro.scope.ScopeUtil;
 
 class AssignmentUtil
 {
-    public static function create(assignment :Expr, setters :Map<String, {dep :String, expr :Array<Expr> -> Expr}>) : Void
+    public static function handleAssignment(assignment :Expr, setters :Map<String, {dep :String, expr :Array<Expr> -> Expr}>) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):

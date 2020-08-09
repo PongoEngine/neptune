@@ -77,7 +77,7 @@ class BlockScope implements Scope
     {
         var setters = new Map<String, {dep :String, expr :Array<Expr> -> Expr}>();
         for(assignment in _assignments) {
-            AssignmentUtil.create(assignment, setters);
+            AssignmentUtil.handleAssignment(assignment, setters);
         }
         for(s in setters) {
             prepSetter(s);
