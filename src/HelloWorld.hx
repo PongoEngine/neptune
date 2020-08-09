@@ -16,12 +16,13 @@ class HelloWorld implements Neptune
         function incrementX() {
             x = x + 1;
         }
-        function toggleIsLeft() {
-            isLeft = !isLeft;
-        }
 
         var left = <h1>Left</h1>;
         var right = <h1>Right</h1>;
+
+        function toggleIsLeft() {
+            isLeft = !isLeft;
+        }
 
         return 
             <div>

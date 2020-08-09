@@ -128,12 +128,16 @@ class CompileDom
                 var left = handleDomExpr(scope, eif);
                 var right = handleDomExpr(scope, eelse);
                 var ident = createIdent();
-
                 var createTernaryVar = ETernary(econd, left, right).toExpr()
                     .createDefVar(ident)
                     .toExpr();
                 scope.addVar(createTernaryVar);
 
+                var update = [econd, left, right]
+                    .createDefCall("updateParent")
+                    .toExpr();
+                    
+                scope.addUpdate(update);
                 ident.createDefIdent().toExpr();
             case _: 
                 throw "not implemented yet";

@@ -11,20 +11,23 @@ HelloWorld.prototype = {
 			neptune_platform_html_HtmlPlatform.updateTextNode(var_3,x);
 		};
 		var isLeft = true;
-		var set_isLeft = function(val) {
-			isLeft = val;
-		};
 		var incrementX = function() {
 			set_x(x + 1);
 		};
+		var var_0 = neptune_platform_html_HtmlPlatform.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_0,[neptune_platform_html_HtmlPlatform.createText("Left")]);
+		var left = var_0;
+		var var_1 = neptune_platform_html_HtmlPlatform.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_1,[neptune_platform_html_HtmlPlatform.createText("Right")]);
+		var right = var_1;
+		var set_isLeft = function(val) {
+			isLeft = val;
+			neptune_platform_html_HtmlPlatform.updateParent(isLeft,left,right);
+		};
+		var var_6 = isLeft ? left : right;
 		var toggleIsLeft = function() {
 			set_isLeft(!isLeft);
 		};
-		var var_0 = neptune_platform_html_HtmlPlatform.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_0,[neptune_platform_html_HtmlPlatform.createText("Left")]);
-		var var_1 = neptune_platform_html_HtmlPlatform.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[neptune_platform_html_HtmlPlatform.createText("Right")]);
-		var var_6 = isLeft ? var_0 : var_1;
 		var var_7 = neptune_platform_html_HtmlPlatform.createElement("div");
 		var tmp = neptune_platform_html_HtmlPlatform.createText(" ");
 		var var_2 = neptune_platform_html_HtmlPlatform.createElement("button");
@@ -68,6 +71,13 @@ neptune_platform_html_HtmlPlatform.createText = function(text) {
 neptune_platform_html_HtmlPlatform.updateTextNode = function(node,value) {
 	node.textContent = value;
 	return node;
+};
+neptune_platform_html_HtmlPlatform.updateParent = function(condition,left,right) {
+	if(condition) {
+		right.parentNode.replaceChild(left,right);
+	} else {
+		left.parentNode.replaceChild(right,left);
+	}
 };
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
