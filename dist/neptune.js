@@ -5,24 +5,40 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
-		var var_2 = neptune_platform_html_HtmlPlatform.createText(x);
+		var var_3 = neptune_platform_html_HtmlPlatform.createText(x);
 		var set_x = function(val) {
 			x = val;
-			neptune_platform_html_HtmlPlatform.updateTextNode(var_2,x);
+			neptune_platform_html_HtmlPlatform.updateTextNode(var_3,x);
 		};
-		var onClick = function() {
+		var isLeft = true;
+		var set_isLeft = function(val) {
+			isLeft = val;
+		};
+		var incrementX = function() {
 			set_x(x + 1);
+		};
+		var toggleIsLeft = function() {
+			set_isLeft(!isLeft);
 		};
 		var var_0 = neptune_platform_html_HtmlPlatform.createElement("h1");
 		neptune_platform_html_HtmlPlatform.addChildren(var_0,[neptune_platform_html_HtmlPlatform.createText("Left")]);
-		neptune_platform_html_HtmlPlatform.addChildren(neptune_platform_html_HtmlPlatform.createElement("h1"),[neptune_platform_html_HtmlPlatform.createText("Right")]);
-		var var_4 = neptune_platform_html_HtmlPlatform.createElement("div");
+		var var_1 = neptune_platform_html_HtmlPlatform.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_1,[neptune_platform_html_HtmlPlatform.createText("Right")]);
+		var var_6 = isLeft ? var_0 : var_1;
+		var var_7 = neptune_platform_html_HtmlPlatform.createElement("div");
 		var tmp = neptune_platform_html_HtmlPlatform.createText(" ");
-		var var_3 = neptune_platform_html_HtmlPlatform.createElement("h2");
-		neptune_platform_html_HtmlPlatform.addChildren(var_3,[var_2]);
-		neptune_platform_html_HtmlPlatform.addChildren(var_4,[tmp,var_3,neptune_platform_html_HtmlPlatform.createText(" "),var_0,neptune_platform_html_HtmlPlatform.createText(" ")]);
-		neptune_platform_html_HtmlPlatform.onclick(var_4,onClick);
-		return var_4;
+		var var_2 = neptune_platform_html_HtmlPlatform.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(var_2,[neptune_platform_html_HtmlPlatform.createText("Increment X")]);
+		neptune_platform_html_HtmlPlatform.onclick(var_2,incrementX);
+		var tmp1 = neptune_platform_html_HtmlPlatform.createText(" ");
+		var var_4 = neptune_platform_html_HtmlPlatform.createElement("h2");
+		neptune_platform_html_HtmlPlatform.addChildren(var_4,[var_3]);
+		var tmp2 = neptune_platform_html_HtmlPlatform.createText(" ");
+		var var_5 = neptune_platform_html_HtmlPlatform.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(var_5,[neptune_platform_html_HtmlPlatform.createText("Toggle IsLeft")]);
+		neptune_platform_html_HtmlPlatform.onclick(var_5,toggleIsLeft);
+		neptune_platform_html_HtmlPlatform.addChildren(var_7,[tmp,var_2,tmp1,var_4,tmp2,var_5,neptune_platform_html_HtmlPlatform.createText(" "),var_6,neptune_platform_html_HtmlPlatform.createText(" ")]);
+		return var_7;
 	}
 };
 var Main = function() { };

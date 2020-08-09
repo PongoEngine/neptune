@@ -49,10 +49,9 @@ class Deps
 
     public function remove(item :String) : Void
     {
-        if(!_map.exists(item)) {
-            throw "err";
+        if(_map.exists(item)) {
+            _length--;
         }
-        _length--;
         _map.remove(item);
     }
 
