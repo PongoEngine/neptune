@@ -108,7 +108,7 @@ class CompileDom
                     var createTextVar = [expr].createDefCall("createText").toExpr()
                         .createDefVar(ident)
                         .toExpr();
-                    scope.newVar(createTextVar);
+                    scope.addVar(createTextVar);
 
                     var update = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
                         .createDefCall("updateTextNode")
@@ -128,7 +128,7 @@ class CompileDom
                 var createTernaryVar = ETernary(econd, left, right).toExpr()
                     .createDefVar(ident)
                     .toExpr();
-                scope.newVar(createTernaryVar);
+                scope.addVar(createTernaryVar);
 
                 ident.createDefIdent().toExpr();
             case _: 

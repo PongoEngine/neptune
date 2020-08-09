@@ -42,12 +42,7 @@ class ModuleScope implements Scope
         return c;
     }
 
-    public function trackVar(name :String) : Void
-    {
-        throw "err";
-    }
-
-    public function newVar(expr :Expr) : Void
+    public function addVar(expr :Expr) : Void
     {
         throw "err";
     }

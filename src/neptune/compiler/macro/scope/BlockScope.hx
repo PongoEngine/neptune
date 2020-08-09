@@ -33,7 +33,6 @@ class BlockScope implements Scope
     public function new(block :Array<Expr>) : Void
     {
         _block = block;
-        _vars = new Map<String, Bool>();
         _assignments = [];
         _updates = [];
     }
@@ -45,15 +44,7 @@ class BlockScope implements Scope
         return c;
     }
 
-    public function trackVar(name :String) : Void
-    {
-        if(_vars.exists(name)) {
-            throw "already exists";
-        }
-        _vars.set(name, true);
-    }
-
-    public function newVar(expr :Expr) : Void
+    public function addVar(expr :Expr) : Void
     {
         switch expr.expr {
             case EVars(vars):
@@ -104,7 +95,6 @@ class BlockScope implements Scope
     }
 
     private var _block :Array<Expr>;
-    private var _vars :Map<String, Bool>;
     private var _assignments :Array<Expr>;
     private var _updates :Array<Expr>;
 }
