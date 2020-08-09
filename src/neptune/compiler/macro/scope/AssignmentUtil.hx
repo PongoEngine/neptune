@@ -28,7 +28,7 @@ using neptune.compiler.macro.scope.ScopeUtil;
 
 class AssignmentUtil
 {
-    public static function handleAssignment(assignment :Expr, setters :Map<String, {dep :String, expr :Array<Expr> -> Expr}>) : Void
+    public static function handleAssignment(assignment :Expr, setters :Map<String, {dep :String}>) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):
@@ -38,8 +38,7 @@ class AssignmentUtil
                             case EConst(c): switch c {
                                 case CIdent(s):
                                     if(!setters.exists(s)) {
-                                        var setter = createSetter(s);
-                                        setters.set(s, {dep: s, expr: setter});
+                                        setters.set(s, {dep: s});
                                     }
                                     transformAssignment(assignment, e2, s);
                                 case _:
@@ -52,6 +51,29 @@ class AssignmentUtil
         }
     }
 
+    public static function createSetter(ident :String, updates :Array<Expr>) : Expr
+    {
+        var assignment = createAssignment(ident);
+
+        var block = [assignment].concat(updates)
+            .createDefBlock()
+            .toExpr();
+        return block.createDefFunc('set_${ident}', ["val"])
+            .toExpr();
+    }
+
+    private static function createAssignment(ident :String) : Expr
+    {
+        var this_ = ident
+            .createDefIdent()
+            .toExpr();
+        var that = 'val'
+            .createDefIdent()
+            .toExpr();
+        return OpAssign.createDefBinop(this_, that)
+            .toExpr();
+    }
+
     /**
      * Transform assignment expression in place to call setter
      * @param assignment 
@@ -61,28 +83,6 @@ class AssignmentUtil
     private static function transformAssignment(assignment :Expr, e2 :Expr, ident :String) : Void
     {
         assignment.expr = [e2].createDefCall('set_${ident}');
-    }
-
-    //functional
-    private static function createSetter(ident :String) : Array<Expr> -> Expr
-    {
-        var this_ = ident
-            .createDefIdent()
-            .toExpr();
-        var that = 'new_${ident}'
-            .createDefIdent()
-            .toExpr();
-        return (updates) -> {
-            var assignmentExpr = OpAssign.createDefBinop(this_, that)
-                .toExpr();
-            updates.unshift(assignmentExpr);
-            var blockExpr = updates
-                .createDefBlock()
-                .toExpr();
-            return blockExpr
-                .createDefFunc('set_${ident}', ['new_${ident}'])
-                .toExpr();
-        }
     }
 }
 

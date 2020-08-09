@@ -6,9 +6,8 @@ HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
 		var var_2 = window.document.createTextNode(x);
-		var set_x = function(new_x) {
-			x = new_x;
-			x = new_x;
+		var set_x = function(val) {
+			x = val;
 			var_2.textContent = x;
 		};
 		var onClick = function() {
