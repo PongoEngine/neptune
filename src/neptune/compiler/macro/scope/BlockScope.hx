@@ -35,6 +35,7 @@ class BlockScope implements Scope
         _block = block;
         _assignments = [];
         _updates = [];
+        _blahs = new Map<String, {expr: Expr, updates :Array<Expr>}>();
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -74,7 +75,7 @@ class BlockScope implements Scope
 
     public function complete() : Void
     {
-        var setters = new Map<String, {deps :Array<String>, expr :Expr}>();
+        var setters = new Map<String, {dep :String, expr :Expr}>();
         for(assignment in _assignments) {
             AssignmentUtil.create(assignment, setters);
         }
@@ -83,9 +84,9 @@ class BlockScope implements Scope
         }
     }
 
-    private function addSetter(setter :{deps :Array<String>, expr :Expr}) : Void
+    private function addSetter(setter :{dep :String, expr :Expr}) : Void
     {
-        var index = setter.deps.getInsertIndex(_block);
+        var index = [setter.dep].getInsertIndex(_block);
         if(index == -1) {
             this.parent.addSetter(setter);
         }
@@ -97,6 +98,8 @@ class BlockScope implements Scope
     private var _block :Array<Expr>;
     private var _assignments :Array<Expr>;
     private var _updates :Array<Expr>;
+
+    private var _blahs :Map<String, {expr: Expr, updates :Array<Expr>}>;
 }
 
 #end

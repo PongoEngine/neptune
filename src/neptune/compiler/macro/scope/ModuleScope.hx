@@ -62,7 +62,7 @@ class ModuleScope implements Scope
 
     }
 
-    private function addSetter(setter :{deps :Array<String>, expr :Expr}) : Void
+    private function addSetter(setter :{dep :String, expr :Expr}) : Void
     {
         throw "err";
     }
