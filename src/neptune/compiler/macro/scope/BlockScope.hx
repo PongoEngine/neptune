@@ -25,7 +25,6 @@ package neptune.compiler.macro.scope;
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
-using neptune.compiler.macro.Assignment;
 
 class BlockScope implements Scope
 {
@@ -35,6 +34,7 @@ class BlockScope implements Scope
     {
         _block = block;
         _assignments = [];
+        _updates = [];
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -57,26 +57,28 @@ class BlockScope implements Scope
         }
     }
 
+    /**
+     * Raw dom update that needs to be called when dependency is updated.
+     * @param expr 
+     */
     public function addUpdate(expr :Expr) : Void
     {
-        switch expr.expr {
-            case ECall(e, params): 
-                var deps = [];
-                for(param in params) {
-                    deps.findDeps(param);
-                }
-            case _:
-                throw "impossible";
-        }
+        _updates.push(expr);
     }
 
     public inline function addAssignment(expr :Expr) : Void
     {
-        _assignments.push(expr.saveAssignment());
+        _assignments.push(expr);
+    }
+
+    public function complete() : Void
+    {
+
     }
 
     private var _block :Array<Expr>;
-    private var _assignments :Array<Assignment>;
+    private var _assignments :Array<Expr>;
+    private var _updates :Array<Expr>;
 }
 
 #end

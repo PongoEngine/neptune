@@ -25,7 +25,6 @@ package neptune.compiler.macro.scope;
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
-using neptune.compiler.macro.Assignment;
 
 class ModuleScope implements Scope
 {
@@ -33,6 +32,7 @@ class ModuleScope implements Scope
 
     public function new(fields :Array<Field>) : Void
     {
+        _fields = fields;
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -56,6 +56,13 @@ class ModuleScope implements Scope
     {
         throw "err";
     }
+
+    public function complete() : Void
+    {
+
+    }
+
+    private var _fields :Array<Field>;
 }
 
 #end

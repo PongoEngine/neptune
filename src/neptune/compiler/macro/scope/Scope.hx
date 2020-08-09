@@ -25,7 +25,6 @@ package neptune.compiler.macro.scope;
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.ScopeUtil;
-using neptune.compiler.macro.Assignment;
 
 interface Scope
 {
@@ -34,6 +33,7 @@ interface Scope
     function addVar(expr :Expr) : Void;
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
+    function complete() : Void;
 }
 
 #end
