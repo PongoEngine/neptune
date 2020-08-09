@@ -22,6 +22,7 @@ class HelloWorld implements Neptune
         return 
             <div onclick={onClick}>
                 <h2>{x}</h2>
+                {left}
             </div>;
     }
 }

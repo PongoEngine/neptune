@@ -5,22 +5,23 @@ var HelloWorld = function() {
 HelloWorld.prototype = {
 	template: function() {
 		var x = 30;
-		var var_2 = window.document.createTextNode(x);
+		var var_2 = neptune_platform_html_HtmlPlatform.createText(x);
 		var set_x = function(val) {
 			x = val;
-			var_2.textContent = x;
+			neptune_platform_html_HtmlPlatform.updateTextNode(var_2,x);
 		};
 		var onClick = function() {
 			set_x(x + 1);
 		};
-		neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[window.document.createTextNode("Left")]);
-		neptune_platform_html_HtmlPlatform.addChildren(window.document.createElement("h1"),[window.document.createTextNode("Right")]);
-		var var_4 = window.document.createElement("div");
-		var tmp = window.document.createTextNode(" ");
-		var var_3 = window.document.createElement("h2");
+		var var_0 = neptune_platform_html_HtmlPlatform.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(var_0,[neptune_platform_html_HtmlPlatform.createText("Left")]);
+		neptune_platform_html_HtmlPlatform.addChildren(neptune_platform_html_HtmlPlatform.createElement("h1"),[neptune_platform_html_HtmlPlatform.createText("Right")]);
+		var var_4 = neptune_platform_html_HtmlPlatform.createElement("div");
+		var tmp = neptune_platform_html_HtmlPlatform.createText(" ");
+		var var_3 = neptune_platform_html_HtmlPlatform.createElement("h2");
 		neptune_platform_html_HtmlPlatform.addChildren(var_3,[var_2]);
-		neptune_platform_html_HtmlPlatform.addChildren(var_4,[tmp,var_3,window.document.createTextNode(" ")]);
-		var_4.onclick = onClick;
+		neptune_platform_html_HtmlPlatform.addChildren(var_4,[tmp,var_3,neptune_platform_html_HtmlPlatform.createText(" "),var_0,neptune_platform_html_HtmlPlatform.createText(" ")]);
+		neptune_platform_html_HtmlPlatform.onclick(var_4,onClick);
 		return var_4;
 	}
 };
@@ -42,9 +43,27 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
+neptune_platform_html_HtmlPlatform.createElement = function(tagname) {
+	return window.document.createElement(tagname);
+};
+neptune_platform_html_HtmlPlatform.createText = function(text) {
+	return window.document.createTextNode(text);
+};
+neptune_platform_html_HtmlPlatform.updateTextNode = function(node,value) {
+	node.textContent = value;
+	return node;
+};
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
-	while(_g < children.length) element.appendChild(children[_g++]);
+	while(_g < children.length) neptune_platform_html_HtmlPlatform.addChild(element,children[_g++]);
+	return element;
+};
+neptune_platform_html_HtmlPlatform.onclick = function(element,value) {
+	element.onclick = value;
+	return element;
+};
+neptune_platform_html_HtmlPlatform.addChild = function(element,child) {
+	element.appendChild(child);
 	return element;
 };
 Main.main();

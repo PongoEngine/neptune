@@ -34,6 +34,7 @@ class ScopeBlock implements Scope
     public function new(block :Array<Expr>) : Void
     {
         _block = block;
+        _meta = new Set<String>();
         _updates = [];
         _setters = new Map<String, Array<Expr>>();
     }
@@ -43,6 +44,16 @@ class ScopeBlock implements Scope
         var c = new ScopeBlock(block);
         c.parent = this;
         return c;
+    }
+
+    public inline function saveMeta(name :String) : Void
+    {
+        _meta.set(name);
+    }
+
+    public inline function isMeta(name :String) : Bool
+    {
+        return _meta.exists(name);
     }
 
     public function addVar(expr :Expr) : Void
@@ -112,6 +123,7 @@ class ScopeBlock implements Scope
     }
 
     private var _block :Array<Expr>;
+    private var _meta :Set<String>;
     private var _updates :Array<Expr>;
     private var _setters :Map<String, Array<Expr>>;
 }

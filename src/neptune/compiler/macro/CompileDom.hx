@@ -104,18 +104,23 @@ class CompileDom
         return switch expr.expr {
             case EConst(c): switch c {
                 case CIdent(s):
-                    var ident = createIdent();
-                    var createTextVar = [expr].createDefCall("createText").toExpr()
-                        .createDefVar(ident)
-                        .toExpr();
-                    scope.addVar(createTextVar);
+                    if(scope.isMeta(s)) {
+                        expr;
+                    }
+                    else {
+                        var ident = createIdent();
+                        var createTextVar = [expr].createDefCall("createText").toExpr()
+                            .createDefVar(ident)
+                            .toExpr();
+                        scope.addVar(createTextVar);
 
-                    var update = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
-                        .createDefCall("updateTextNode")
-                        .toExpr();
+                        var update = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
+                            .createDefCall("updateTextNode")
+                            .toExpr();
 
-                    scope.addUpdate(update);
-                    ident.createDefIdent().toExpr();
+                        scope.addUpdate(update);
+                        ident.createDefIdent().toExpr();
+                    }
                 case _:
                     throw "not implemented yet";
             }
