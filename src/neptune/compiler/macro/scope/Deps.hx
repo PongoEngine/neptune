@@ -24,7 +24,7 @@ package neptune.compiler.macro.scope;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.scope.ScopeUtil;
+using neptune.compiler.macro.scope.DepsUtil;
 
 class Deps
 {

@@ -24,7 +24,7 @@ package neptune.compiler.macro;
 
 #if macro
 import neptune.compiler.macro.scope.Scope;
-import neptune.compiler.macro.scope.ModuleScope;
+import neptune.compiler.macro.scope.ScopeModule;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -35,14 +35,10 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var fields = Context.getBuildFields();
-        var scope = new ModuleScope(fields);
+        var scope = new ScopeModule(fields);
         var scopes :Array<Scope> = [scope];
         for(field in fields) {
             handleField(field, scope, scopes);
-        }
-
-        for(scope in scopes) {
-            scope.prepSetters();
         }
 
         for(scope in scopes) {

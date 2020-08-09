@@ -22,25 +22,25 @@ package neptune.compiler.macro.scope;
 */
 
 #if macro
+import neptune.util.Set;
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.scope.ScopeUtil;
+using neptune.compiler.macro.scope.DepsUtil;
 
-class BlockScope implements Scope
+class ScopeBlock implements Scope
 {
     public var parent :Scope;
 
     public function new(block :Array<Expr>) : Void
     {
         _block = block;
-        _assignments = [];
         _updates = [];
         _setters = new Map<String, Array<Expr>>();
     }
 
     public function createChild(block :Array<Expr>) : Scope
     {
-        var c = new BlockScope(block);
+        var c = new ScopeBlock(block);
         c.parent = this;
         return c;
     }
@@ -67,29 +67,20 @@ class BlockScope implements Scope
         _updates.push(expr);
     }
 
-    public inline function addAssignment(expr :Expr) : Void
+    public function addAssignment(assignment :Expr) : Void
     {
-        _assignments.push(expr);
-
-    }
-
-    public function prepSetters() : Void
-    {
-        var setters = new Map<String, Bool>();
-        for(assignment in _assignments) {
-            AssignmentUtil.handleAssignment(assignment, setters);
-        }
-        for(s in setters.keys()) {
+        var setters = new Set<String>();
+        AssignmentUtil.handleAssignment(assignment, setters);
+        for(s in setters) {
             prepSetter(s);
         }
+
     }
 
     public function completeSetters() : Void
     {
         for(update in _updates) {
-            var deps = new Deps();
-            deps.findDeps(update);
-            for(dep in deps) {
+            for(dep in Deps.from(update)) {
                 if(_setters.exists(dep)) {
                     _setters.get(dep).push(update);
                 }
@@ -98,8 +89,7 @@ class BlockScope implements Scope
 
         for(setter in _setters.keyValueIterator()) {
             var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value);
-            var deps = new Deps();
-            deps.findDeps(fullSetter);
+            var deps = Deps.from(fullSetter);
             var index = deps.getInsertIndex(_block);
             _block.insert(index, fullSetter);
         }
@@ -122,7 +112,6 @@ class BlockScope implements Scope
     }
 
     private var _block :Array<Expr>;
-    private var _assignments :Array<Expr>;
     private var _updates :Array<Expr>;
     private var _setters :Map<String, Array<Expr>>;
 }

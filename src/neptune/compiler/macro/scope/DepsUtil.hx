@@ -24,7 +24,7 @@ package neptune.compiler.macro.scope;
 #if macro
 import haxe.macro.Expr;
 
-class ScopeUtil
+class DepsUtil
 {
     public static function findDeps(deps :Deps, expr :Expr) : Deps
     {

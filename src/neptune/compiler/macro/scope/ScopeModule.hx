@@ -24,9 +24,8 @@ package neptune.compiler.macro.scope;
 #if macro
 import haxe.macro.Expr;
 using neptune.compiler.macro.ExprUtils;
-using neptune.compiler.macro.scope.ScopeUtil;
 
-class ModuleScope implements Scope
+class ScopeModule implements Scope
 {
     public var parent :Scope;
 
@@ -37,7 +36,7 @@ class ModuleScope implements Scope
 
     public function createChild(block :Array<Expr>) : Scope
     {
-        var c = new BlockScope(block);
+        var c = new ScopeBlock(block);
         c.parent = this;
         return c;
     }
@@ -55,10 +54,6 @@ class ModuleScope implements Scope
     public inline function addAssignment(expr :Expr) : Void
     {
         throw "err";
-    }
-
-    public function prepSetters() : Void
-    {
     }
 
     public function completeSetters() : Void
