@@ -114,8 +114,7 @@ class CompileDom
                         .createDefCall("updateTextNode")
                         .toExpr();
 
-                    scope.addUpdate(update);
-                    
+                    scope.addUpdate(update, s.createDefIdent().toExpr());
                     ident.createDefIdent().toExpr();
                 case _:
                     throw "not implemented yet";

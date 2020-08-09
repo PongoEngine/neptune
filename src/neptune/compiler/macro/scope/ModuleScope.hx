@@ -47,7 +47,7 @@ class ModuleScope implements Scope
         throw "err";
     }
 
-    public function addUpdate(expr :Expr) : Void
+    public function addUpdate(expr :Expr, dep :Expr) : Void
     {
         throw "err";
     }
@@ -57,12 +57,15 @@ class ModuleScope implements Scope
         throw "err";
     }
 
-    public function complete() : Void
+    public function prepSetters() : Void
     {
-
     }
 
-    private function addSetter(setter :{dep :String, expr :Expr}) : Void
+    public function completeSetters() : Void
+    {
+    }
+
+    private function prepSetter(setter :{dep :String, expr :Expr -> Expr}) : Void
     {
         throw "err";
     }

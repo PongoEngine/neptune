@@ -35,7 +35,7 @@ class BlockScope implements Scope
         _block = block;
         _assignments = [];
         _updates = [];
-        _blahs = new Map<String, {expr: Expr, updates :Array<Expr>}>();
+        _setters = new Map<String, {expr: Expr -> Expr, dep :String, updates :Array<Expr>}>();
     }
 
     public function createChild(block :Array<Expr>) : Scope
@@ -62,9 +62,9 @@ class BlockScope implements Scope
      * Raw dom update that needs to be called when dependency is updated.
      * @param expr 
      */
-    public function addUpdate(expr :Expr) : Void
+    public function addUpdate(expr :Expr, dep :Expr) : Void
     {
-        _updates.push(expr);
+        _updates.push({expr: expr, dep: dep});
     }
 
     public inline function addAssignment(expr :Expr) : Void
@@ -73,33 +73,58 @@ class BlockScope implements Scope
 
     }
 
-    public function complete() : Void
+    public function prepSetters() : Void
     {
-        var setters = new Map<String, {dep :String, expr :Expr}>();
+        var setters = new Map<String, {dep :String, expr :Expr -> Expr}>();
         for(assignment in _assignments) {
             AssignmentUtil.create(assignment, setters);
         }
         for(s in setters) {
-            addSetter(s);
+            prepSetter(s);
         }
     }
 
-    private function addSetter(setter :{dep :String, expr :Expr}) : Void
+    public function completeSetters() : Void
+    {
+        for(update in _updates) {
+            switch update.dep.expr {
+                case EConst(c): switch c {
+                    case CIdent(s):
+                        _setters.get(s).updates.push(update.expr);
+                    case _:
+                        throw "not implemented yet";
+                }
+                case _:
+                    throw "not implemented yet";
+            }
+        }
+
+        for(setter in _setters) {
+            var index = [setter.dep].getInsertIndex(_block);
+            var updateExpr = setter.updates.createDefArrayDecl().toExpr();
+            _block.insert(index, setter.expr(updateExpr));
+        }
+    }
+
+    private function prepSetter(setter :{dep :String, expr :Expr -> Expr}) : Void
     {
         var index = [setter.dep].getInsertIndex(_block);
         if(index == -1) {
-            this.parent.addSetter(setter);
+            this.parent.prepSetter(setter);
         }
         else {
-            _block.insert(index, setter.expr);
+            if(_setters.exists(setter.dep)) {
+                throw "already exists setter!";
+            }
+            _setters.set(setter.dep, {expr: setter.expr, dep: setter.dep, updates: []});
         }
     }
 
     private var _block :Array<Expr>;
     private var _assignments :Array<Expr>;
-    private var _updates :Array<Expr>;
+    private var _updates :Array<{expr :Expr ,dep :Expr}>;
 
-    private var _blahs :Map<String, {expr: Expr, updates :Array<Expr>}>;
+    private var _setters :Map<String, {expr: Expr -> Expr, dep :String, updates :Array<Expr>}>;
 }
 
 #end
