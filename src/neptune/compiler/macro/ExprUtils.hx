@@ -39,11 +39,6 @@ class ExprUtils
         return EVars([{name:name, type: null, expr: e}]);
     }
 
-    public static function createDefVars(vars :Array<{name :String, e :Expr}>) : ExprDef
-    {
-        return EVars(vars.map(item -> {{name:item.name, type: null, expr: item.e, isFinal: false}}));
-    }
-
     public static function createDefString(str :String) : ExprDef
     {
         return EConst(CString(str));
@@ -77,34 +72,9 @@ class ExprUtils
         return EBinop(OpAssign, e1, e2);
     }
 
-    public static function createDefReturn(e :Expr) : ExprDef
-    {
-        return EReturn(e);
-    }
-
-    public static function createDefField(e :Expr, field :String) : ExprDef
-    {
-        return EField(e, field);
-    }
-
     public static function createDefFunc(body :Expr, name :String, args :Array<String>) : ExprDef
     {
         return EFunction(FunctionKind.FNamed(name), {
-            args: args.map(a -> {
-                name: a,
-                opt: false,
-                type: null,
-                value: null,
-                meta: null
-            }),
-            ret: null,
-            expr: body
-        });
-    }
-
-    public static function createDefFuncAnon(body :Expr, args :Array<String>) : ExprDef
-    {
-        return EFunction(FunctionKind.FAnonymous, {
             args: args.map(a -> {
                 name: a,
                 opt: false,

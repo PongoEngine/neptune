@@ -63,6 +63,7 @@ class AssignmentUtil
         assignment.expr = [e2].createDefCall('set_${ident}');
     }
 
+    //functional
     private static function createSetter(ident :String) : Array<Expr> -> Expr
     {
         var this_ = ident
