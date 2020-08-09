@@ -1,3 +1,5 @@
+package roadmap;
+
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
  *
@@ -19,12 +21,38 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import js.Browser;
+import js.html.Node;
+import neptune.platform.html.HtmlPlatform.*;
+import neptune.Neptune;
 
-class Main {
-	static function main() {
-		var helloWorld = new roadmap.RoadMap();
-		var template = helloWorld.template();
-		Browser.document.body.appendChild(template);
-	}
+class RoadMap implements Neptune 
+{
+    
+    public function new() : Void
+    {
+    }
+
+    public function template() : Node
+    {
+        var x = 30;
+        var isLeft = true;
+        function incrementX() {
+            x = x + 1;
+        }
+
+        var left = <h1>Left</h1>;
+        var right = <h1>Right</h1>;
+
+        function toggleIsLeft() {
+            isLeft = !isLeft;
+        }
+
+        return 
+            <div>
+                <button onclick={incrementX}>Increment X</button>
+                <h2>{x}</h2>
+                <button onclick={toggleIsLeft}>Toggle IsLeft</button>
+                {isLeft ? left : right}
+            </div>;
+    }
 }
