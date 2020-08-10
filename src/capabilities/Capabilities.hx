@@ -43,9 +43,9 @@ class Capabilities implements Neptune
             <div>
                 {StaticFunctions.render()}
                 {Constant.render()}
-                {ForLoops.render()}
+                {ForLoops.render(200)}
                 {Markup.render()}
-                <button onclick={incrementX}>Increment X</button>
+                <button onclick={incrementX}>Increment X{10 + 200}</button>
                 {x}
             </div>;
     }

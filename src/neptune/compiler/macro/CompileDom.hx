@@ -170,7 +170,17 @@ class CompileDom
                 var dom = CompileDom.compileMeta(e);
                 return CompileDom.handleTree(scope, dom);
 
+            case EBinop(_):
+                var ident = createIdent();
+                var createTextVar = [expr].createDefCall("createText").toExpr()
+                    .createDefVar(ident)
+                    .toExpr();
+                scope.addVar(createTextVar);
+
+                ident.createDefIdent().toExpr();
+
             case _:
+                trace(expr.expr);
                 throw "not implemented yet";
         }
     }

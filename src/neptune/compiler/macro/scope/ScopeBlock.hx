@@ -21,6 +21,7 @@ package neptune.compiler.macro.scope;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Context;
 #if macro
 import neptune.util.Set;
 import haxe.macro.Expr;
@@ -61,9 +62,15 @@ class ScopeBlock implements Scope
         switch expr.expr {
             case EVars(vars):
                 if(vars.length != 1) throw "err";
-                var deps = new Deps().findDeps(vars[0].expr);
-                var index = deps.getInsertIndex(_block);
-                _block.insert(index, expr);
+                if(_block.length == 1) {
+                    Context.warning("Not sure if safe", Context.currentPos());
+                    _block.unshift(expr);
+                }
+                else {
+                    var deps = new Deps().findDeps(vars[0].expr);
+                    var index = deps.getInsertIndex(_block);
+                    _block.insert(index, expr);
+                }
             case _:
                 throw "impossible";
         }

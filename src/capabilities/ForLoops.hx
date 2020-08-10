@@ -27,17 +27,18 @@ import neptune.Neptune;
 
 class ForLoops implements Neptune 
 {
-    /**
-     * Not completed
-     * @return Node
-     */
-    public static function render() : Node
+    public static function render(length :Int) : Node
     {
         return 
             <div>
                 {
-                    for(i in 0...10) 'Loop '
+                    for(i in 0...length) blah(i)
                 }
             </div>;
+    }
+
+    private static function blah(val :Int) : Node
+    {
+        return <h1>Hi {val}</h1>;
     }
 }
