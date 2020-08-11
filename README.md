@@ -12,7 +12,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 ## Expressions
 
-- [x] ### EConst
+- [x] EConst
 * CInt
   * Renders to a node
 * CFloat
@@ -26,60 +26,60 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 * CRegexp
   * Not Supported
 
-- [x] ### EArray
+- [x] EArray
   * Updates when array index is modified
   * Renders to a node
 
-- [ ] ### EBinop
+- [ ] EBinop
 
-- [ ] ### EField
+- [ ] EField
 
-- [ ] ### EParenthesis
+- [ ] EParenthesis
 
-- [ ] ### EObjectDecl
+- [ ] EObjectDecl
 
-- [ ] ### EArrayDecl
+- [ ] EArrayDecl
 
-- [ ] ### ECall
+- [ ] ECall
 
-- [ ] ### ENew
+- [ ] ENew
 
-- [ ] ### EUnop
+- [ ] EUnop
 
-- [ ] ### EVars
+- [ ] EVars
 
-- [ ] ### EFunction
+- [ ] EFunction
 
-- [ ] ### EBlock
+- [ ] EBlock
 
-- [ ] ### EFor
+- [ ] EFor
 
-- [ ] ### EIf
+- [ ] EIf
 
-- [ ] ### EWhile
+- [ ] EWhile
 
-- [ ] ### ESwitch
+- [ ] ESwitch
 
-- [ ] ### ETry
+- [ ] ETry
 
-- [ ] ### EReturn
+- [ ] EReturn
 
-- [ ] ### EBreak
+- [ ] EBreak
 
-- [ ] ### EContinue
+- [ ] EContinue
 
-- [ ] ### EUntyped
+- [ ] EUntyped
 
-- [ ] ### EThrow
+- [ ] EThrow
 
-- [ ] ### ECast
+- [ ] ECast
 
-- [ ] ### EDisplay
+- [ ] EDisplay
 
-- [ ] ### EDisplayNew
+- [ ] EDisplayNew
 
-- [ ] ### ETernary
+- [ ] ETernary
 
-- [ ] ### ECheckType
+- [ ] ECheckType
 
-- [ ] ### EMeta
+- [ ] EMeta
