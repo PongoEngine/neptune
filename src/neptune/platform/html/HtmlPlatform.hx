@@ -50,20 +50,6 @@ class HtmlPlatform
         return condition ? left : right;
     }
 
-    public static inline function updateTextNode(node :Text, value :Dynamic) : Text
-    {
-        node.textContent = value;
-        return node;
-    }
-
-    public static inline function updateNode(from :Node, to :Node) : Node
-    {
-        trace(from, to);
-        var parent = from.parentNode;
-        parent.replaceChild(to, from);
-        return to;
-    }
-
     public static function updateParent(condition :Bool, left :Node, right :Node) : Void
     {
         if(condition) {
@@ -105,5 +91,19 @@ class HtmlPlatform
     public static inline function removeChild(element :Element, child :Node) : Void
     {
         element.removeChild(child);
+    }
+
+    //updates
+    public static inline function updateTextNode(node :Text, value :Dynamic) : Text
+    {
+        node.textContent = value;
+        return node;
+    }
+
+    public static inline function updateNode(from :Node, to :Node) : Node
+    {
+        var parent = from.parentNode;
+        parent.replaceChild(to, from);
+        return to;
     }
 }

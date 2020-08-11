@@ -144,19 +144,30 @@ class CompileDom
                     [expr].createDefCall("createText").toExpr();
             }
             case EArray(e1, e2):
-                var ident = createIdent();
+                var ident1 = createIdent();
+                var ident2 = createIdent();
+                var lastIndex = e2
+                    .createDefVar(ident2)
+                    .toExpr();
+                scope.addVar(lastIndex);
                 var varExpr = expr
-                    .createDefVar(ident)
+                    .createDefVar(ident1)
                     .toExpr();
                 scope.addVar(varExpr);
 
-                //todo add from to
-                var update = [ident.createDefIdent().toExpr(), expr]
+                var left = EArray(e1, ident2.createDefIdent().toExpr()).toExpr();
+
+                var update1 = [left, expr]
                     .createDefCall("updateNode")
                     .toExpr();
+                var update2 = OpAssign.createDefBinop(
+                    ident2.createDefIdent().toExpr(),
+                    e2
+                ).toExpr();
+                var update = [update1, update2].createDefBlock().toExpr();
 
                 scope.addUpdate(update);
-                ident.createDefIdent().toExpr();
+                ident1.createDefIdent().toExpr();
 
             // case ETernary(econd, eif, eelse):
             //     var left = handleDomExpr(scope, eif);

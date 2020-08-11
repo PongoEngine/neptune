@@ -26,7 +26,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 * CRegexp
   * Not Supported
 
-- [ ] ### EArray
+- [x] ### EArray
 
 - [ ] ### EBinop
 

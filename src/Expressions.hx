@@ -36,12 +36,14 @@ class Expressions implements Neptune
     {
         var items = [
             <p>Item1</p>,
-            <p>Item2</p>
+            <p>Item2</p>,
+            <p>Item3</p>,
+            <p>Item4</p>,
         ];
         
         var index = 0;
         function onClick() {
-            index = 1;
+            index = index + 1;
         }
 
         return 

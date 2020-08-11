@@ -60,6 +60,7 @@ class DepsUtil
                 findDeps(deps, e1);
                 findDeps(deps, e2);
             case _:
+                trace(expr.expr);
                 throw "not implemented yet";
         }
         return deps;

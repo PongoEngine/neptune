@@ -2,69 +2,44 @@
 (function ($global) { "use strict";
 var Expressions = function() {
 };
-Expressions.__name__ = true;
 Expressions.prototype = {
 	template: function() {
 		var var_0 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Item1")]);
 		var var_1 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("Item2")]);
-		var items = [var_0,var_1];
+		var var_2 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(var_2,[window.document.createTextNode("Item3")]);
+		var var_3 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode("Item4")]);
+		var items = [var_0,var_1,var_2,var_3];
 		var index = 0;
-		var var_2 = items[index];
+		var var_4 = items[index];
+		var var_5 = index;
 		var set_index = function(val) {
 			index = val;
-			var to = items[index];
-			haxe_Log.trace(var_2,{ fileName : "src/neptune/platform/html/HtmlPlatform.hx", lineNumber : 61, className : "neptune.platform.html.HtmlPlatform", methodName : "updateNode", customParams : [to]});
-			var_2.parentNode.replaceChild(to,var_2);
+			var from = items[var_5];
+			from.parentNode.replaceChild(items[index],from);
+			var_5 = index;
 		};
 		var onClick = function() {
-			set_index(1);
+			set_index(index + 1);
 		};
-		var var_3 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode(" "),var_2,window.document.createTextNode(" ")]);
-		var_3.onclick = onClick;
-		return var_3;
+		var var_6 = window.document.createElement("div");
+		neptune_platform_html_HtmlPlatform.addChildren(var_6,[window.document.createTextNode(" "),var_4,window.document.createTextNode(" ")]);
+		var_6.onclick = onClick;
+		return var_6;
 	}
 };
 var Main = function() { };
-Main.__name__ = true;
 Main.main = function() {
 	var template = new Expressions().template();
 	window.document.body.appendChild(template);
-};
-Math.__name__ = true;
-var Std = function() { };
-Std.__name__ = true;
-Std.string = function(s) {
-	return js_Boot.__string_rec(s,"");
-};
-var haxe_Log = function() { };
-haxe_Log.__name__ = true;
-haxe_Log.formatOutput = function(v,infos) {
-	var str = Std.string(v);
-	if(infos == null) {
-		return str;
-	}
-	var pstr = infos.fileName + ":" + infos.lineNumber;
-	if(infos.customParams != null) {
-		var _g = 0;
-		var _g1 = infos.customParams;
-		while(_g < _g1.length) str += ", " + Std.string(_g1[_g++]);
-	}
-	return pstr + ": " + str;
-};
-haxe_Log.trace = function(v,infos) {
-	var str = haxe_Log.formatOutput(v,infos);
-	if(typeof(console) != "undefined" && console.log != null) {
-		console.log(str);
-	}
 };
 var haxe_iterators_ArrayIterator = function(array) {
 	this.current = 0;
 	this.array = array;
 };
-haxe_iterators_ArrayIterator.__name__ = true;
 haxe_iterators_ArrayIterator.prototype = {
 	hasNext: function() {
 		return this.current < this.array.length;
@@ -73,81 +48,11 @@ haxe_iterators_ArrayIterator.prototype = {
 		return this.array[this.current++];
 	}
 };
-var js_Boot = function() { };
-js_Boot.__name__ = true;
-js_Boot.__string_rec = function(o,s) {
-	if(o == null) {
-		return "null";
-	}
-	if(s.length >= 5) {
-		return "<...>";
-	}
-	var t = typeof(o);
-	if(t == "function" && (o.__name__ || o.__ename__)) {
-		t = "object";
-	}
-	switch(t) {
-	case "function":
-		return "<function>";
-	case "object":
-		if(((o) instanceof Array)) {
-			var str = "[";
-			s += "\t";
-			var _g = 0;
-			var _g1 = o.length;
-			while(_g < _g1) {
-				var i = _g++;
-				str += (i > 0 ? "," : "") + js_Boot.__string_rec(o[i],s);
-			}
-			str += "]";
-			return str;
-		}
-		var tostr;
-		try {
-			tostr = o.toString;
-		} catch( _g ) {
-			return "???";
-		}
-		if(tostr != null && tostr != Object.toString && typeof(tostr) == "function") {
-			var s2 = o.toString();
-			if(s2 != "[object Object]") {
-				return s2;
-			}
-		}
-		var str = "{\n";
-		s += "\t";
-		var hasp = o.hasOwnProperty != null;
-		var k = null;
-		for( k in o ) {
-		if(hasp && !o.hasOwnProperty(k)) {
-			continue;
-		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
-			continue;
-		}
-		if(str.length != 2) {
-			str += ", \n";
-		}
-		str += s + k + " : " + js_Boot.__string_rec(o[k],s);
-		}
-		s = s.substring(1);
-		str += "\n" + s + "}";
-		return str;
-	case "string":
-		return o;
-	default:
-		return String(o);
-	}
-};
 var neptune_platform_html_HtmlPlatform = function() { };
-neptune_platform_html_HtmlPlatform.__name__ = true;
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);
 	return element;
 };
-String.__name__ = true;
-Array.__name__ = true;
-js_Boot.__toStr = ({ }).toString;
 Main.main();
 })({});
