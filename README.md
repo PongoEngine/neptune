@@ -34,7 +34,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] EField
 
-- [ ] EParenthesis
+- [x] EParenthesis
 
 - [ ] EObjectDecl
 

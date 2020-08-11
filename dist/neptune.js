@@ -27,10 +27,17 @@ Expressions.prototype = {
 		var onClick = function() {
 			set_index(index + 1);
 		};
-		var element_div_7 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_7,[window.document.createTextNode(" "),arra_4,window.document.createTextNode(" "),binop_6,window.document.createTextNode(" ")]);
-		element_div_7.onclick = onClick;
-		return element_div_7;
+		var element_div_9 = window.document.createElement("div");
+		var tmp = window.document.createTextNode(" ");
+		var tmp1 = window.document.createTextNode(" ");
+		var element_p_7 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_7,[binop_6]);
+		var tmp2 = window.document.createTextNode(" ");
+		var element_p_8 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_8,[window.document.createTextNode("Hello")]);
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_9,[tmp,arra_4,tmp1,element_p_7,tmp2,element_p_8,window.document.createTextNode(" ")]);
+		element_div_9.onclick = onClick;
+		return element_div_9;
 	}
 };
 var Main = function() { };

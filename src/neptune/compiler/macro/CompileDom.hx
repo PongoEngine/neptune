@@ -182,6 +182,8 @@ class CompileDom
 
                 scope.addUpdate(update);
                 ident.createDefIdent().toExpr();
+            case EParenthesis(e):
+                handleDomExpr(scope, e);
             // case ETernary(econd, eif, eelse):
             //     var left = handleDomExpr(scope, eif);
             //     var right = handleDomExpr(scope, eelse);

@@ -49,7 +49,8 @@ class Expressions implements Neptune
         return 
             <div onclick={onClick}>
                 {items[index]}
-                {10 + index}
+                <p>{10 + index}</p>
+                <p>{("Hello")}</p>
             </div>;
     }
 }
