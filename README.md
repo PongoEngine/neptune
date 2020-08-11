@@ -10,7 +10,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 ## Expressions
 
-### EConst
+- [x] ### EConst
 * CInt
   * Renders to a node
 * CFloat
@@ -24,58 +24,58 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 * CRegexp
   * Not Supported
 
-### EArray
+- [ ] ### EArray
 
-### EBinop
+- [ ] ### EBinop
 
-### EField
+- [ ] ### EField
 
-### EParenthesis
+- [ ] ### EParenthesis
 
-### EObjectDecl
+- [ ] ### EObjectDecl
 
-### EArrayDecl
+- [ ] ### EArrayDecl
 
-### ECall
+- [ ] ### ECall
 
-### ENew
+- [ ] ### ENew
 
-### EUnop
+- [ ] ### EUnop
 
-### EVars
+- [ ] ### EVars
 
-### EFunction
+- [ ] ### EFunction
 
-### EBlock
+- [ ] ### EBlock
 
-### EFor
+- [ ] ### EFor
 
-### EIf
+- [ ] ### EIf
 
-### EWhile
+- [ ] ### EWhile
 
-### ESwitch
+- [ ] ### ESwitch
 
-### ETry
+- [ ] ### ETry
 
-### EReturn
+- [ ] ### EReturn
 
-### EBreak
+- [ ] ### EBreak
 
-### EContinue
+- [ ] ### EContinue
 
-### EUntyped
+- [ ] ### EUntyped
 
-### EThrow
+- [ ] ### EThrow
 
-### ECast
+- [ ] ### ECast
 
-### EDisplay
+- [ ] ### EDisplay
 
-### EDisplayNew
+- [ ] ### EDisplayNew
 
-### ETernary
+- [ ] ### ETernary
 
-### ECheckType
+- [ ] ### ECheckType
 
-### EMeta
+- [ ] ### EMeta

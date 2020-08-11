@@ -56,6 +56,9 @@ class DepsUtil
                 for(expr in exprs) {
                     findDeps(deps, expr);
                 }
+            case EArray(e1, e2):
+                findDeps(deps, e1);
+                findDeps(deps, e2);
             case _:
                 throw "not implemented yet";
         }

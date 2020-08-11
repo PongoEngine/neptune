@@ -143,41 +143,55 @@ class CompileDom
                 case _:
                     [expr].createDefCall("createText").toExpr();
             }
-
-            case ETernary(econd, eif, eelse):
-                var left = handleDomExpr(scope, eif);
-                var right = handleDomExpr(scope, eelse);
+            case EArray(e1, e2):
                 var ident = createIdent();
-                var createTernaryVar = ETernary(econd, left, right).toExpr()
+                var varExpr = expr
                     .createDefVar(ident)
                     .toExpr();
-                scope.addVar(createTernaryVar);
+                scope.addVar(varExpr);
 
-                var update = [econd, left, right]
-                    .createDefCall("updateParent")
+                //todo add from to
+                var update = [ident.createDefIdent().toExpr(), expr]
+                    .createDefCall("updateNode")
                     .toExpr();
-                    
+
                 scope.addUpdate(update);
                 ident.createDefIdent().toExpr();
 
-            case ECall(e, params):
-                expr;
+            // case ETernary(econd, eif, eelse):
+            //     var left = handleDomExpr(scope, eif);
+            //     var right = handleDomExpr(scope, eelse);
+            //     var ident = createIdent();
+            //     var createTernaryVar = ETernary(econd, left, right).toExpr()
+            //         .createDefVar(ident)
+            //         .toExpr();
+            //     scope.addVar(createTernaryVar);
 
-            case EFor(it, expr):
-                transformForLoop(it, handleDomExpr(scope, expr));
+            //     var update = [econd, left, right]
+            //         .createDefCall("updateParent")
+            //         .toExpr();
+                    
+            //     scope.addUpdate(update);
+            //     ident.createDefIdent().toExpr();
 
-            case EMeta(s, e):
-                var dom = CompileDom.compileMeta(e);
-                return CompileDom.handleTree(scope, dom);
+            // case ECall(e, params):
+            //     expr;
 
-            case EBinop(_):
-                var ident = createIdent();
-                var createTextVar = [expr].createDefCall("createText").toExpr()
-                    .createDefVar(ident)
-                    .toExpr();
-                scope.addVar(createTextVar);
+            // case EFor(it, expr):
+            //     transformForLoop(it, handleDomExpr(scope, expr));
 
-                ident.createDefIdent().toExpr();
+            // case EMeta(s, e):
+            //     var dom = CompileDom.compileMeta(e);
+            //     return CompileDom.handleTree(scope, dom);
+
+            // case EBinop(_):
+            //     var ident = createIdent();
+            //     var createTextVar = [expr].createDefCall("createText").toExpr()
+            //         .createDefVar(ident)
+            //         .toExpr();
+            //     scope.addVar(createTextVar);
+
+            //     ident.createDefIdent().toExpr();
 
             case _:
                 trace(expr.expr);

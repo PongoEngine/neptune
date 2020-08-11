@@ -57,8 +57,10 @@ class AssignmentUtil
         var block = [assignment].concat(updates)
             .createDefBlock()
             .toExpr();
-        return block.createDefFunc('set_${ident}', ["val"])
+        var setter = block.createDefFunc('set_${ident}', ["val"])
             .toExpr();
+
+        return setter;
     }
 
     private static function createAssignment(ident :String) : Expr

@@ -56,6 +56,14 @@ class HtmlPlatform
         return node;
     }
 
+    public static inline function updateNode(from :Node, to :Node) : Node
+    {
+        trace(from, to);
+        var parent = from.parentNode;
+        parent.replaceChild(to, from);
+        return to;
+    }
+
     public static function updateParent(condition :Bool, left :Node, right :Node) : Void
     {
         if(condition) {

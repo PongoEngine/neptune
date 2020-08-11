@@ -1,4 +1,4 @@
-package capabilities;
+package ;
 
 /*
  * Copyright (c) 2020 Jeremy Meltingtallow
@@ -25,10 +25,28 @@ import js.html.Node;
 import neptune.platform.html.HtmlPlatform.*;
 import neptune.Neptune;
 
-class StaticFunctions implements Neptune 
+class Expressions implements Neptune 
 {
-    public static function render() : Node
+    
+    public function new() : Void
     {
-        return <h1>Render StaticFunctions</h1>;
+    }
+
+    public function template() : Node
+    {
+        var items = [
+            <p>Item1</p>,
+            <p>Item2</p>
+        ];
+        
+        var index = 0;
+        function onClick() {
+            index = 1;
+        }
+
+        return 
+            <div onclick={onClick}>
+                {items[index]}
+            </div>;
     }
 }

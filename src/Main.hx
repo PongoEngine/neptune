@@ -23,7 +23,7 @@ import js.Browser;
 
 class Main {
 	static function main() {
-		var helloWorld = new capabilities.Capabilities();
+		var helloWorld = new Expressions();
 		var template = helloWorld.template();
 		Browser.document.body.appendChild(template);
 	}
