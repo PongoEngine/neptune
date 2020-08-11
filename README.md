@@ -1,4 +1,7 @@
+<img src="./neptune.png" height="200"  align="right">
+
 # Neptune
+
 Neptune is a renderer that sits on top of an application. It will automatically track changes in state and update the view. It is written as a HTML first tool but other platforms will be supported.
 
 Goal: To have an inuitive API that feels like vanilla haxe. A macro is used to generate the view expressions but it shouldn't feel like its affecting the code.
@@ -6,7 +9,6 @@ Goal: To have an inuitive API that feels like vanilla haxe. A macro is used to g
 Status: I'm currently working on what each expression type will transform into when in markup mode. I'm hoping to have all expression types accounted for and then will transition into tracking assignment expressions in different scopes.
 
 Sidenote: If anyone reading this knows how the xml meta macro works hit me up. It functions well enough but I ran into a couple cases where it disagrees on what I consider valid.
-
 
 ## Expressions
 
