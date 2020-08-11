@@ -30,7 +30,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
   * Updates when array index is modified
   * Renders to a node
 
-- [ ] EBinop
+- [x] EBinop
 
 - [ ] EField
 
