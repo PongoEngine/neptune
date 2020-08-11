@@ -14,27 +14,33 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [x] EConst
 * CInt
-  * Renders to a node
+  * Value: TextNode
+  * Update: None
 * CFloat
-  * Renders to a node
+  * Value: TextNode
+  * Update: None
 * CString
-  * Renders to a node
+  * Value: TextNode
+  * Update: None
 * CIdent
-  * Saves to var
-  * Updates when reference is modified
-  * Renders to a node
+  * Value: TextNode
+  * Update: Update text content when identifier changes
 * CRegexp
   * Not Supported
 
 - [x] EArray
-  * Updates when array index is modified
-  * Renders to a node
+  * Value: Node
+  * Update: Replace node when array index changes
 
 - [x] EBinop
+  * Value: TextNode
+  * Update: Update text content when value changes
 
 - [ ] EField
 
 - [x] EParenthesis
+  * Value: Node
+  * Update: Determined by parenthesis item
 
 - [ ] EObjectDecl
 
