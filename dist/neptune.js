@@ -4,31 +4,33 @@ var Expressions = function() {
 };
 Expressions.prototype = {
 	template: function() {
-		var var_0 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(var_0,[window.document.createTextNode("Item1")]);
-		var var_1 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(var_1,[window.document.createTextNode("Item2")]);
-		var var_2 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(var_2,[window.document.createTextNode("Item3")]);
-		var var_3 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(var_3,[window.document.createTextNode("Item4")]);
-		var items = [var_0,var_1,var_2,var_3];
+		var element_p_0 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_0,[window.document.createTextNode("Item1")]);
+		var element_p_1 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_1,[window.document.createTextNode("Item2")]);
+		var element_p_2 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_2,[window.document.createTextNode("Item3")]);
+		var element_p_3 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_3,[window.document.createTextNode("Item4")]);
+		var items = [element_p_0,element_p_1,element_p_2,element_p_3];
 		var index = 0;
-		var var_4 = items[index];
-		var var_5 = index;
+		var binop_6 = window.document.createTextNode(10 + index);
+		var arra_4 = items[index];
+		var lastIndex_5 = index;
 		var set_index = function(val) {
 			index = val;
-			var from = items[var_5];
+			var from = items[lastIndex_5];
 			from.parentNode.replaceChild(items[index],from);
-			var_5 = index;
+			lastIndex_5 = index;
+			binop_6.textContent = 10 + index;
 		};
 		var onClick = function() {
 			set_index(index + 1);
 		};
-		var var_6 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(var_6,[window.document.createTextNode(" "),var_4,window.document.createTextNode(" ")]);
-		var_6.onclick = onClick;
-		return var_6;
+		var element_div_7 = window.document.createElement("div");
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_7,[window.document.createTextNode(" "),arra_4,window.document.createTextNode(" "),binop_6,window.document.createTextNode(" ")]);
+		element_div_7.onclick = onClick;
+		return element_div_7;
 	}
 };
 var Main = function() { };

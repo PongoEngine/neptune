@@ -66,7 +66,7 @@ class CompileDom
                     .createDefArrayDecl()
                     .toExpr();
 
-                var ident = createIdent();
+                var ident = createIdent('element_${tag}');
                 var element = [tag.createDefString().toExpr()]
                     .createDefCall("createElement")
                     .toExpr()
@@ -127,7 +127,7 @@ class CompileDom
                         expr;
                     }
                     else {
-                        var ident = createIdent();
+                        var ident = createIdent(s);
                         var createTextVar = [expr].createDefCall("createText").toExpr()
                             .createDefVar(ident)
                             .toExpr();
@@ -144,8 +144,8 @@ class CompileDom
                     [expr].createDefCall("createText").toExpr();
             }
             case EArray(e1, e2):
-                var ident1 = createIdent();
-                var ident2 = createIdent();
+                var ident1 = createIdent("arra");
+                var ident2 = createIdent("lastIndex");
                 var lastIndex = e2
                     .createDefVar(ident2)
                     .toExpr();
@@ -169,6 +169,19 @@ class CompileDom
                 scope.addUpdate(update);
                 ident1.createDefIdent().toExpr();
 
+            case EBinop(op, e1, e2):
+                var ident = createIdent("binop");
+                var createTextVar = [expr].createDefCall("createText").toExpr()
+                    .createDefVar(ident)
+                    .toExpr();
+                scope.addVar(createTextVar);
+
+                var update = [ident.createDefIdent().toExpr(), expr]
+                    .createDefCall("updateTextNode")
+                    .toExpr();
+
+                scope.addUpdate(update);
+                ident.createDefIdent().toExpr();
             // case ETernary(econd, eif, eelse):
             //     var left = handleDomExpr(scope, eif);
             //     var right = handleDomExpr(scope, eelse);
@@ -195,15 +208,6 @@ class CompileDom
             //     var dom = CompileDom.compileMeta(e);
             //     return CompileDom.handleTree(scope, dom);
 
-            // case EBinop(_):
-            //     var ident = createIdent();
-            //     var createTextVar = [expr].createDefCall("createText").toExpr()
-            //         .createDefVar(ident)
-            //         .toExpr();
-            //     scope.addVar(createTextVar);
-
-            //     ident.createDefIdent().toExpr();
-
             case _:
                 trace(expr.expr);
                 throw "not implemented yet";
@@ -211,9 +215,9 @@ class CompileDom
     }
 
     private static var _identIndex = 0;
-    private static function createIdent() : String
+    private static function createIdent(name :String) : String
     {
-        return 'var_${_identIndex++}';
+        return '${name}_${_identIndex++}';
     }
 
     private static function transformForLoop(it :Expr, expr :Expr) : Expr
