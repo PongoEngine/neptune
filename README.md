@@ -27,6 +27,8 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
   * Not Supported
 
 - [x] ### EArray
+  * Updates when array index is modified
+  * Renders to a node
 
 - [ ] ### EBinop
 
