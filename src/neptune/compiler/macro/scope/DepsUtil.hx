@@ -70,6 +70,15 @@ class DepsUtil
                 for(value in values) {
                     findDeps(deps, value);
                 }
+            case EFor(it, expr):
+                findDeps(deps, it);
+                findDeps(deps, expr);
+            case EMeta(s, e):
+            case ECast(e, t):
+                findDeps(deps, e);
+            case EWhile(econd, e, normalWhile):
+                findDeps(deps, econd);
+                findDeps(deps, e);
             case _:
                 trace(expr.expr);
                 throw "not implemented yet";

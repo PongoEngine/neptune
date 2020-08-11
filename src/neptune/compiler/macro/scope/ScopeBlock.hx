@@ -106,6 +106,8 @@ class ScopeBlock implements Scope
         }
 
         for(setter in _setters.keyValueIterator()) {
+            var tempSetter = AssignmentUtil.createSetterTemp(setter.key);
+            _block.unshift(tempSetter);
             var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value);
             var deps = Deps.from(fullSetter);
             var index = deps.getInsertIndex(_block);

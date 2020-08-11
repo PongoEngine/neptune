@@ -45,6 +45,15 @@ class HtmlPlatform
         return document.createDocumentFragment();
     }
 
+    public static function createFragmentNodes(nodes :Array<Node>) : DocumentFragment
+    {
+        var frag = document.createDocumentFragment();
+        for(item in nodes) {
+            frag.appendChild(item);
+        }
+        return frag;
+    }
+
     public static inline function ternary(condition :Bool, left :Node, right :Node) : Node
     {
         return condition ? left : right;

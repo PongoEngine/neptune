@@ -4,6 +4,8 @@ var Expressions = function() {
 };
 Expressions.prototype = {
 	template: function() {
+		var set_length = function(val) {
+		};
 		var element_p_0 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_0,[window.document.createTextNode("Item1")]);
 		var element_p_1 = window.document.createElement("p");
@@ -12,24 +14,38 @@ Expressions.prototype = {
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_2,[window.document.createTextNode("Item3")]);
 		var element_p_3 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_3,[window.document.createTextNode("Item4")]);
-		var items = [element_p_0,element_p_1,element_p_2,element_p_3];
-		var index = 0;
-		var binop_6 = window.document.createTextNode("Taco" + index);
-		var arra_4 = items[index];
-		var lastIndex_5 = index;
-		var set_index = function(val) {
-			index = val;
-			var from = items[lastIndex_5];
-			from.parentNode.replaceChild(items[index],from);
-			lastIndex_5 = index;
-			binop_6.textContent = "Taco" + index;
-		};
+		var binop_6 = window.document.createTextNode("Taco" + 0);
+		var arra_4 = [element_p_0,element_p_1,element_p_2,element_p_3][0];
+		var length = 0;
 		var onClick = function() {
-			set_index(index + 1);
+			set_length(length + 1);
 		};
-		var element_h1_9 = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(element_h1_9,[window.document.createTextNode("Hi")]);
-		var element_div_11 = window.document.createElement("div");
+		var frag = window.document.createElement("div");
+		var _g = 0;
+		var _g1 = length;
+		while(_g < _g1) {
+			var i_15 = window.document.createTextNode(_g++);
+			var element_h1_16 = window.document.createElement("h1");
+			neptune_platform_html_HtmlPlatform.addChildren(element_h1_16,[window.document.createTextNode("ForItem"),i_15]);
+			frag.appendChild(element_h1_16);
+		}
+		var for_12 = frag;
+		set_length = function(val) {
+			length = val;
+			var frag = window.document.createElement("div");
+			var _g = 0;
+			var _g1 = length;
+			while(_g < _g1) {
+				var i_15 = window.document.createTextNode(_g++);
+				var element_h1_16 = window.document.createElement("h1");
+				neptune_platform_html_HtmlPlatform.addChildren(element_h1_16,[window.document.createTextNode("ForItem"),i_15]);
+				frag.appendChild(element_h1_16);
+			}
+			var to = frag;
+			for_12.parentNode.replaceChild(to,for_12);
+			for_12 = to;
+		};
+		var element_div_14 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
 		var tmp1 = window.document.createTextNode(" ");
 		var element_p_7 = window.document.createElement("p");
@@ -37,9 +53,16 @@ Expressions.prototype = {
 		var tmp2 = window.document.createTextNode(" ");
 		var element_p_8 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_8,[window.document.createTextNode("Hello")]);
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_11,[tmp,arra_4,tmp1,element_p_7,tmp2,element_p_8,window.document.createTextNode(" "),element_h1_9,window.document.createTextNode(" ")]);
-		element_div_11.onclick = onClick;
-		return element_div_11;
+		var tmp3 = window.document.createTextNode(" ");
+		var element_h1_9 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h1_9,[window.document.createTextNode("Hello")]);
+		var element_p_10 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_10,[window.document.createTextNode("World")]);
+		var element_button_11 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(element_button_11,[window.document.createTextNode("How are you?")]);
+		element_button_11.onclick = onClick;
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_14,[tmp,arra_4,tmp1,element_p_7,tmp2,element_p_8,tmp3,neptune_platform_html_HtmlPlatform.createFragmentNodes([element_h1_9,element_p_10,element_button_11]),window.document.createTextNode(" "),for_12,window.document.createTextNode(" ")]);
+		return element_div_14;
 	}
 };
 var Main = function() { };
@@ -60,6 +83,12 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
+neptune_platform_html_HtmlPlatform.createFragmentNodes = function(nodes) {
+	var frag = window.document.createDocumentFragment();
+	var _g = 0;
+	while(_g < nodes.length) frag.appendChild(nodes[_g++]);
+	return frag;
+};
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);

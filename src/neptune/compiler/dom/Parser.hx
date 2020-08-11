@@ -84,12 +84,10 @@ class Parser
                 case Token.CURLY_BRACE_OPENED: {
                     assertToken(scanner.next(), Token.CURLY_BRACE_OPENED);
                     var min = scanner.curIndex + scanner.startingIndex;
-                    var exprStr = scanner.consumeWhile((str) -> {
-                        scanner.hasNext() && str != Token.CURLY_BRACE_CLOSED;
-                    });
+                    var exprStr = parseExpr(scanner);
                     var max = scanner.curIndex + scanner.startingIndex;
                     var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
-                    var expr = Context.parse(exprStr, pos);
+                    var expr = Context.parse('{${exprStr};}', pos);
                     assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
                     return DomExpr(expr);
                 }
@@ -102,6 +100,24 @@ class Parser
         }
 
         throw "err";
+    }
+
+    static function parseExpr(scanner :Scanner) : String
+    {
+        var start = scanner.peek();
+        var curlys = 1;
+        var exprStr = scanner.consumeWhile((str) -> {
+            if(str == Token.CURLY_BRACE_OPENED) {
+                curlys++;
+            }
+            else if(str == Token.CURLY_BRACE_CLOSED) {
+                curlys--;
+            }
+            var curlyLogic = curlys == 0 ? str != Token.CURLY_BRACE_CLOSED : true;
+            return scanner.hasNext() && curlyLogic;
+        });
+
+        return exprStr;
     }
 
     static function parseTagname(scanner :Scanner) : String

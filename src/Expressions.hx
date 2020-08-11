@@ -38,25 +38,32 @@ class Expressions implements Neptune
             <p>Item1</p>,
             <p>Item2</p>,
             <p>Item3</p>,
-            <p>Item4</p>,
+            <p>Item4</p>
         ];
         
         var index = 0;
+        var length = 0;
         function onClick() {
-            index += 1;
+            // index += 1;
+            length += 1;
         }
 
         return 
-            <div onclick={onClick}>
+            <div>
                 {items[index]}
                 <p>{"Taco" + index}</p>
                 <p>{("Hello")}</p>
                 {
-                    if(true) <h1>Hi</h1>
-                    else "Cool"
+                    [
+                        <h1>Hello</h1>,
+                        <p>World</p>,
+                        <button onclick={onClick}>How are you?</button>
+                    ]
                 }
                 {
-                    var x = 0
+                    for(i in 0...length) {
+                        <h1>ForItem{i}</h1>
+                    }
                 }
             </div>;
     }

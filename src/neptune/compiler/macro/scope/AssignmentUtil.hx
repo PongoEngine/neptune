@@ -61,6 +61,21 @@ class AssignmentUtil
         }
     }
 
+    public static function createSetterTemp(ident :String) : Expr
+    {
+        var assignment = createAssignment(ident);
+
+        var block = []
+            .createDefBlock()
+            .toExpr();
+        var setter = block.createDefFuncAnon(["val"])
+            .toExpr()
+            .createDefVar('set_${ident}')
+            .toExpr();
+
+        return setter;
+    }
+
     public static function createSetter(ident :String, updates :Array<Expr>) : Expr
     {
         var assignment = createAssignment(ident);
@@ -68,10 +83,11 @@ class AssignmentUtil
         var block = [assignment].concat(updates)
             .createDefBlock()
             .toExpr();
-        var setter = block.createDefFunc('set_${ident}', ["val"])
+        var setter = block.createDefFuncAnon(["val"])
             .toExpr();
 
-        return setter;
+        return OpAssign.createDefBinop('set_${ident}'.createDefIdent().toExpr(), setter)
+            .toExpr();
     }
 
     private static function createAssignment(ident :String) : Expr

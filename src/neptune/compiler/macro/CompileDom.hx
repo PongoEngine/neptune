@@ -190,10 +190,10 @@ class CompileDom
                 var left = handleDomExpr(scope, eif);
                 var right = handleDomExpr(scope, eelse);
                 var ident = createIdent("ifelse");
-                var createTernaryVar = EIf(econd, left, right).toExpr()
+                var ifExpr = EIf(econd, left, right).toExpr()
                     .createDefVar(ident)
                     .toExpr();
-                scope.addVar(createTernaryVar);
+                scope.addVar(ifExpr);
 
                 var update = [econd, left, right]
                     .createDefCall("updateParent")
@@ -201,6 +201,9 @@ class CompileDom
                     
                 scope.addUpdate(update);
                 ident.createDefIdent().toExpr();
+
+            case EBlock(exprs):
+                EBlock(exprs.map(handleDomExpr.bind(scope))).toExpr();
             
             // case ETernary(econd, eif, eelse):
                 // var left = handleDomExpr(scope, eif);
@@ -218,18 +221,87 @@ class CompileDom
                 // scope.addUpdate(update);
                 // ident.createDefIdent().toExpr();
 
-            // case ECall(e, params):
-            //     expr;
+            case EFor(it, expr):
+                var frag = ["div".createDefString().toExpr()].createDefCall("createElement").toExpr()
+                    .createDefVar("frag")
+                    .toExpr();
 
-            // case EFor(it, expr):
-            //     transformForLoop(it, handleDomExpr(scope, expr));
+                var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+                var callAppendChild = ECall(appendChild, [expr]).toExpr();
+
+                var forExpr = EFor(it, callAppendChild).toExpr();
+                var returnExpr = "frag".createDefIdent().toExpr();
+                var e = [frag, forExpr, returnExpr].createDefBlock().toExpr();
+
+                var ident = createIdent("for");
+                var forVar = e.createDefVar(ident).toExpr();
+
+                scope.addVar(forVar);
+                
+                var updateIdent = createIdent("for_update");
+                var update1 = [ident.createDefIdent().toExpr(), e]
+                    .createDefCall("updateNode").toExpr()
+                    .createDefVar(updateIdent)
+                    .toExpr();
+
+                var update2 = OpAssign.createDefBinop(
+                    ident.createDefIdent().toExpr(),
+                    ECast(updateIdent.createDefIdent().toExpr(), null).toExpr()
+                ).toExpr();
+
+                var update = [update1, update2].createDefBlock().toExpr();
+
+                scope.addUpdate(update);
+                
+                ident.createDefIdent().toExpr();
+
+            case EWhile(econd, e, normalWhile):
+                var frag = ["div".createDefString().toExpr()].createDefCall("createElement").toExpr()
+                    .createDefVar("frag")
+                    .toExpr();
+
+                var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+                var callAppendChild = ECall(appendChild, [expr]).toExpr();
+
+                var forExpr = EWhile(econd, callAppendChild, normalWhile).toExpr();
+                var returnExpr = "frag".createDefIdent().toExpr();
+                var e = [frag, forExpr, returnExpr].createDefBlock().toExpr();
+
+                var ident = createIdent("for");
+                var forVar = e.createDefVar(ident).toExpr();
+
+                scope.addVar(forVar);
+                
+                var updateIdent = createIdent("for_update");
+                var update1 = [ident.createDefIdent().toExpr(), e]
+                    .createDefCall("updateNode").toExpr()
+                    .createDefVar(updateIdent)
+                    .toExpr();
+
+                var update2 = OpAssign.createDefBinop(
+                    ident.createDefIdent().toExpr(),
+                    ECast(updateIdent.createDefIdent().toExpr(), null).toExpr()
+                ).toExpr();
+
+                var update = [update1, update2].createDefBlock().toExpr();
+
+                scope.addUpdate(update);
+                
+                ident.createDefIdent().toExpr();
 
             case EVars(vars):
-                Context.fatalError("Variable cannot be defined in markup.", Context.currentPos());
+                expr;
 
             case EMeta(s, e):
                 var dom = CompileDom.compileMeta(e);
-                return CompileDom.handleTree(scope, dom);
+                CompileDom.handleTree(scope, dom);
+
+            case EArrayDecl(values):
+                var nodes = values.map(handleDomExpr.bind(scope))
+                    .createDefArrayDecl()
+                    .toExpr();
+                [nodes].createDefCall("createFragmentNodes")
+                    .toExpr();
 
             case _:
                 trace(expr.expr);
