@@ -43,7 +43,7 @@ class Expressions implements Neptune
         
         var index = 0;
         function onClick() {
-            index = index + 1;
+            index += 1;
         }
 
         return 

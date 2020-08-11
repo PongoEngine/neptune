@@ -44,6 +44,17 @@ class AssignmentUtil
                             }
                             case _:
                         }
+                    case OpAssignOp(op):
+                        switch e1.expr {
+                            case EConst(c): switch c {
+                                case CIdent(s):
+                                    setters.set(s);
+                                    var binopExpr = EBinop(op, e1, e2).toExpr();
+                                    transformAssignment(assignment, binopExpr, s);
+                                case _:
+                            }
+                            case _:
+                        }
                     case _:
                 }
             case _:
