@@ -59,6 +59,17 @@ class DepsUtil
             case EArray(e1, e2):
                 findDeps(deps, e1);
                 findDeps(deps, e2);
+            case EIf(econd, eif, eelse):
+                findDeps(deps, eif);
+                findDeps(deps, eelse);
+            case EVars(vars):
+                for(var_ in vars) {
+                    findDeps(deps, var_.expr);
+                }
+            case EArrayDecl(values):
+                for(value in values) {
+                    findDeps(deps, value);
+                }
             case _:
                 trace(expr.expr);
                 throw "not implemented yet";

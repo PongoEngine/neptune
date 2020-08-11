@@ -52,7 +52,8 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] EUnop
 
-- [ ] EVars
+- [x] EVars
+  * Not Supported
 
 - [ ] EFunction
 
@@ -60,7 +61,9 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] EFor
 
-- [ ] EIf
+- [x] EIf
+  * Value: Node
+  * Update: Replace node when condition changes
 
 - [ ] EWhile
 
@@ -88,4 +91,6 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] ECheckType
 
-- [ ] EMeta
+- [x] EMeta
+  * Value: Node
+  * Update: None

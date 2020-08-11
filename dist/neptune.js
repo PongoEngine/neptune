@@ -14,7 +14,7 @@ Expressions.prototype = {
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_3,[window.document.createTextNode("Item4")]);
 		var items = [element_p_0,element_p_1,element_p_2,element_p_3];
 		var index = 0;
-		var binop_6 = window.document.createTextNode(10 + index);
+		var binop_6 = window.document.createTextNode("Taco" + index);
 		var arra_4 = items[index];
 		var lastIndex_5 = index;
 		var set_index = function(val) {
@@ -22,12 +22,14 @@ Expressions.prototype = {
 			var from = items[lastIndex_5];
 			from.parentNode.replaceChild(items[index],from);
 			lastIndex_5 = index;
-			binop_6.textContent = 10 + index;
+			binop_6.textContent = "Taco" + index;
 		};
 		var onClick = function() {
 			set_index(index + 1);
 		};
-		var element_div_9 = window.document.createElement("div");
+		var element_h1_9 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h1_9,[window.document.createTextNode("Hi")]);
+		var element_div_11 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
 		var tmp1 = window.document.createTextNode(" ");
 		var element_p_7 = window.document.createElement("p");
@@ -35,9 +37,9 @@ Expressions.prototype = {
 		var tmp2 = window.document.createTextNode(" ");
 		var element_p_8 = window.document.createElement("p");
 		neptune_platform_html_HtmlPlatform.addChildren(element_p_8,[window.document.createTextNode("Hello")]);
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_9,[tmp,arra_4,tmp1,element_p_7,tmp2,element_p_8,window.document.createTextNode(" ")]);
-		element_div_9.onclick = onClick;
-		return element_div_9;
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_11,[tmp,arra_4,tmp1,element_p_7,tmp2,element_p_8,window.document.createTextNode(" "),element_h1_9,window.document.createTextNode(" ")]);
+		element_div_11.onclick = onClick;
+		return element_div_11;
 	}
 };
 var Main = function() { };

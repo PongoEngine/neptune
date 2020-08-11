@@ -185,22 +185,38 @@ class CompileDom
 
             case EParenthesis(e):
                 handleDomExpr(scope, e);
+
+            case EIf(econd, eif, eelse):
+                var left = handleDomExpr(scope, eif);
+                var right = handleDomExpr(scope, eelse);
+                var ident = createIdent("ifelse");
+                var createTernaryVar = EIf(econd, left, right).toExpr()
+                    .createDefVar(ident)
+                    .toExpr();
+                scope.addVar(createTernaryVar);
+
+                var update = [econd, left, right]
+                    .createDefCall("updateParent")
+                    .toExpr();
+                    
+                scope.addUpdate(update);
+                ident.createDefIdent().toExpr();
             
             // case ETernary(econd, eif, eelse):
-            //     var left = handleDomExpr(scope, eif);
-            //     var right = handleDomExpr(scope, eelse);
-            //     var ident = createIdent();
-            //     var createTernaryVar = ETernary(econd, left, right).toExpr()
-            //         .createDefVar(ident)
-            //         .toExpr();
-            //     scope.addVar(createTernaryVar);
+                // var left = handleDomExpr(scope, eif);
+                // var right = handleDomExpr(scope, eelse);
+                // var ident = createIdent();
+                // var createTernaryVar = ETernary(econd, left, right).toExpr()
+                //     .createDefVar(ident)
+                //     .toExpr();
+                // scope.addVar(createTernaryVar);
 
-            //     var update = [econd, left, right]
-            //         .createDefCall("updateParent")
-            //         .toExpr();
+                // var update = [econd, left, right]
+                //     .createDefCall("updateParent")
+                //     .toExpr();
                     
-            //     scope.addUpdate(update);
-            //     ident.createDefIdent().toExpr();
+                // scope.addUpdate(update);
+                // ident.createDefIdent().toExpr();
 
             // case ECall(e, params):
             //     expr;
@@ -208,9 +224,12 @@ class CompileDom
             // case EFor(it, expr):
             //     transformForLoop(it, handleDomExpr(scope, expr));
 
-            // case EMeta(s, e):
-            //     var dom = CompileDom.compileMeta(e);
-            //     return CompileDom.handleTree(scope, dom);
+            case EVars(vars):
+                Context.fatalError("Variable cannot be defined in markup.", Context.currentPos());
+
+            case EMeta(s, e):
+                var dom = CompileDom.compileMeta(e);
+                return CompileDom.handleTree(scope, dom);
 
             case _:
                 trace(expr.expr);
@@ -224,21 +243,21 @@ class CompileDom
         return '${name}_${_identIndex++}';
     }
 
-    private static function transformForLoop(it :Expr, expr :Expr) : Expr
-    {
-        var frag = [].createDefCall("createFragment").toExpr()
-            .createDefVar("frag")
-            .toExpr();
+    // private static function transformForLoop(it :Expr, expr :Expr) : Expr
+    // {
+    //     var frag = [].createDefCall("createFragment").toExpr()
+    //         .createDefVar("frag")
+    //         .toExpr();
 
-        var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
-        var callAppendChild = ECall(appendChild, [expr]).toExpr();
+    //     var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+    //     var callAppendChild = ECall(appendChild, [expr]).toExpr();
             
-        var forExpr = EFor(it, callAppendChild).toExpr();
-        var returnExpr = "frag".createDefIdent().toExpr();
-        var fullBlock = [frag, forExpr, returnExpr].createDefBlock().toExpr();
+    //     var forExpr = EFor(it, callAppendChild).toExpr();
+    //     var returnExpr = "frag".createDefIdent().toExpr();
+    //     var fullBlock = [frag, forExpr, returnExpr].createDefBlock().toExpr();
 
-        return fullBlock;
-    }
+    //     return fullBlock;
+    // }
 }
 
 #end
