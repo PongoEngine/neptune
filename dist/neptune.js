@@ -6,23 +6,29 @@ Expressions.prototype = {
 	template: function() {
 		var set_x = function(val) {
 		};
-		var x = 0;
+		var x = true;
 		var onClick = function() {
-			set_x(x + 1);
+			set_x(!x);
 		};
+		var element_h1_1 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h1_1,[window.document.createTextNode("Zero")]);
+		var left_0 = element_h1_1;
+		var element_h1_3 = window.document.createElement("h1");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h1_3,[window.document.createTextNode("Not Zero")]);
+		var right_2 = element_h1_3;
+		var ifelse_4 = x ? left_0 : right_2;
 		set_x = function(val) {
 			x = val;
+			neptune_platform_html_HtmlPlatform.updateParent(x,left_0,right_2);
 		};
-		var element_div_2 = window.document.createElement("div");
+		var element_div_6 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
-		var element_h1_0 = window.document.createElement("h1");
-		neptune_platform_html_HtmlPlatform.addChildren(element_h1_0,[window.document.createTextNode("Turtle Item")]);
 		var tmp1 = window.document.createTextNode(" ");
-		var element_button_1 = window.document.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(element_button_1,[window.document.createTextNode("Action")]);
-		element_button_1.onclick = onClick;
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_2,[tmp,element_h1_0,tmp1,element_button_1,window.document.createTextNode(" ")]);
-		return element_div_2;
+		var element_button_5 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(element_button_5,[window.document.createTextNode("Action")]);
+		element_button_5.onclick = onClick;
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_6,[tmp,ifelse_4,tmp1,element_button_5,window.document.createTextNode(" ")]);
+		return element_div_6;
 	}
 };
 var Main = function() { };
@@ -43,6 +49,13 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 };
 var neptune_platform_html_HtmlPlatform = function() { };
+neptune_platform_html_HtmlPlatform.updateParent = function(condition,left,right) {
+	if(condition && right.parentNode != null) {
+		right.parentNode.replaceChild(left,right);
+	} else if(left.parentNode != null) {
+		left.parentNode.replaceChild(right,left);
+	}
+};
 neptune_platform_html_HtmlPlatform.addChildren = function(element,children) {
 	var _g = 0;
 	while(_g < children.length) element.appendChild(children[_g++]);

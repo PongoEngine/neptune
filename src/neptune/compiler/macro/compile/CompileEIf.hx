@@ -31,21 +31,30 @@ class CompileEIf
 {
     public static function compile(scope :Scope, original :Expr, econd :Expr, eif :Expr, eelse :Expr) : Expr
     {
-        // var left = Compile.handleDomExpr(scope, eif);
-        // var right = Compile.handleDomExpr(scope, eelse);
-        // var ident = Compile.createIdent("ifelse");
-        // var ifExpr = EIf(econd, left, right).toExpr()
-        //     .createDefVar(ident)
-        //     .toExpr();
-        // scope.addVarExpr(ifExpr);
+        var leftIdent = Compile.createIdent("left");
+        var left = Compile.handleDomExpr(scope, eif)
+            .createDefVar(leftIdent)
+            .toExpr();
+        scope.addVarExpr(left);
+        
+        var rightIdent = Compile.createIdent("right");
+        var right = Compile.handleDomExpr(scope, eelse)
+            .createDefVar(rightIdent)
+            .toExpr();
+        scope.addVarExpr(right);
 
-        // var update = [econd, left, right]
-        //     .createDefCall("updateParent")
-        //     .toExpr();
+        var ifElseIdent = Compile.createIdent("ifelse");
+        var ifExpr = EIf(econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()).toExpr()
+            .createDefVar(ifElseIdent)
+            .toExpr();
+        scope.addVarExpr(ifExpr);
+
+        var update = [econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()]
+            .createDefCall("updateParent")
+            .toExpr();
             
-        // scope.addUpdateExpr(update);
-        // return ident.createDefIdent().toExpr();
-        return null;
+        scope.addUpdateExpr(update);
+        return ifElseIdent.createDefIdent().toExpr();
     }
 }
 #end

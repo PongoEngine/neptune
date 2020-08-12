@@ -67,11 +67,11 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
   * Value: Node
   * Update: None
 
-- [ ] EFor
+- [x] EFor
   * Value: Fragment
   * Update: Replace node when condition changes
 
-- [ ] EIf
+- [x] EIf
   * Value: Node
   * Update: Replace node when condition changes
 

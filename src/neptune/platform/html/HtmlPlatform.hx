@@ -61,11 +61,11 @@ class HtmlPlatform
 
     public static function updateParent(condition :Bool, left :Node, right :Node) : Void
     {
-        if(condition) {
+        if(condition && right.parentNode != null) {
             var parent = right.parentNode;
             parent.replaceChild(left, right);
         }
-        else {
+        else if(left.parentNode != null) {
             var parent = left.parentNode;
             parent.replaceChild(right, left);
         }

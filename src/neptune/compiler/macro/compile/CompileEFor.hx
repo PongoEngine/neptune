@@ -31,39 +31,39 @@ class CompileEFor
 {
     public static function compile(scope :Scope, original :Expr, it :Expr, expr :Expr) : Expr
     {
-        // var frag = ["div".createDefString().toExpr()].createDefCall("createElement").toExpr()
-        //     .createDefVar("frag")
-        //     .toExpr();
+        var frag = ["div".createDefString().toExpr()].createDefCall("createElement").toExpr()
+            .createDefVar("frag")
+            .toExpr();
 
-        // var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
-        // var callAppendChild = ECall(appendChild, [expr]).toExpr();
+        var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+        var compiledExpr = Compile.handleDomExpr(scope, expr);
+        var callAppendChild = ECall(appendChild, [compiledExpr]).toExpr();
 
-        // var forExpr = EFor(it, callAppendChild).toExpr();
-        // var returnExpr = "frag".createDefIdent().toExpr();
-        // var e = [frag, forExpr, returnExpr].createDefBlock().toExpr();
+        var forExpr = EFor(it, callAppendChild).toExpr();
+        var returnExpr = "frag".createDefIdent().toExpr();
+        var e = [frag, forExpr, returnExpr].createDefBlock().toExpr();
 
-        // var ident = Compile.createIdent("for");
-        // var forVar = e.createDefVar(ident).toExpr();
+        var ident = Compile.createIdent("for");
+        var forVar = e.createDefVar(ident).toExpr();
 
-        // scope.addVarExpr(forVar);
+        scope.addVarExpr(forVar);
         
-        // var updateIdent = Compile.createIdent("for_update");
-        // var update1 = [ident.createDefIdent().toExpr(), e]
-        //     .createDefCall("updateNode").toExpr()
-        //     .createDefVar(updateIdent)
-        //     .toExpr();
+        var updateIdent = Compile.createIdent("for_update");
+        var update1 = [ident.createDefIdent().toExpr(), e]
+            .createDefCall("updateNode").toExpr()
+            .createDefVar(updateIdent)
+            .toExpr();
 
-        // var update2 = OpAssign.createDefBinop(
-        //     ident.createDefIdent().toExpr(),
-        //     ECast(updateIdent.createDefIdent().toExpr(), null).toExpr()
-        // ).toExpr();
+        var update2 = OpAssign.createDefBinop(
+            ident.createDefIdent().toExpr(),
+            ECast(updateIdent.createDefIdent().toExpr(), null).toExpr()
+        ).toExpr();
 
-        // var update = [update1, update2].createDefBlock().toExpr();
+        var update = [update1, update2].createDefBlock().toExpr();
 
-        // scope.addUpdateExpr(update);
+        scope.addUpdateExpr(update);
         
-        // return ident.createDefIdent().toExpr();
-        return null;
+        return ident.createDefIdent().toExpr();
     }
 }
 #end

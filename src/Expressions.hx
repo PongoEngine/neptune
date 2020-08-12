@@ -34,18 +34,21 @@ class Expressions implements Neptune
 
     public function template() : Node
     {
-        var x = 0;
-        var y = 20;
+        var x = true;
 
         function onClick() {
-            x += 1;
+            x = !x;
         }
 
         return 
             <div>
                 {   
-                    var turtle = <h1>Turtle Item</h1>;
-                    turtle;
+                    if(x) {
+                        <h1>Zero</h1>
+                    }
+                    else {
+                        <h1>Not Zero</h1>
+                    }
                 }
                 <button onclick={onClick}>Action</button>
             </div>;
