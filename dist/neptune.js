@@ -7,11 +7,13 @@ Expressions.prototype = {
 		var set_x = function(val) {
 		};
 		var x = 0;
+		var text_1 = window.document.createTextNode(x);
 		var onClick = function() {
 			set_x(x + 1);
 		};
 		set_x = function(val) {
 			x = val;
+			text_1.textContent = x;
 		};
 		var element_div_3 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
@@ -20,7 +22,7 @@ Expressions.prototype = {
 		element_button_0.onclick = onClick;
 		var tmp1 = window.document.createTextNode(" ");
 		var element_p_2 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(element_p_2,[window.document.createTextNode(x)]);
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_2,[text_1]);
 		neptune_platform_html_HtmlPlatform.addChildren(element_div_3,[tmp,element_button_0,tmp1,element_p_2,window.document.createTextNode(" ")]);
 		return element_div_3;
 	}

@@ -136,7 +136,10 @@ class Compile
                 CompileEIf.compile(scope, original, econd, eif, eelse);
 
             case EBlock(exprs):
-                EBlock(exprs.map(handleDomExpr.bind(scope))).toExpr();
+                for(i in 0...exprs.length) {
+                    exprs[i] = handleDomExpr(scope, exprs[i]);
+                }
+                original;
 
             case EWhile(econd, e, normalWhile):
                 CompileEWhile.compile(scope, original, econd, e, normalWhile);
@@ -145,12 +148,10 @@ class Compile
                 CompileEFor.compile(scope, original, it, expr);
 
             case EVars(vars):
-                EVars(vars.map(v -> {
-                    var e = handleDomExpr(scope, v.expr);
-                    v.expr = e;
-                    scope.saveVar(v);
-                    v;
-                })).toExpr();
+                for(i in 0...vars.length) {
+                    vars[i].expr = handleDomExpr(scope, vars[i].expr);
+                }
+                original;
 
             case EMeta(s, e):
                 var dom = Compile.compileMeta(e);

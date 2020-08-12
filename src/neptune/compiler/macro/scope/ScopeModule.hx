@@ -51,7 +51,7 @@ class ScopeModule implements Scope
         throw "err";
     }
 
-    public function setReplacement(old :Expr, new_ :Array<Expr>) : Void
+    public function addVarExpr(expr :Expr) : Void
     {
         throw "err";
     }
