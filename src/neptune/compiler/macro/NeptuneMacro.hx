@@ -86,7 +86,7 @@ class NeptuneMacro
                 handleExpr(e2, scope, scopes);
                 switch op {
                     case OpAssign | OpAssignOp(_):
-                        scope.addAssignment(expr);
+                        scope.transformAssignment(expr);
                     case _:
                 }
 
@@ -178,7 +178,7 @@ class NeptuneMacro
                 handleExpr(e, scope, scopes); 
                 switch op {
                     case OpIncrement | OpDecrement:
-                        scope.addAssignment(expr);
+                        scope.transformAssignment(expr);
                     case _:
                 }
 

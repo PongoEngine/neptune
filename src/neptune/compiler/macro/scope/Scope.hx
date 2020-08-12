@@ -33,7 +33,7 @@ interface Scope
     function getVar(name :String) : Var;
     function addVar(expr :Expr) : Void;
     function addUpdate(expr :Expr) : Void;
-    function addAssignment(expr :Expr) : Void;
+    function transformAssignment(expr :Expr) : Void;
     function addSetters() : Void;
 }
 

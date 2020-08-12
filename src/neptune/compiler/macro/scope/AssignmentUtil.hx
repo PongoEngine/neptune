@@ -29,7 +29,7 @@ using neptune.compiler.macro.scope.DepsUtil;
 
 class AssignmentUtil
 {
-    public static function handleAssignment(assignment :Expr) : Void
+    public static function transformAssignment(assignment :Expr) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):

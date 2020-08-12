@@ -61,7 +61,7 @@ class ScopeModule implements Scope
         throw "err";
     }
 
-    public inline function addAssignment(expr :Expr) : Void
+    public inline function transformAssignment(expr :Expr) : Void
     {
         throw "err";
     }

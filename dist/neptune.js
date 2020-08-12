@@ -7,11 +7,11 @@ Expressions.prototype = {
 		var set_x = function(val) {
 		};
 		var x = 0;
-		set_x = function(val) {
-			x = val;
-		};
 		var onClick = function() {
 			set_x(x + 1);
+		};
+		set_x = function(val) {
+			x = val;
 		};
 		var element_div_2 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");

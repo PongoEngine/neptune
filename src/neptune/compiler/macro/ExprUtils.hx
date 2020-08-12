@@ -109,5 +109,23 @@ class ExprUtils
             expr: e
         }
     }
+
+    public static function insertBeforeReturn(block :Array<Expr>, expr :Expr) : Void
+    {
+        if(block.length == 0) {
+            block.push(expr);
+        }
+        else {
+            var lastIndex = block.length -1;
+            switch block[lastIndex].expr {
+                case EReturn(_):
+                    var return_ = block[lastIndex];
+                    block[lastIndex] = expr;
+                    block.push(return_);
+                case _:
+                    block.push(expr);
+            }
+        }
+    }
 }
 #end
