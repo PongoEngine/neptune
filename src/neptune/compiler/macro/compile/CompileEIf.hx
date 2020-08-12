@@ -31,20 +31,21 @@ class CompileEIf
 {
     public static function compile(scope :Scope, original :Expr, econd :Expr, eif :Expr, eelse :Expr) : Expr
     {
-        var left = Compile.handleDomExpr(scope, eif);
-        var right = Compile.handleDomExpr(scope, eelse);
-        var ident = Compile.createIdent("ifelse");
-        var ifExpr = EIf(econd, left, right).toExpr()
-            .createDefVar(ident)
-            .toExpr();
-        scope.addVar(ifExpr);
+        // var left = Compile.handleDomExpr(scope, eif);
+        // var right = Compile.handleDomExpr(scope, eelse);
+        // var ident = Compile.createIdent("ifelse");
+        // var ifExpr = EIf(econd, left, right).toExpr()
+        //     .createDefVar(ident)
+        //     .toExpr();
+        // scope.addVarExpr(ifExpr);
 
-        var update = [econd, left, right]
-            .createDefCall("updateParent")
-            .toExpr();
+        // var update = [econd, left, right]
+        //     .createDefCall("updateParent")
+        //     .toExpr();
             
-        scope.addUpdate(update);
-        return ident.createDefIdent().toExpr();
+        // scope.addUpdateExpr(update);
+        // return ident.createDefIdent().toExpr();
+        return null;
     }
 }
 #end

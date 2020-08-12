@@ -38,7 +38,18 @@ class CompileEConst
                     original;
                 }
                 else {
-                    [original].createDefCall("createText").toExpr();
+                    // var text = [original].createDefCall("createText").toExpr()
+                        // .createDefVar
+                    var ident = Compile.createIdent("text");
+                    var var_ = [original].createDefCall("createText").toExpr()
+                        .createDefVar(ident)
+                        .toExpr();
+
+                    [var_, ident.createDefIdent().toExpr()].createDefBlock().toExpr();
+
+                    // // scope.addVarExpr(var_);
+
+                    // ident.createDefIdent().toExpr();
                 }
             case _:
                 [original].createDefCall("createText").toExpr();

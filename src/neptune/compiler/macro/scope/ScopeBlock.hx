@@ -37,6 +37,7 @@ class ScopeBlock implements Scope
         _block = block;
         _vars = new Map<String, Var>();
         _updates = [];
+        _replacements = new Map<Expr, Array<Expr>>();
         _setters = new Map<String, Array<Expr>>();
     }
 
@@ -60,30 +61,30 @@ class ScopeBlock implements Scope
         return _vars.get(name);
     }
 
-    public function addVar(expr :Expr) : Void
+    public function setReplacement(old :Expr, new_ :Array<Expr>) : Void
     {
-        switch expr.expr {
-            case EVars(vars):
-                if(vars.length != 1) throw "err";
-                if(_block.length == 1) {
-                    Context.warning("Not sure if safe", Context.currentPos());
-                    _block.unshift(expr);
-                }
-                else {
-                    var deps = new Deps().findDeps(vars[0].expr);
-                    var index = deps.getInsertIndex(_block);
-                    _block.insert(index, expr);
-                }
-            case _:
-                throw "impossible";
-        }
+        // switch expr.expr {
+        //     case EVars(vars):
+        //         if(vars.length != 1) throw "err";
+        //         if(_block.length == 1) {
+        //             Context.warning("Not sure if safe", Context.currentPos());
+        //             _block.unshift(expr);
+        //         }
+        //         else {
+        //             var deps = new Deps().findDeps(vars[0].expr);
+        //             var index = deps.getInsertIndex(_block);
+        //             _block.insert(index, expr);
+        //         }
+        //     case _:
+        //         throw "impossible";
+        // }
     }
 
     /**
      * Raw dom update that needs to be called when dependency is updated.
      * @param expr 
      */
-    public function addUpdate(expr :Expr) : Void
+    public function addUpdateExpr(expr :Expr) : Void
     {
         _updates.push(expr);
     }
@@ -93,7 +94,7 @@ class ScopeBlock implements Scope
         AssignmentUtil.transformAssignment(assignment);
     }
 
-    public function addSetters() : Void
+    public function updateBlock() : Void
     {
         for(update in _updates) {
             for(dep in Deps.from(update)) {
@@ -113,6 +114,7 @@ class ScopeBlock implements Scope
 
     private var _block :Array<Expr>;
     private var _vars :Map<String, Var>;
+    private var _replacements :Map<Expr, Array<Expr>>; //?
     private var _updates :Array<Expr>;
     private var _setters :Map<String, Array<Expr>>;
 }

@@ -13,16 +13,16 @@ Expressions.prototype = {
 		set_x = function(val) {
 			x = val;
 		};
-		var element_div_2 = window.document.createElement("div");
+		var element_div_3 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
 		var element_button_0 = window.document.createElement("button");
 		neptune_platform_html_HtmlPlatform.addChildren(element_button_0,[window.document.createTextNode("Increment X")]);
 		element_button_0.onclick = onClick;
 		var tmp1 = window.document.createTextNode(" ");
-		var element_p_1 = window.document.createElement("p");
-		neptune_platform_html_HtmlPlatform.addChildren(element_p_1,[window.document.createTextNode(x)]);
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_2,[tmp,element_button_0,tmp1,element_p_1,window.document.createTextNode(" ")]);
-		return element_div_2;
+		var element_p_2 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_2,[window.document.createTextNode(x)]);
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_3,[tmp,element_button_0,tmp1,element_p_2,window.document.createTextNode(" ")]);
+		return element_div_3;
 	}
 };
 var Main = function() { };

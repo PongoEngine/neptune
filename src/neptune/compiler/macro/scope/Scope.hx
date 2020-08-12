@@ -31,10 +31,10 @@ interface Scope
     function createChild(block :Array<Expr>) : Scope;
     function saveVar(var_ :Var) : Void;
     function getVar(name :String) : Var;
-    function addVar(expr :Expr) : Void;
-    function addUpdate(expr :Expr) : Void;
+    function setReplacement(old :Expr, new_ :Array<Expr>) : Void;
+    function addUpdateExpr(expr :Expr) : Void;
     function transformAssignment(expr :Expr) : Void;
-    function addSetters() : Void;
+    function updateBlock() : Void;
 }
 
 #end
