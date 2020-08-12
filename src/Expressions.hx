@@ -37,7 +37,8 @@ class Expressions implements Neptune
         return 
             <div>
                 {
-                    <h1>Hi</h1>
+                    var h1 = <h1>Hi</h1>;
+                    h1
                 }
             </div>;
     }

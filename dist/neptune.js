@@ -8,7 +8,7 @@ Expressions.prototype = {
 		var tmp = window.document.createTextNode(" ");
 		var element_h1_0 = window.document.createElement("h1");
 		neptune_platform_html_HtmlPlatform.addChildren(element_h1_0,[window.document.createTextNode("Hi")]);
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_1,[tmp,element_h1_0,window.document.createTextNode(" ")]);
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_1,[tmp,window.document.createTextNode(element_h1_0),window.document.createTextNode(" ")]);
 		return element_div_1;
 	}
 };

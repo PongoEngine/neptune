@@ -161,7 +161,11 @@ class Compile
                 CompileEFor.compile(scope, original, it, expr);
 
             case EVars(vars):
-                original;
+                EVars(vars.map(v -> {
+                    var e = handleDomExpr(scope, v.expr);
+                    v.expr = e;
+                    v;
+                })).toExpr();
 
             case EMeta(s, e):
                 var dom = Compile.compileMeta(e);
@@ -174,7 +178,6 @@ class Compile
                 original;
 
             case _:
-                trace(original.expr);
                 throw "not implemented yet";
         }
     }
