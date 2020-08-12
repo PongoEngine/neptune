@@ -25,6 +25,7 @@ package neptune.compiler.macro;
 #if macro
 import neptune.compiler.macro.scope.Scope;
 import neptune.compiler.macro.scope.ScopeModule;
+import neptune.compiler.macro.compile.Compile;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -128,8 +129,8 @@ class NeptuneMacro
                 handleExpr(eelse, scope, scopes);
 
             case EMeta(s, e):
-                var dom = CompileDom.compileMeta(e);
-                var exprDef = CompileDom.handleTree(scope, dom).expr;
+                var dom = Compile.compileMeta(e);
+                var exprDef = Compile.handleTree(scope, dom).expr;
                 expr.expr = exprDef;
 
             case ENew(t, params):
