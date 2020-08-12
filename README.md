@@ -54,7 +54,8 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 - [x] ENew
   * Not Supported
 
-- [ ] EUnop
+- [x] EUnop
+  * Not Supported
 
 - [x] EVars
   * Not Supported

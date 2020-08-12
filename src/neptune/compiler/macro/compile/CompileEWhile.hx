@@ -31,7 +31,7 @@ class CompileEWhile
 {
     public static function compile(scope :Scope, original :Expr, econd :Expr, e :Expr, normalWhile :Bool) : Expr
     {
-        return original;
+        throw "not implemented yet";
     }
 }
 #end

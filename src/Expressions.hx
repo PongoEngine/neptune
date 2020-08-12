@@ -34,38 +34,11 @@ class Expressions implements Neptune
 
     public function template() : Node
     {
-        var items = [
-            <p>Item1</p>,
-            <p>Item2</p>,
-            <p>Item3</p>,
-            <p>Item4</p>
-        ];
-        
-        var index = 0;
-        var length = 0;
-        function onClick() {
-            // index += 1;
-            length += 1;
-        }
-
         return 
             <div>
-                {items[index]}
-                <p>{"Taco" + index}</p>
-                <p>{("Hello")}</p>
                 {
-                    [
-                        <h1>Hello</h1>,
-                        <p>World</p>,
-                        <button onclick={onClick}>How are you?</button>
-                    ]
+                    <h1>Hi</h1>
                 }
-                {
-                    for(i in 0...length) {
-                        <h1>ForItem{i}</h1>
-                    }
-                }
-
             </div>;
     }
 }

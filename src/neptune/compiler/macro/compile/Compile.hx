@@ -170,6 +170,9 @@ class Compile
             case EArrayDecl(values):
                 CompileEArrayDecl.compile(scope, original, values);
 
+            case EUnop(op, postFix, e):
+                original;
+
             case _:
                 trace(original.expr);
                 throw "not implemented yet";
