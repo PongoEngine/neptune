@@ -40,6 +40,11 @@ class HtmlPlatform
         return document.createTextNode(text);
     }
 
+    public static inline function createBlank() : Text
+    {
+        return document.createTextNode("");
+    }
+
     public static inline function createFragment() : DocumentFragment
     {
         return document.createDocumentFragment();

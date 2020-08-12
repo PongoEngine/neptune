@@ -59,7 +59,8 @@ class CompileEConst
     //not a final solution
     private static function isElement(scope :Scope, ident :String) : Bool
     {
-        return switch Context.typeof(scope.getVar(ident).expr) {
+        var var_ = scope.getVar(ident);
+        return var_ == null ? false : switch Context.typeof(scope.getVar(ident).expr) {
             case TInst(t, params):
                 t.toString() == "js.html.Element";
             case _:

@@ -29,19 +29,16 @@ using neptune.util.NStringUtils;
 
 class CompileEIf
 {
-    public static function compile(scope :Scope, original :Expr, econd :Expr, eif :Expr, eelse :Expr) : Expr
+    public static function compile(scope :Scope, original :Expr, econd :Expr, eif :Expr, eelse :Null<Expr>) : Expr
     {
         var leftIdent = Compile.createIdent("left");
         var left = Compile.handleDomExpr(scope, eif)
             .createDefVar(leftIdent)
             .toExpr();
         scope.addVarExpr(left);
-        
+
         var rightIdent = Compile.createIdent("right");
-        var right = Compile.handleDomExpr(scope, eelse)
-            .createDefVar(rightIdent)
-            .toExpr();
-        scope.addVarExpr(right);
+        handleElse(scope, eelse, rightIdent);
 
         var ifElseIdent = Compile.createIdent("ifelse");
         var ifExpr = EIf(econd, leftIdent.createDefIdent().toExpr(), rightIdent.createDefIdent().toExpr()).toExpr()
@@ -55,6 +52,22 @@ class CompileEIf
             
         scope.addUpdateExpr(update);
         return ifElseIdent.createDefIdent().toExpr();
+    }
+
+    private static function handleElse(scope :Scope, eelse :Null<Expr>, rightIdent :String) 
+    {
+        if(eelse != null) {
+            var right = Compile.handleDomExpr(scope, eelse)
+                .createDefVar(rightIdent)
+                .toExpr();
+            scope.addVarExpr(right);
+        }
+        else {
+            var right = [].createDefCall("createBlank").toExpr()
+                .createDefVar(rightIdent)
+                .toExpr();
+            scope.addVarExpr(right);
+        }
     }
 }
 #end

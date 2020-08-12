@@ -11,36 +11,13 @@ Expressions.prototype = {
 			set_x(x + 1);
 		};
 		var frag = window.document.createElement("div");
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
-		var element_div_0 = window.document.createElement("div");
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-		frag.appendChild(element_div_0);
+		var _g = 0;
+		while(_g < 1000) {
+			++_g;
+			var element_div_0 = window.document.createElement("div");
+			neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
+			frag.appendChild(element_div_0);
+		}
 		set_x = function(val) {
 			x = val;
 		};

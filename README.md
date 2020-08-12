@@ -86,7 +86,8 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 - [x] EBreak
   * Not Supported
 
-- [ ] EContinue
+- [x] EContinue
+  * Not Supported
 
 - [ ] EUntyped
 
