@@ -31,31 +31,30 @@ class CompileEArray
 {
     public static function compile(scope :Scope, original :Expr, e1 :Expr, e2 :Expr) : Expr
     {
-        // var ident1 = Compile.createIdent("arra");
-        // var ident2 = Compile.createIdent("lastIndex");
-        // var lastIndex = e2
-        //     .createDefVar(ident2)
-        //     .toExpr();
-        // scope.addVarExpr(lastIndex);
-        // var varExpr = original
-        //     .createDefVar(ident1)
-        //     .toExpr();
-        // scope.addVarExpr(varExpr);
+        var ident1 = Compile.createIdent("arra");
+        var ident2 = Compile.createIdent("lastIndex");
+        var lastIndex = e2
+            .createDefVar(ident2)
+            .toExpr();
+        scope.addVarExpr(lastIndex);
+        var varExpr = original
+            .createDefVar(ident1)
+            .toExpr();
+        scope.addVarExpr(varExpr);
 
-        // var left = EArray(e1, ident2.createDefIdent().toExpr()).toExpr();
+        var left = EArray(e1, ident2.createDefIdent().toExpr()).toExpr();
 
-        // var update1 = [left, original]
-        //     .createDefCall("updateNode")
-        //     .toExpr();
-        // var update2 = OpAssign.createDefBinop(
-        //     ident2.createDefIdent().toExpr(),
-        //     e2
-        // ).toExpr();
-        // var update = [update1, update2].createDefBlock().toExpr();
+        var update1 = [left, original]
+            .createDefCall("updateNode")
+            .toExpr();
+        var update2 = OpAssign.createDefBinop(
+            ident2.createDefIdent().toExpr(),
+            e2
+        ).toExpr();
+        var update = [update1, update2].createDefBlock().toExpr();
 
-        // scope.addUpdateExpr(update);
-        // return ident1.createDefIdent().toExpr();
-        return null;
+        scope.addUpdateExpr(update);
+        return ident1.createDefIdent().toExpr();
     }
 }
 #end

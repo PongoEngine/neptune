@@ -61,7 +61,6 @@ class CompileEConst
     {
         return switch Context.typeof(scope.getVar(ident).expr) {
             case TInst(t, params):
-                trace(t.toString());
                 t.toString() == "js.html.Element";
             case _:
                 false;

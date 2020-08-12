@@ -42,7 +42,7 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
   * Value: Node
   * Update: Determined by parenthesis item
 
-- [x] EObjectDecl
+- [ ] EObjectDecl
   * Not Supported
 
 - [x] EArrayDecl
@@ -51,27 +51,27 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] ECall
 
-- [x] ENew
+- [ ] ENew
   * Not Supported
 
 - [x] EUnop
   * Not Supported
 
-- [x] EVars
+- [ ] EVars
   * Not Supported
 
-- [x] EFunction
+- [ ] EFunction
   * Not Supported
 
-- [x] EBlock
+- [ ] EBlock
   * Value: Fragment
   * Update: None
 
-- [x] EFor
+- [ ] EFor
   * Value: Fragment
   * Update: Replace node when condition changes
 
-- [x] EIf
+- [ ] EIf
   * Value: Node
   * Update: Replace node when condition changes
 
@@ -101,6 +101,6 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] ECheckType
 
-- [x] EMeta
+- [ ] EMeta
   * Value: Node
   * Update: None

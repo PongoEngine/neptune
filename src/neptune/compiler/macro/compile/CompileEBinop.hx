@@ -31,19 +31,18 @@ class CompileEBinop
 {
     public static function compile(scope :Scope, original :Expr, e1 :Expr, e2 :Expr) : Expr
     {
-        // var ident = Compile.createIdent("binop");
-        // var createTextVar = [original].createDefCall("createText").toExpr()
-        //     .createDefVar(ident)
-        //     .toExpr();
-        // scope.addVarExpr(createTextVar);
+        var ident = Compile.createIdent("binop");
+        var createTextVar = [original].createDefCall("createText").toExpr()
+            .createDefVar(ident)
+            .toExpr();
+        scope.addVarExpr(createTextVar);
 
-        // var update = [ident.createDefIdent().toExpr(), original]
-        //     .createDefCall("updateTextNode")
-        //     .toExpr();
+        var update = [ident.createDefIdent().toExpr(), original]
+            .createDefCall("updateTextNode")
+            .toExpr();
 
-        // scope.addUpdateExpr(update);
-        // return ident.createDefIdent().toExpr();
-        return null;
+        scope.addUpdateExpr(update);
+        return ident.createDefIdent().toExpr();
     }
 }
 #end

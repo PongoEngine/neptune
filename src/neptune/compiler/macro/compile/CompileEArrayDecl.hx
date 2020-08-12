@@ -31,7 +31,10 @@ class CompileEArrayDecl
 {
     public static function compile(scope :Scope, original :Expr, values :Array<Expr>) : Expr
     {
-        var nodes = values.map(Compile.handleDomExpr.bind(scope))
+        for(i in 0...values.length) {
+            values[i] = Compile.handleDomExpr(scope, values[i]);
+        }
+        var nodes = values
             .createDefArrayDecl()
             .toExpr();
         return [nodes].createDefCall("createFragmentNodes")
