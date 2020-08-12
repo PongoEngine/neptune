@@ -57,14 +57,14 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 - [x] EUnop
   * Not Supported
 
-- [ ] EVars
+- [x] EVars
   * Not Supported
 
 - [ ] EFunction
   * Not Supported
 
-- [ ] EBlock
-  * Value: Fragment
+- [x] EBlock
+  * Value: Node
   * Update: None
 
 - [ ] EFor

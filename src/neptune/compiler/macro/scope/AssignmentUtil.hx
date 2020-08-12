@@ -29,7 +29,7 @@ using neptune.compiler.macro.scope.DepsUtil;
 
 class AssignmentUtil
 {
-    public static function transformAssignment(assignment :Expr) : Void
+    public static function transformAssignment(assignment :Expr) : Null<String>
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):
@@ -39,6 +39,7 @@ class AssignmentUtil
                             case EConst(c): switch c {
                                 case CIdent(s):
                                     assignment.expr = [e2].createDefCall('set_${s}');
+                                    return s;
                                 case _:
                             }
                             case _:
@@ -49,6 +50,7 @@ class AssignmentUtil
                                 case CIdent(s):
                                     var binopExpr = EBinop(op, e1, e2).toExpr();
                                     assignment.expr = [binopExpr].createDefCall('set_${s}');
+                                    return s;
                                 case _:
                             }
                             case _:
@@ -57,6 +59,7 @@ class AssignmentUtil
                 }
             case _:
         }
+        return null;
     }
 
     public static function createSetterTemp(ident :String) : Expr

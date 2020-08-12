@@ -43,6 +43,10 @@ class NeptuneMacro
         }
 
         for(scope in scopes) {
+            scope.pushAssignments();
+        }
+
+        for(scope in scopes) {
             scope.updateBlock();
         }
 

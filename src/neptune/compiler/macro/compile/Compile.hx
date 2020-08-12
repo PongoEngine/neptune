@@ -150,6 +150,7 @@ class Compile
             case EVars(vars):
                 for(i in 0...vars.length) {
                     vars[i].expr = handleDomExpr(scope, vars[i].expr);
+                    scope.saveVar(vars[i]);
                 }
                 original;
 

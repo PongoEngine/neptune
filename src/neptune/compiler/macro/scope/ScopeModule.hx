@@ -23,6 +23,7 @@ package neptune.compiler.macro.scope;
 
 #if macro
 import haxe.macro.Expr;
+import neptune.util.Set;
 using neptune.compiler.macro.ExprUtils;
 
 class ScopeModule implements Scope
@@ -67,6 +68,10 @@ class ScopeModule implements Scope
     }
 
     public function updateBlock() : Void
+    {
+    }
+
+    public function pushAssignments(?assignments :Set<String>) : Void
     {
     }
 

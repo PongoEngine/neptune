@@ -23,8 +23,8 @@ package neptune.compiler.macro.scope;
 
 import haxe.macro.Context;
 #if macro
-import neptune.util.Set;
 import haxe.macro.Expr;
+import neptune.util.Set;
 using neptune.compiler.macro.ExprUtils;
 using neptune.compiler.macro.scope.DepsUtil;
 
@@ -38,6 +38,7 @@ class ScopeBlock implements Scope
         _vars = new Map<String, Var>();
         _varExprs = [];
         _updates = [];
+        _assignments = new Set<String>();
         _setters = new Map<String, Array<Expr>>();
     }
 
@@ -77,11 +78,18 @@ class ScopeBlock implements Scope
 
     public inline function transformAssignment(assignment :Expr) : Void
     {
-        AssignmentUtil.transformAssignment(assignment);
+        var ident = AssignmentUtil.transformAssignment(assignment);
+        if(ident != null) {
+            _assignments.set(ident);
+        }
     }
 
     public function updateBlock() : Void
     {
+        if(this.parent != null) {
+            this.parent.pushAssignments(_assignments);
+        }
+
         for(update in _updates) {
             for(dep in Deps.from(update)) {
                 if(_setters.exists(dep)) {
@@ -90,17 +98,32 @@ class ScopeBlock implements Scope
             }
         }
 
-        blah();
+        addVarsToBlock();
 
         for(setter in _setters.keyValueIterator()) {
-            var tempSetter = AssignmentUtil.createSetterTemp(setter.key);
-            _block.unshift(tempSetter);
-            var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value);
-            _block.insertBeforeReturn(fullSetter);
+            if(_assignments.exists(setter.key)) {
+                var tempSetter = AssignmentUtil.createSetterTemp(setter.key);
+                _block.unshift(tempSetter);
+                var fullSetter = AssignmentUtil.createSetter(setter.key, setter.value);
+                _block.insertBeforeReturn(fullSetter);
+            }
         }
     }
 
-    private function blah() {
+    public function pushAssignments(?newAssignments :Set<String>) : Void
+    {
+        if(newAssignments != null) {
+            for(assignment in newAssignments) {
+                _assignments.set(assignment);
+            }
+        }
+        
+        if(this.parent != null) {
+            this.parent.pushAssignments(_assignments);
+        }
+    }
+
+    private function addVarsToBlock() {
         for(expr in _varExprs) {
             switch expr.expr {
                 case EVars(vars):
@@ -125,6 +148,7 @@ class ScopeBlock implements Scope
     private var _updates :Array<Expr>;
     private var _varExprs :Array<Expr>;
     private var _setters :Map<String, Array<Expr>>;
+    private var _assignments :Set<String>;
 }
 
 #end
