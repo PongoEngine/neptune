@@ -32,29 +32,9 @@ class Expressions implements Neptune
     {
     }
 
-    public function doggo() : Node
-        {
-            var x = 0;
-            var y = 20;
-    
-            function onClick() {
-                x += 1;
-            }
-    
-            return 
-                <div>
-                    {
-                        var i = <span>Sup</span>;   
-                        <h3>Hi {i;}</h3>
-                    }
-                    <button onclick={onClick}>Action</button>
-                </div>;
-        }
-
     public function template() : Node
     {
         var x = 0;
-        var y = 20;
 
         function onClick() {
             x += 1;
@@ -63,11 +43,12 @@ class Expressions implements Neptune
         return 
             <div>
                 {
-                    var i = <span>Sup</span>;   
-                    <h3>Hi {i;}</h3>
+                    for(i in 0...10) {
+                        <h1>Hi</h1>
+                    }
                 }
                 <button onclick={onClick}>Action</button>
-                {this.doggo();}
+                <p>{x;}</p>
             </div>;
     }
 }

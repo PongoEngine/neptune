@@ -36,6 +36,7 @@ class CompileEFor
             .toExpr();
 
         var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+        
         var compiledExpr = Compile.handleDomExpr(scope, expr);
         var callAppendChild = ECall(appendChild, [compiledExpr]).toExpr();
 
@@ -47,21 +48,6 @@ class CompileEFor
         var forVar = e.createDefVar(ident).toExpr();
 
         scope.addVarExpr(forVar);
-        
-        var updateIdent = Compile.createIdent("for_update");
-        var update1 = [ident.createDefIdent().toExpr(), e]
-            .createDefCall("updateNode").toExpr()
-            .createDefVar(updateIdent)
-            .toExpr();
-
-        var update2 = OpAssign.createDefBinop(
-            ident.createDefIdent().toExpr(),
-            ECast(updateIdent.createDefIdent().toExpr(), null).toExpr()
-        ).toExpr();
-
-        var update = [update1, update2].createDefBlock().toExpr();
-
-        scope.addUpdateExpr(update);
         
         return ident.createDefIdent().toExpr();
     }
