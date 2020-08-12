@@ -164,6 +164,9 @@ class Compile
             case EUnop(op, postFix, e):
                 original;
 
+            case EBreak:
+                Context.fatalError("Break is not supported", Context.currentPos());
+
             case _:
                 throw "not implemented yet";
         }

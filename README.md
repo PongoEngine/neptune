@@ -83,7 +83,8 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
 
 - [ ] EReturn
 
-- [ ] EBreak
+- [x] EBreak
+  * Not Supported
 
 - [ ] EContinue
 
