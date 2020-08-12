@@ -27,34 +27,11 @@ import neptune.compiler.macro.scope.Scope;
 using neptune.compiler.macro.ExprUtils;
 using neptune.util.NStringUtils;
 
-class CompileEArray
+class CompileEWhile
 {
-    public static function compile(scope :Scope, original :Expr, e1 :Expr, e2 :Expr) : Expr
+    public static function compile(scope :Scope, original :Expr, econd :Expr, e :Expr, normalWhile :Bool) : Expr
     {
-        var ident1 = Compile.createIdent("arra");
-        var ident2 = Compile.createIdent("lastIndex");
-        var lastIndex = e2
-            .createDefVar(ident2)
-            .toExpr();
-        scope.addVar(lastIndex);
-        var varExpr = original
-            .createDefVar(ident1)
-            .toExpr();
-        scope.addVar(varExpr);
-
-        var left = EArray(e1, ident2.createDefIdent().toExpr()).toExpr();
-
-        var update1 = [left, original]
-            .createDefCall("updateNode")
-            .toExpr();
-        var update2 = OpAssign.createDefBinop(
-            ident2.createDefIdent().toExpr(),
-            e2
-        ).toExpr();
-        var update = [update1, update2].createDefBlock().toExpr();
-
-        scope.addUpdate(update);
-        return ident1.createDefIdent().toExpr();
+        return original;
     }
 }
 #end

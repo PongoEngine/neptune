@@ -50,9 +50,9 @@ Sidenote: If anyone reading this knows how the xml meta macro works hit me up. I
   * Update: None
 
 - [ ] ECall
-  * Not Supported
 
 - [x] ENew
+  * Not Supported
 
 - [ ] EUnop
 

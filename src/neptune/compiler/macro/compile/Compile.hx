@@ -137,6 +137,9 @@ class Compile
 
             case EBlock(exprs):
                 EBlock(exprs.map(handleDomExpr.bind(scope))).toExpr();
+
+            case EWhile(econd, e, normalWhile):
+                CompileEWhile.compile(scope, original, econd, e, normalWhile);
             
             // case ETernary(econd, eif, eelse):
                 // var left = handleDomExpr(scope, eif);

@@ -22,10 +22,7 @@ package neptune.compiler.macro.compile;
 */
 
 #if macro
-import haxe.macro.Context;
 import haxe.macro.Expr;
-import neptune.compiler.dom.Scanner;
-import neptune.compiler.dom.Parser;
 import neptune.compiler.macro.scope.Scope;
 using neptune.compiler.macro.ExprUtils;
 using neptune.util.NStringUtils;
