@@ -167,6 +167,9 @@ class Compile
             case EBreak:
                 Context.fatalError("Break is not supported", Context.currentPos());
 
+            case ECall(e, params):
+                original;
+
             case _:
                 throw "not implemented yet";
         }

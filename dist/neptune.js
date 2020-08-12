@@ -3,32 +3,51 @@
 var Expressions = function() {
 };
 Expressions.prototype = {
-	template: function() {
+	doggo: function() {
 		var set_x = function(val) {
 		};
 		var x = 0;
 		var onClick = function() {
 			set_x(x + 1);
 		};
-		var frag = window.document.createElement("div");
-		var _g = 0;
-		while(_g < 1000) {
-			++_g;
-			var element_div_0 = window.document.createElement("div");
-			neptune_platform_html_HtmlPlatform.addChildren(element_div_0,[window.document.createTextNode("Hi")]);
-			frag.appendChild(element_div_0);
-		}
 		set_x = function(val) {
 			x = val;
 		};
-		var element_div_4 = window.document.createElement("div");
+		var element_div_3 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
+		var element_span_0 = window.document.createElement("span");
+		neptune_platform_html_HtmlPlatform.addChildren(element_span_0,[window.document.createTextNode("Sup")]);
+		var element_h3_1 = window.document.createElement("h3");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h3_1,[window.document.createTextNode("Hi "),element_span_0]);
 		var tmp1 = window.document.createTextNode(" ");
-		var element_button_3 = window.document.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(element_button_3,[window.document.createTextNode("Action")]);
-		element_button_3.onclick = onClick;
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_4,[tmp,frag,tmp1,element_button_3,window.document.createTextNode(" ")]);
-		return element_div_4;
+		var element_button_2 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(element_button_2,[window.document.createTextNode("Action")]);
+		element_button_2.onclick = onClick;
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_3,[tmp,element_h3_1,tmp1,element_button_2,window.document.createTextNode(" ")]);
+		return element_div_3;
+	}
+	,template: function() {
+		var set_x = function(val) {
+		};
+		var x = 0;
+		var onClick = function() {
+			set_x(x + 1);
+		};
+		set_x = function(val) {
+			x = val;
+		};
+		var element_div_7 = window.document.createElement("div");
+		var tmp = window.document.createTextNode(" ");
+		var element_span_4 = window.document.createElement("span");
+		neptune_platform_html_HtmlPlatform.addChildren(element_span_4,[window.document.createTextNode("Sup")]);
+		var element_h3_5 = window.document.createElement("h3");
+		neptune_platform_html_HtmlPlatform.addChildren(element_h3_5,[window.document.createTextNode("Hi "),element_span_4]);
+		var tmp1 = window.document.createTextNode(" ");
+		var element_button_6 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(element_button_6,[window.document.createTextNode("Action")]);
+		element_button_6.onclick = onClick;
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_7,[tmp,element_h3_5,tmp1,element_button_6,window.document.createTextNode(" "),this.doggo(),window.document.createTextNode(" ")]);
+		return element_div_7;
 	}
 };
 var Main = function() { };

@@ -88,7 +88,7 @@ class DepsUtil
 
     public static function getInsertIndex(deps :Deps, block :Array<Expr>) : Int
     {
-        var index = 0;
+        var index = 1;
         for(blockItem in block) {
             switch blockItem.expr {
                 case EVars(vars): 
