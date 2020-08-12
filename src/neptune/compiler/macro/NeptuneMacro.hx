@@ -188,10 +188,7 @@ class NeptuneMacro
 
             case EVars(vars):
                 for(var_ in vars) {
-                    switch var_.expr.expr {
-                        case EMeta(s, e): scope.saveMeta(var_.name);
-                        case _:
-                    }
+                    scope.saveVar(var_);
                     handleExpr(var_.expr, scope, scopes);
                 }
 

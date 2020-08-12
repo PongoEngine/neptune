@@ -29,8 +29,8 @@ interface Scope
 {
     var parent :Scope;
     function createChild(block :Array<Expr>) : Scope;
-    function saveMeta(name :String) : Void;
-    function isMeta(name :String) : Bool;
+    function saveVar(var_ :Var) : Void;
+    function getVar(name :String) : Var;
     function addVar(expr :Expr) : Void;
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;

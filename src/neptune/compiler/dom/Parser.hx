@@ -87,7 +87,7 @@ class Parser
                     var exprStr = parseExpr(scanner);
                     var max = scanner.curIndex + scanner.startingIndex;
                     var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
-                    var expr = Context.parse('{${exprStr};}', pos);
+                    var expr = Context.parse('{${exprStr}}', pos);
                     assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
                     return DomExpr(expr);
                 }

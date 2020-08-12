@@ -41,14 +41,14 @@ class ScopeModule implements Scope
         return c;
     }
 
-    public function saveMeta(name :String) : Void
+    public function saveVar(var_ :Var) : Void
     {
         throw "err";
     }
 
-    public function isMeta(name :String) : Bool
+    public function getVar(name :String) : Var
     {
-        return false;
+        throw "err";
     }
 
     public function addVar(expr :Expr) : Void

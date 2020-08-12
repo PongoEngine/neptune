@@ -141,22 +141,6 @@ class Compile
             case EWhile(econd, e, normalWhile):
                 CompileEWhile.compile(scope, original, econd, e, normalWhile);
             
-            // case ETernary(econd, eif, eelse):
-                // var left = handleDomExpr(scope, eif);
-                // var right = handleDomExpr(scope, eelse);
-                // var ident = Compile.createIdent();
-                // var createTernaryVar = ETernary(econd, left, right).toExpr()
-                //     .createDefVar(ident)
-                //     .toExpr();
-                // scope.addVar(createTernaryVar);
-
-                // var update = [econd, left, right]
-                //     .createDefCall("updateParent")
-                //     .toExpr();
-                    
-                // scope.addUpdate(update);
-                // ident.createDefIdent().toExpr();
-
             case EFor(it, expr):
                 CompileEFor.compile(scope, original, it, expr);
 
@@ -164,6 +148,7 @@ class Compile
                 EVars(vars.map(v -> {
                     var e = handleDomExpr(scope, v.expr);
                     v.expr = e;
+                    scope.saveVar(v);
                     v;
                 })).toExpr();
 

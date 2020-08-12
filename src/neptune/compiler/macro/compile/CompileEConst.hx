@@ -21,6 +21,7 @@ package neptune.compiler.macro.compile;
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import haxe.macro.Context;
 #if macro
 import haxe.macro.Expr;
 import neptune.compiler.macro.scope.Scope;
@@ -33,27 +34,27 @@ class CompileEConst
     {
         return switch const {
             case CIdent(s):
-                if(scope.isMeta(s)) {
+                if(isElement(scope, s)) {
                     original;
                 }
                 else {
-                    // var ident = Compile.createIdent(s);
-                    // var createTextVar = [original].createDefCall("createText").toExpr()
-                    //     .createDefVar(ident)
-                    //     .toExpr();
-                    // scope.addVar(createTextVar);
                     [original].createDefCall("createText").toExpr();
-
-                    // var update = [ident.createDefIdent().toExpr(), s.createDefIdent().toExpr()]
-                    //     .createDefCall("updateTextNode")
-                    //     .toExpr();
-
-                    // scope.addUpdate(update);
-                    // ident.createDefIdent().toExpr();
                 }
             case _:
                 [original].createDefCall("createText").toExpr();
         }
+    }
+
+    //not a final solution
+    private static function isElement(scope :Scope, ident :String) : Bool
+    {
+        return switch Context.typeof(scope.getVar(ident).expr) {
+            case TInst(t, params):
+                trace(t.toString());
+                t.toString() == "js.html.Element";
+            case _:
+                false;
+        };
     }
 }
 #end
