@@ -34,8 +34,7 @@ interface Scope
     function addVar(expr :Expr) : Void;
     function addUpdate(expr :Expr) : Void;
     function addAssignment(expr :Expr) : Void;
-    function completeSetters() : Void;
-    private function prepSetter(setter :String) : Void;
+    function addSetters() : Void;
 }
 
 #end

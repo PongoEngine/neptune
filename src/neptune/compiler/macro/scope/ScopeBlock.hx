@@ -50,6 +50,9 @@ class ScopeBlock implements Scope
     public inline function saveVar(var_ :Var) : Void
     {
         _vars.set(var_.name, var_);
+        if(!_setters.exists(var_.name)) {
+            _setters.set(var_.name, []);
+        }
     }
 
     public inline function getVar(name :String) : Var
@@ -87,15 +90,10 @@ class ScopeBlock implements Scope
 
     public function addAssignment(assignment :Expr) : Void
     {
-        var setters = new Set<String>();
-        AssignmentUtil.handleAssignment(assignment, setters);
-        for(s in setters) {
-            prepSetter(s);
-        }
-
+        AssignmentUtil.handleAssignment(assignment);
     }
 
-    public function completeSetters() : Void
+    public function addSetters() : Void
     {
         for(update in _updates) {
             for(dep in Deps.from(update)) {
@@ -112,22 +110,6 @@ class ScopeBlock implements Scope
             var deps = Deps.from(fullSetter);
             var index = deps.getInsertIndex(_block);
             _block.insert(index, fullSetter);
-        }
-    }
-
-    private function prepSetter(setter :String) : Void
-    {
-        var deps = new Deps();
-        deps.set(setter);
-        var index = deps.getInsertIndex(_block);
-        if(index == -1) {
-            this.parent.prepSetter(setter);
-        }
-        else {
-            if(_setters.exists(setter)) {
-                throw "already exists setter!";
-            }
-            _setters.set(setter, []);
         }
     }
 

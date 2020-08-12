@@ -66,13 +66,8 @@ class ScopeModule implements Scope
         throw "err";
     }
 
-    public function completeSetters() : Void
+    public function addSetters() : Void
     {
-    }
-
-    private function prepSetter(setter :String) : Void
-    {
-        throw "err";
     }
 
     private var _fields :Array<Field>;

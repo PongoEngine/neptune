@@ -43,7 +43,7 @@ class NeptuneMacro
         }
 
         for(scope in scopes) {
-            scope.completeSetters();
+            scope.addSetters();
         }
 
         #if debugFields

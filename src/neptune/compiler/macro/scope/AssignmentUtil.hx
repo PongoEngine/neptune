@@ -29,7 +29,7 @@ using neptune.compiler.macro.scope.DepsUtil;
 
 class AssignmentUtil
 {
-    public static function handleAssignment(assignment :Expr, setters :Set<String>) : Void
+    public static function handleAssignment(assignment :Expr) : Void
     {
         switch assignment.expr {
             case EBinop(op, e1, e2):
@@ -38,8 +38,7 @@ class AssignmentUtil
                         switch e1.expr {
                             case EConst(c): switch c {
                                 case CIdent(s):
-                                    setters.set(s);
-                                    transformAssignment(assignment, e2, s);
+                                    assignment.expr = [e2].createDefCall('set_${s}');
                                 case _:
                             }
                             case _:
@@ -48,9 +47,8 @@ class AssignmentUtil
                         switch e1.expr {
                             case EConst(c): switch c {
                                 case CIdent(s):
-                                    setters.set(s);
                                     var binopExpr = EBinop(op, e1, e2).toExpr();
-                                    transformAssignment(assignment, binopExpr, s);
+                                    assignment.expr = [binopExpr].createDefCall('set_${s}');
                                 case _:
                             }
                             case _:
@@ -63,8 +61,6 @@ class AssignmentUtil
 
     public static function createSetterTemp(ident :String) : Expr
     {
-        var assignment = createAssignment(ident);
-
         var block = []
             .createDefBlock()
             .toExpr();
@@ -100,17 +96,6 @@ class AssignmentUtil
             .toExpr();
         return OpAssign.createDefBinop(this_, that)
             .toExpr();
-    }
-
-    /**
-     * Transform assignment expression in place to call setter
-     * @param assignment 
-     * @param e2 
-     * @param ident 
-     */
-    private static function transformAssignment(assignment :Expr, e2 :Expr, ident :String) : Void
-    {
-        assignment.expr = [e2].createDefCall('set_${ident}');
     }
 }
 
