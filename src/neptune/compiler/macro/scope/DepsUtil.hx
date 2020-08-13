@@ -79,6 +79,8 @@ class DepsUtil
             case EWhile(econd, e, normalWhile):
                 findDeps(deps, econd);
                 findDeps(deps, e);
+            case EReturn(e):
+                findDeps(deps, e);
             case _:
                 trace(expr.expr);
                 throw "not implemented yet";

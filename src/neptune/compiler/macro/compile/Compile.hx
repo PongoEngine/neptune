@@ -145,7 +145,7 @@ class Compile
                 CompileEWhile.compile(scope, original, econd, e, normalWhile);
             
             case EFor(it, expr):
-                CompileEFor.compile(scope, original, it, expr);
+                CompileEFor.compile(scope, it, expr);
 
             case EVars(vars):
                 for(i in 0...vars.length) {

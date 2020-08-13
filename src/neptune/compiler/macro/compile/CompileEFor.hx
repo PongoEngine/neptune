@@ -29,27 +29,50 @@ using neptune.util.NStringUtils;
 
 class CompileEFor
 {
-    public static function compile(scope :Scope, original :Expr, it :Expr, expr :Expr) : Expr
+    public static function compile(scope :Scope, it :Expr, expr :Expr) : Expr
     {
-        var frag = ["div".createDefString().toExpr()].createDefCall("createElement").toExpr()
-            .createDefVar("frag")
+        var fragIdent = Compile.createIdent("frag");
+        var frag = createFragment(fragIdent);
+        var callAppendChild = appendChild(fragIdent, scope, expr);
+        var forExpr = forBlock(fragIdent, it, frag, callAppendChild);
+
+        var forIdent = Compile.createIdent("for");
+
+        var updateFunc = forExpr
+            .createDefFuncAnon([])
+            .toExpr()
+            .createDefVar(forIdent)
             .toExpr();
 
-        var appendChild = EField("frag".createDefIdent().toExpr(), "appendChild").toExpr();
+        scope.addVarExpr(updateFunc);
         
+        return [].createDefCall(forIdent).toExpr();
+    }
+
+    private static function createFragment(ident :String) : Expr
+    {
+        return [].createDefCall("createFragment").toExpr()
+            .createDefVar(ident)
+            .toExpr();
+    }
+
+    private static function appendChild(fragIdent :String, scope :Scope, expr :Expr) : Expr
+    {
+        var appendChild = EField(fragIdent.createDefIdent().toExpr(), "appendChild").toExpr();
         var compiledExpr = Compile.handleDomExpr(scope, expr);
-        var callAppendChild = ECall(appendChild, [compiledExpr]).toExpr();
+        return ECall(appendChild, [compiledExpr]).toExpr();
+    }
 
-        var forExpr = EFor(it, callAppendChild).toExpr();
-        var returnExpr = "frag".createDefIdent().toExpr();
-        var e = [frag, forExpr, returnExpr].createDefBlock().toExpr();
-
-        var ident = Compile.createIdent("for");
-        var forVar = e.createDefVar(ident).toExpr();
-
-        scope.addVarExpr(forVar);
-        
-        return ident.createDefIdent().toExpr();
+    private static function forBlock(fragIdent :String, it :Expr, frag :Expr, callAppendChild :Expr) : Expr
+    {
+        var forExpr = EFor(it, callAppendChild)
+            .toExpr();
+        var returnExpr = fragIdent
+            .createDefIdent()
+            .toExpr()
+            .createDefReturn()
+            .toExpr();
+        return [frag, forExpr, returnExpr].createDefBlock().toExpr();
     }
 }
 #end

@@ -102,6 +102,11 @@ class ExprUtils
         });
     }
 
+    public static function createDefReturn(expr :Expr) : ExprDef
+    {
+        return EReturn(expr);
+    }
+
     public static function toExpr(e :ExprDef) : Expr
     {
         return {
