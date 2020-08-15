@@ -29,9 +29,11 @@ using neptune.compiler.macro.ExprUtils;
 class ScopeModule implements Scope
 {
     public var parent :Scope;
+    public var children :Array<Scope>;
 
     public function new(fields :Array<Field>) : Void
     {
+        this.children = [];
         _fields = fields;
     }
 
@@ -39,8 +41,18 @@ class ScopeModule implements Scope
     {
         var c = new ScopeBlock(block);
         c.parent = this;
+        this.children.push(c);
         return c;
     }
+
+    public function runThrough(fn :Scope -> Void) : Void
+    {
+        for(c in children) {
+            c.runThrough(fn);
+        }
+        fn(this);
+    }
+
 
     public function saveVar(var_ :Var) : Void
     {

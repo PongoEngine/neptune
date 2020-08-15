@@ -29,6 +29,8 @@ import neptune.util.Set;
 interface Scope
 {
     var parent :Scope;
+    var children :Array<Scope>;
+    function runThrough(fn :Scope -> Void) : Void;
     function createChild(block :Array<Expr>) : Scope;
     function saveVar(var_ :Var) : Void;
     function getVar(name :String) : Var;

@@ -31,9 +31,11 @@ using neptune.compiler.macro.scope.DepsUtil;
 class ScopeBlock implements Scope
 {
     public var parent :Scope;
+    public var children :Array<Scope>;
 
     public function new(block :Array<Expr>) : Void
     {
+        this.children = [];
         _block = block;
         _vars = new Map<String, Var>();
         _varExprs = [];
@@ -46,7 +48,16 @@ class ScopeBlock implements Scope
     {
         var c = new ScopeBlock(block);
         c.parent = this;
+        this.children.push(c);
         return c;
+    }
+
+    public function runThrough(fn :Scope -> Void) : Void
+    {
+        for(c in children) {
+            c.runThrough(fn);
+        }
+        fn(this);
     }
 
     public inline function saveVar(var_ :Var) : Void

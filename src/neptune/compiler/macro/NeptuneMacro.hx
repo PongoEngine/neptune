@@ -36,19 +36,18 @@ class NeptuneMacro
     macro static public function fromInterface():Array<Field> 
     {
         var fields = Context.getBuildFields();
-        var scope = new ScopeModule(fields);
-        var scopes :Array<Scope> = [scope];
+        var scopeModule = new ScopeModule(fields);
         for(field in fields) {
-            handleField(field, scope, scopes);
+            handleField(field, scopeModule);
         }
 
-        for(scope in scopes) {
+        scopeModule.runThrough((scope) -> {
             scope.pushAssignments();
-        }
+        });
 
-        for(scope in scopes) {
+        scopeModule.runThrough((scope) -> {
             scope.updateBlock();
-        }
+        });
 
         #if debugFields
         for(field in fields) {
@@ -61,33 +60,33 @@ class NeptuneMacro
         return fields;
     }
 
-    private static function handleField(field :Field, scope :Scope, scopes :Array<Scope>) : Void
+    private static function handleField(field :Field, scope :Scope) : Void
     {
         switch field.kind {
             case FVar(t, e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
             case FFun(f):
-                handleFunction(f, scope, scopes);
+                handleFunction(f, scope);
             case FProp(get, set, t, e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
         }
     }
 
-    private static function handleExpr(expr :Expr, scope :Scope, scopes :Array<Scope>) : Void
+    private static function handleExpr(expr :Expr, scope :Scope) : Void
     {
         if(expr == null) return;
         switch expr.expr {
             case EArray(e1, e2):
-                handleExpr(e1, scope, scopes);
-                handleExpr(e2, scope, scopes);
+                handleExpr(e1, scope);
+                handleExpr(e2, scope);
 
             case EArrayDecl(values):
                 for(value in values)
-                    handleExpr(value, scope, scopes);
+                    handleExpr(value, scope);
 
             case EBinop(op, e1, e2):
-                handleExpr(e1, scope, scopes);
-                handleExpr(e2, scope, scopes);
+                handleExpr(e1, scope);
+                handleExpr(e2, scope);
                 switch op {
                     case OpAssign | OpAssignOp(_):
                         scope.transformAssignment(expr);
@@ -96,18 +95,17 @@ class NeptuneMacro
 
             case EBlock(exprs):
                 var child = scope.createChild(exprs);
-                scopes.push(child);
                 for(expr in exprs)
-                    handleExpr(expr, child, scopes);
+                    handleExpr(expr, child);
 
             case EBreak:
 
             case ECall(e, params):
                 for(param in params)
-                    handleExpr(param, scope, scopes);
+                    handleExpr(param, scope);
 
             case ECast(e, t):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
 
             case ECheckType(e, t):
 
@@ -122,15 +120,15 @@ class NeptuneMacro
             case EField(e, field):
             
             case EFor(it, expr):
-                handleExpr(expr, scope, scopes);
+                handleExpr(expr, scope);
 
             case EFunction(kind, f):
-                handleFunction(f, scope, scopes);
+                handleFunction(f, scope);
 
             case EIf(econd, eif, eelse):
-                handleExpr(econd, scope, scopes);
-                handleExpr(eif, scope, scopes);
-                handleExpr(eelse, scope, scopes);
+                handleExpr(econd, scope);
+                handleExpr(eif, scope);
+                handleExpr(eelse, scope);
 
             case EMeta(s, e):
                 var dom = Compile.compileMeta(e);
@@ -139,47 +137,47 @@ class NeptuneMacro
 
             case ENew(t, params):
                 for(param in params) {
-                    handleExpr(param, scope, scopes);
+                    handleExpr(param, scope);
                 }
                 
             case EObjectDecl(fields):
                 for(field in fields) {
-                    handleExpr(field.expr, scope, scopes);
+                    handleExpr(field.expr, scope);
                 }
 
             case EParenthesis(e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
 
             case EReturn(e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
 
             case ESwitch(e, cases, edef):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
                 for(case_ in cases) {
-                    handleExpr(case_.expr, scope, scopes);
-                    handleExpr(case_.guard, scope, scopes);
+                    handleExpr(case_.expr, scope);
+                    handleExpr(case_.guard, scope);
                     for(value in case_.values) {
-                        handleExpr(value, scope, scopes);
+                        handleExpr(value, scope);
                     }
                 }
-                handleExpr(edef, scope, scopes);
+                handleExpr(edef, scope);
 
             case ETernary(econd, eif, eelse):
-                handleExpr(econd, scope, scopes);    
-                handleExpr(eif, scope, scopes);    
-                handleExpr(eelse, scope, scopes);    
+                handleExpr(econd, scope);    
+                handleExpr(eif, scope);    
+                handleExpr(eelse, scope);    
 
             case EThrow(e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
 
             case ETry(e, catches):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
                 for(catch_ in catches) {
-                    handleExpr(catch_.expr, scope, scopes);
+                    handleExpr(catch_.expr, scope);
                 }
 
             case EUnop(op, postFix, e):
-                handleExpr(e, scope, scopes); 
+                handleExpr(e, scope); 
                 switch op {
                     case OpIncrement | OpDecrement:
                         scope.transformAssignment(expr);
@@ -187,31 +185,31 @@ class NeptuneMacro
                 }
 
             case EWhile(econd, e, normalWhile):
-                handleExpr(econd, scope, scopes);
-                handleExpr(e, scope, scopes);
+                handleExpr(econd, scope);
+                handleExpr(e, scope);
 
             case EVars(vars):
                 for(var_ in vars) {
                     scope.saveVar(var_);
-                    handleExpr(var_.expr, scope, scopes);
+                    handleExpr(var_.expr, scope);
                 }
 
             case EUntyped(e):
-                handleExpr(e, scope, scopes);
+                handleExpr(e, scope);
         }
     }
 
-    private static function handleFunction(function_ :Function, scope :Scope, scopes :Array<Scope>) : Void
+    private static function handleFunction(function_ :Function, scope :Scope) : Void
     {
         for(arg in function_.args) {
-            handleFunctionArg(arg, scope, scopes);
+            handleFunctionArg(arg, scope);
         }
-        handleExpr(function_.expr, scope, scopes);
+        handleExpr(function_.expr, scope);
     }
 
-    private static function handleFunctionArg(arg :FunctionArg, scope :Scope, scopes :Array<Scope>) : Void
+    private static function handleFunctionArg(arg :FunctionArg, scope :Scope) : Void
     {
-        handleExpr(arg.value, scope, scopes);
+        handleExpr(arg.value, scope);
     }
 }
 
