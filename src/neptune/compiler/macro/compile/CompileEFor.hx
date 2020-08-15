@@ -33,8 +33,10 @@ class CompileEFor
     {
         var fragIdent = Compile.createIdent("frag");
         var frag = createFragment(fragIdent);
-        var callAppendChild = appendChild(fragIdent, scope, expr);
-        var forExpr = forBlock(fragIdent, it, frag, callAppendChild);
+        var block :Array<Expr> = [];
+
+        var callAppendChild = appendChild(fragIdent, block, scope, expr);
+        var forExpr = forBlock(fragIdent, block, it, frag, callAppendChild);
 
         var forIdent = Compile.createIdent("for");
 
@@ -56,22 +58,25 @@ class CompileEFor
             .toExpr();
     }
 
-    private static function appendChild(fragIdent :String, scope :Scope, expr :Expr) : Expr
+    private static function appendChild(fragIdent :String, block :Array<Expr>, scope :Scope, expr :Expr) : Expr
     {
         var appendChild = EField(fragIdent.createDefIdent().toExpr(), "appendChild").toExpr();
-        var compiledExpr = Compile.handleDomExpr(scope, expr);
+        var child = scope.createChild(block);
+        var compiledExpr = Compile.handleDomExpr(child, expr);
         return ECall(appendChild, [compiledExpr]).toExpr();
     }
 
-    private static function forBlock(fragIdent :String, it :Expr, frag :Expr, callAppendChild :Expr) : Expr
+    private static function forBlock(fragIdent :String, block :Array<Expr>, it :Expr, frag :Expr, callAppendChild :Expr) : Expr
     {
-        var forExpr = EFor(it, callAppendChild)
+        block.push(callAppendChild);
+        var forExpr = EFor(it, block.createDefBlock().toExpr())
             .toExpr();
         var returnExpr = fragIdent
             .createDefIdent()
             .toExpr()
             .createDefReturn()
             .toExpr();
+        
         return [frag, forExpr, returnExpr].createDefBlock().toExpr();
     }
 }

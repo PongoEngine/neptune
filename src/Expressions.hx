@@ -44,7 +44,7 @@ class Expressions implements Neptune
             <div>
                 {
                     for(i in 0...x) {
-                        <h1>Hi</h1>
+                        <h1>{i;}</h1>
                     }
                 }
                 <button onclick={onClick}>Increment</button>
