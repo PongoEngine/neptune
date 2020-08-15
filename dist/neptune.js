@@ -6,34 +6,37 @@ Expressions.prototype = {
 	template: function() {
 		var set_x = function(val) {
 		};
-		var x = 100;
+		var x = 3;
 		var onClick = function() {
 			set_x(x + 1);
 		};
-		var for_3 = function() {
-			var frag_0 = window.document.createDocumentFragment();
+		var for_4 = function() {
+			var frag_1 = window.document.createDocumentFragment();
 			var _g = 0;
 			var _g1 = x;
 			while(_g < _g1) {
-				var text_1 = window.document.createTextNode(_g++);
-				var element_h1_2 = window.document.createElement("h1");
-				neptune_platform_html_HtmlPlatform.addChildren(element_h1_2,[text_1]);
-				frag_0.appendChild(element_h1_2);
+				var text_2 = window.document.createTextNode(_g++);
+				var element_h1_3 = window.document.createElement("h1");
+				neptune_platform_html_HtmlPlatform.addChildren(element_h1_3,[text_2]);
+				frag_1.appendChild(element_h1_3);
 			}
-			return frag_0;
+			return frag_1;
 		};
 		set_x = function(val) {
 			x = val;
 		};
-		var element_div_5 = window.document.createElement("div");
+		var element_div_6 = window.document.createElement("div");
 		var tmp = window.document.createTextNode(" ");
-		var tmp1 = for_3();
-		var tmp2 = window.document.createTextNode(" ");
-		var element_button_4 = window.document.createElement("button");
-		neptune_platform_html_HtmlPlatform.addChildren(element_button_4,[window.document.createTextNode("Increment")]);
-		element_button_4.onclick = onClick;
-		neptune_platform_html_HtmlPlatform.addChildren(element_div_5,[tmp,tmp1,tmp2,element_button_4,window.document.createTextNode(" ")]);
-		return element_div_5;
+		var element_button_0 = window.document.createElement("button");
+		neptune_platform_html_HtmlPlatform.addChildren(element_button_0,[window.document.createTextNode("Increment")]);
+		element_button_0.onclick = onClick;
+		var tmp1 = window.document.createTextNode(" ");
+		var tmp2 = for_4();
+		var tmp3 = window.document.createTextNode(" ");
+		var element_p_5 = window.document.createElement("p");
+		neptune_platform_html_HtmlPlatform.addChildren(element_p_5,[window.document.createTextNode("Hi")]);
+		neptune_platform_html_HtmlPlatform.addChildren(element_div_6,[tmp,element_button_0,tmp1,tmp2,tmp3,element_p_5,window.document.createTextNode(" ")]);
+		return element_div_6;
 	}
 };
 var Main = function() { };
