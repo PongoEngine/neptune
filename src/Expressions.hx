@@ -48,7 +48,7 @@ class Expressions implements Neptune
                         <h1>{i;}</h1>
                     }
                 }
-                <p>Hi</p>
+                <p>Hi - {x;}</p>
             </div>;
     }
 }
