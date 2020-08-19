@@ -114,6 +114,12 @@ class HtmlPlatform
         return node;
     }
 
+    public static inline function updateFragment(node :DocumentFragment, value :DocumentFragment) : DocumentFragment
+    {
+        // trace(node.children.length, value.children.length);
+        return node;
+    }
+
     public static inline function updateNode(from :Node, to :Node) : Node
     {
         var parent = from.parentNode;

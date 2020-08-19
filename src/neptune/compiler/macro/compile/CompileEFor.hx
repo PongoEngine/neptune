@@ -33,8 +33,28 @@ class CompileEFor
     {
         var fragIdent = Compile.createIdent("for_frag");
         var forExpr = createForExpr(fragIdent, scope, expr);
+        var rootFragIdent = Compile.createIdent("root_for_frag");
+        var frag = createFragmentCall(rootFragIdent);
+        scope.addVarExpr(frag);
+        var localFor = wrapLoop(fragIdent, it, forExpr);
 
-        return wrapLoop(fragIdent, it, forExpr);
+        scope.addUpdateExpr(updateFragment(rootFragIdent, localFor));
+
+        return createInitializer(fragIdent, rootFragIdent, localFor.copy());
+    }
+
+    private static function createInitializer(fragIdent :String, rootFragIdent :String, localFor :Array<Expr>) : Expr
+    {
+        localFor.push(OpAssign.createDefBinop(rootFragIdent.createDefIdent().toExpr(), fragIdent.createDefIdent().toExpr()).toExpr());
+        localFor.push(rootFragIdent.createDefIdent().toExpr());
+        return localFor.createDefBlock().toExpr();
+    }
+
+    private static function updateFragment(rootFragIdent :String, localFor :Array<Expr>) : Expr
+    {
+        return [rootFragIdent.createDefIdent().toExpr(), localFor.createDefBlock().toExpr()]
+            .createDefCall("updateFragment")
+            .toExpr();
     }
 
     private static function createForExpr(fragIdent :String, scope :Scope, expr :Expr) : Expr
@@ -42,22 +62,22 @@ class CompileEFor
         var block = [];
         var child = scope.createChild(block);
         var compiledExpr = Compile.handleDomExpr(child, expr);
-        block.push(appendChild(fragIdent,  compiledExpr));
+        var appendChild = [compiledExpr].createDefCallField(fragIdent, "appendChild").toExpr();
+        block.push(appendChild);
         return block.createDefBlock().toExpr();
     }
 
-    private static function appendChild(fragIdent :String, expr :Expr) : Expr
+    private static function wrapLoop(fragIdent :String, it :Expr, expr :Expr) : Array<Expr>
     {
-        var appendChild = EField(fragIdent.createDefIdent().toExpr(), "appendChild").toExpr();
-        return ECall(appendChild, [expr]).toExpr();
-    }
-
-    private static function wrapLoop(fragIdent :String, it :Expr, expr :Expr) : Expr
-    {
-        var frag = [].createDefCall("createFragment").toExpr().createDefVar(fragIdent).toExpr();
+        var frag = createFragmentCall(fragIdent);
         var fragIdentExpr = fragIdent.createDefIdent().toExpr();
 
-        return [frag, EFor(it, expr).toExpr(), fragIdentExpr].createDefBlock().toExpr();
+        return [frag, EFor(it, expr).toExpr(), fragIdentExpr];
+    }
+
+    private static function createFragmentCall(ident :String) : Expr
+    {
+        return [].createDefCall("createFragment").toExpr().createDefVar(ident).toExpr();
     }
 }
 #end

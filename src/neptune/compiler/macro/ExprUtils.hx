@@ -25,6 +25,7 @@ package neptune.compiler.macro;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 import haxe.macro.Printer;
+using neptune.compiler.macro.ExprUtils;
 
 class ExprUtils
 {
@@ -55,6 +56,12 @@ class ExprUtils
             expr: EConst(CIdent(fnName)),
             pos: Context.currentPos()
         }, args);
+    }
+
+    public static function createDefCallField(args :Array<Expr>, obj :String, method :String) : ExprDef
+    {
+        var field = EField(obj.createDefIdent().toExpr(), method).toExpr();
+        return ECall(field, args);
     }
 
     public static function createDefBlock(exprs :Array<Expr>) : ExprDef

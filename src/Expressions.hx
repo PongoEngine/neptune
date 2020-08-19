@@ -45,10 +45,10 @@ class Expressions implements Neptune
                 <button onclick={onClick}>Increment</button>
                 {
                     for(i in 0...x) {
-                        <h1>{i;}</h1>
+                        <h1>I of X: {i;}</h1>
                     }
                 }
-                <p>Hi - {x;}</p>
+                <h2>Length - {x;}</h2>
             </div>;
     }
 }
