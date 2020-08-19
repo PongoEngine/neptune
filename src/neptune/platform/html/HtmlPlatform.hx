@@ -114,9 +114,16 @@ class HtmlPlatform
         return node;
     }
 
-    public static inline function updateFragment(node :DocumentFragment, value :DocumentFragment) : DocumentFragment
+    public static inline function updateFragment(old_ :Array<Element>, new_ :Array<Element>) : Void
     {
-        // trace(node.children.length, value.children.length);
+        trace(old_.length, new_.length);
+    }
+
+    public static inline function pushToFrag(node :DocumentFragment, items :Array<Element>) : DocumentFragment
+    {
+        for(item in items) {
+            node.appendChild(item);
+        }
         return node;
     }
 

@@ -32,52 +32,50 @@ class CompileEFor
     public static function compile(scope :Scope, it :Expr, expr :Expr) : Expr
     {
         var fragIdent = Compile.createIdent("for_frag");
-        var forExpr = createForExpr(fragIdent, scope, expr);
-        var rootFragIdent = Compile.createIdent("root_for_frag");
-        var frag = createFragmentCall(rootFragIdent);
-        scope.addVarExpr(frag);
-        var localFor = wrapLoop(fragIdent, it, forExpr);
+        var fragArrayIdentGlobal = Compile.createIdent("for_frag_array_g");
+        var fragArrayIdentLocal = Compile.createIdent("for_frag_array_l");
+        var forExpr = createForExpr(fragIdent, fragArrayIdentLocal, scope, expr);
+        var fragArray = [].createDefArrayDecl().toExpr().createDefVar(fragArrayIdentGlobal).toExpr();
+        scope.addVarExpr(fragArray);
 
-        scope.addUpdateExpr(updateFragment(rootFragIdent, localFor));
+        scope.addUpdateExpr(createUpdater(fragIdent, fragArrayIdentGlobal, fragArrayIdentLocal, it, forExpr));
 
-        return createInitializer(fragIdent, rootFragIdent, localFor.copy());
+        return createInitializer(fragIdent, fragArrayIdentGlobal, fragArrayIdentLocal, it, forExpr);
     }
 
-    private static function createInitializer(fragIdent :String, rootFragIdent :String, localFor :Array<Expr>) : Expr
+    private static function updateFragment(fragArrayIdentGlobal :String) : Expr
     {
-        localFor.push(OpAssign.createDefBinop(rootFragIdent.createDefIdent().toExpr(), fragIdent.createDefIdent().toExpr()).toExpr());
-        localFor.push(rootFragIdent.createDefIdent().toExpr());
-        return localFor.createDefBlock().toExpr();
+        return [fragArrayIdentGlobal.createDefIdent().toExpr()].createDefCall("trace").toExpr();
     }
 
-    private static function updateFragment(rootFragIdent :String, localFor :Array<Expr>) : Expr
-    {
-        return [rootFragIdent.createDefIdent().toExpr(), localFor.createDefBlock().toExpr()]
-            .createDefCall("updateFragment")
-            .toExpr();
-    }
-
-    private static function createForExpr(fragIdent :String, scope :Scope, expr :Expr) : Expr
+    private static function createForExpr(fragIdent :String, fragArrayIdentLocal :String, scope :Scope, expr :Expr) : Expr
     {
         var block = [];
         var child = scope.createChild(block);
         var compiledExpr = Compile.handleDomExpr(child, expr);
-        var appendChild = [compiledExpr].createDefCallField(fragIdent, "appendChild").toExpr();
-        block.push(appendChild);
+        var pushItem = [compiledExpr].createDefCallField(fragArrayIdentLocal, "push").toExpr();
+        block.push(pushItem);
+
         return block.createDefBlock().toExpr();
     }
 
-    private static function wrapLoop(fragIdent :String, it :Expr, expr :Expr) : Array<Expr>
+    private static function createInitializer(fragIdent :String, fragArrayIdentGlobal :String, fragArrayIdentLocal :String, it :Expr, expr :Expr) : Expr
     {
-        var frag = createFragmentCall(fragIdent);
+        var fragArrayLocal = [].createDefArrayDecl().toExpr().createDefVar(fragArrayIdentLocal).toExpr();
+        var frag = [].createDefCall("createFragment").toExpr().createDefVar(fragIdent).toExpr();
+        var opAssign = OpAssign.createDefBinop(fragArrayIdentGlobal.createDefIdent().toExpr(), fragArrayIdentLocal.createDefIdent().toExpr()).toExpr();
+        var pushToFrag = [fragIdent.createDefIdent().toExpr(), fragArrayIdentGlobal.createDefIdent().toExpr()].createDefCall("pushToFrag").toExpr();
         var fragIdentExpr = fragIdent.createDefIdent().toExpr();
 
-        return [frag, EFor(it, expr).toExpr(), fragIdentExpr];
+        return [fragArrayLocal, EFor(it, expr).toExpr(), frag, opAssign, pushToFrag, fragIdentExpr].createDefBlock().toExpr();
     }
 
-    private static function createFragmentCall(ident :String) : Expr
+    private static function createUpdater(fragIdent :String, fragArrayIdentGlobal :String, fragArrayIdentLocal :String, it :Expr, expr :Expr) : Expr
     {
-        return [].createDefCall("createFragment").toExpr().createDefVar(ident).toExpr();
+        var fragArrayLocal = [].createDefArrayDecl().toExpr().createDefVar(fragArrayIdentLocal).toExpr();
+        var updateFragment = [fragArrayIdentGlobal.createDefIdent().toExpr(), fragArrayIdentLocal.createDefIdent().toExpr()].createDefCall("updateFragment").toExpr();
+
+        return [fragArrayLocal, EFor(it, expr).toExpr(), updateFragment].createDefBlock().toExpr();
     }
 }
 #end
