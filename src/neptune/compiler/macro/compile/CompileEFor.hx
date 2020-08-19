@@ -32,23 +32,32 @@ class CompileEFor
     public static function compile(scope :Scope, it :Expr, expr :Expr) : Expr
     {
         var fragIdent = Compile.createIdent("for_frag");
-        var frag = [].createDefCall("createFragment").toExpr().createDefVar(fragIdent).toExpr();
+        var forExpr = createForExpr(fragIdent, scope, expr);
 
+        return wrapLoop(fragIdent, it, forExpr);
+    }
+
+    private static function createForExpr(fragIdent :String, scope :Scope, expr :Expr) : Expr
+    {
         var block = [];
         var child = scope.createChild(block);
         var compiledExpr = Compile.handleDomExpr(child, expr);
         block.push(appendChild(fragIdent,  compiledExpr));
-        var blockExpr = block.createDefBlock().toExpr();
-
-        var fragIdentExpr = fragIdent.createDefIdent().toExpr();
-
-        return [frag, EFor(it, blockExpr).toExpr(), fragIdentExpr].createDefBlock().toExpr();
+        return block.createDefBlock().toExpr();
     }
 
     private static function appendChild(fragIdent :String, expr :Expr) : Expr
     {
         var appendChild = EField(fragIdent.createDefIdent().toExpr(), "appendChild").toExpr();
         return ECall(appendChild, [expr]).toExpr();
+    }
+
+    private static function wrapLoop(fragIdent :String, it :Expr, expr :Expr) : Expr
+    {
+        var frag = [].createDefCall("createFragment").toExpr().createDefVar(fragIdent).toExpr();
+        var fragIdentExpr = fragIdent.createDefIdent().toExpr();
+
+        return [frag, EFor(it, expr).toExpr(), fragIdentExpr].createDefBlock().toExpr();
     }
 }
 #end
