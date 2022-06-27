@@ -26,7 +26,7 @@ import js.html.Text;
 import js.html.Node;
 
 abstract HtmlElement(Element) from Element to Element {
-	public inline function new(tag :String) : Void {
+	public inline function new(tag:String):Void {
 		this = HtmlElement.createElement(tag);
 	}
 
@@ -34,15 +34,14 @@ abstract HtmlElement(Element) from Element to Element {
 		return document.createElement(tagname);
 	}
 
-	public static inline function createText(text:Dynamic):Text {
-		return document.createTextNode(text + "");
+	public static inline function createText(text:String):Text {
+		return document.createTextNode(text);
 	}
 
 	public inline function addAttr(attr:HtmlAttribute):HtmlElement {
-		if(attr.name() == "@click") {
+		if (attr.name() == "@click") {
 			this.addEventListener('click', attr.value());
-		}
-		else {
+		} else {
 			this.setAttribute(attr.name(), attr.value());
 		}
 		return this;
@@ -53,8 +52,31 @@ abstract HtmlElement(Element) from Element to Element {
 		return this;
 	}
 
-	public inline function addChild(child:Node):HtmlElement {
-		this.appendChild(child);
+	public function addChild(child:Dynamic):HtmlElement {
+		if (child != null) {
+			var childType = js.Lib.typeof(child);
+			switch childType {
+				case "symbol", "function", "undefined", "bigint":
+					js.Syntax.code("console.warn({0})", 'Invalid child type: ${childType}');
+				case "object":
+					switch HtmlElement.getType(child) {
+						case 'Node': this.appendChild(child);
+						case _: js.Syntax.code("console.warn({0})", 'Invalid child type: ${childType}');
+					}
+				case "boolean", "number", "string":
+					var text = js.Syntax.code("{0}.toString()", child);
+					this.appendChild(createText(text));
+			}
+		}
 		return this;
+	}
+
+	private static function getType(child:Dynamic):String {
+		var proto = js.Syntax.code("Object.getPrototypeOf({0})", child);
+		if (proto != null && proto.constructor.name != 'EventTarget') {
+			return getType(proto);
+		} else {
+			return child.constructor.name;
+		}
 	}
 }

@@ -10,23 +10,18 @@ Expressions.prototype = {
 			console.log("src/Expressions.hx:42:",x);
 		};
 		var element_0 = window.document.createElement("div");
-		element_0.appendChild(window.document.createTextNode("\n                "));
+		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n                "));
 		var element_1 = window.document.createElement("button");
 		element_1.setAttribute("id","hello");
 		element_1.addEventListener("click",onClick);
-		element_1.appendChild(window.document.createTextNode("Increment"));
-		element_0.appendChild(element_1);
-		element_0.appendChild(window.document.createTextNode("\n                "));
-		var child;
-		if(x == 3) {
-			var element_2 = window.document.createElement("h3");
-			element_2.appendChild(window.document.createTextNode("31"));
-			child = element_2;
-		} else {
-			child = window.document.createTextNode("9");
+		neptune_html_HtmlElement.addChild(element_1,window.document.createTextNode("Increment"));
+		neptune_html_HtmlElement.addChild(element_0,element_1);
+		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n                "));
+		if(x == 4) {
+			neptune_html_HtmlElement.addChild(window.document.createElement("h3"),31);
 		}
-		element_0.appendChild(child);
-		element_0.appendChild(window.document.createTextNode("\n            "));
+		neptune_html_HtmlElement.addChild(element_0,x);
+		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n            "));
 		return element_0;
 	}
 };
@@ -45,6 +40,40 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 	,next: function() {
 		return this.array[this.current++];
+	}
+};
+var neptune_html_HtmlElement = {};
+neptune_html_HtmlElement.addChild = function(this1,child) {
+	if(child != null) {
+		var childType = typeof(child);
+		switch(childType) {
+		case "bigint":case "function":case "symbol":case "undefined":
+			console.warn(("Invalid child type: " + childType));
+			break;
+		case "object":
+			if(neptune_html_HtmlElement.getType(child) == "Node") {
+				this1.appendChild(child);
+			} else {
+				console.warn(("Invalid child type: " + childType));
+			}
+			break;
+		case "boolean":case "number":case "string":
+			var text = child.toString();
+			this1.appendChild(window.document.createTextNode(text));
+			break;
+		}
+	}
+	return this1;
+};
+neptune_html_HtmlElement.getType = function(child) {
+	while(true) {
+		var proto = Object.getPrototypeOf(child);
+		if(proto != null && proto.constructor.name != "EventTarget") {
+			child = proto;
+			continue;
+		} else {
+			return child.constructor.name;
+		}
 	}
 };
 Main.main();

@@ -31,18 +31,6 @@ import neptune.util.NExprUtil.*;
 
 using neptune.compiler.dom.Scanner.ScannerTools;
 
-// class ParserContext {
-// 	public var parent(default, null):ParserContext;
-// 	public var root(default, null):Expr;
-// 	public function new(parent:ParserContext, root:Expr):Void {
-// 		this.parent = parent;
-// 		this.root = root;
-// 	}
-// 	public function typeOf(expr :Expr) : Type {
-// 		try {
-// 		}
-// 	}
-// }
 class Parser {
 	public static function parse(scanner:Scanner):Expr {
 		var nodes = parseNodes(scanner);
@@ -65,112 +53,6 @@ class Parser {
 			nodes.push(parseNode(scanner));
 		}
 		return nodes;
-	}
-
-	// public static function getTypeOfExpr(expr:Expr):Type {
-	// 	return switch expr.expr {
-	// 		case EConst(c): switch c {
-	// 				case CIdent(s):
-	// 					trace(s);
-	// 					throw "not implemented";
-	// 				case _: throw "not implemented";
-	// 			}
-	// 		case EArray(e1, e2): throw "not implemented";
-	// 		case EBinop(op, e1, e2): throw "not implemented";
-	// 		case EField(e, field): throw "not implemented";
-	// 		case EParenthesis(e): throw "not implemented";
-	// 		case EObjectDecl(fields): throw "not implemented";
-	// 		case EArrayDecl(values): throw "not implemented";
-	// 		case ECall(e, params): Context.typeof(expr);
-	// 		case ENew(t, params): throw "not implemented";
-	// 		case EUnop(op, postFix, e): throw "not implemented";
-	// 		case EVars(vars): throw "not implemented";
-	// 		case EFunction(kind, f): throw "not implemented";
-	// 		case EBlock(exprs): switch exprs.length {
-	// 				case 0: throw "Block cannot be empty";
-	// 				case _: getTypeOfExpr(exprs[exprs.length - 1]);
-	// 			}
-	// 		case EFor(it, expr): throw "not implemented";
-	// 		case EIf(econd, eif, eelse): throw "not implemented";
-	// 		case EWhile(econd, e, normalWhile): throw "not implemented";
-	// 		case ESwitch(e, cases, edef): throw "not implemented";
-	// 		case ETry(e, catches): throw "not implemented";
-	// 		case EReturn(e): throw "not implemented";
-	// 		case EBreak: throw "not implemented";
-	// 		case EContinue: throw "not implemented";
-	// 		case EUntyped(e): throw "not implemented";
-	// 		case EThrow(e): throw "not implemented";
-	// 		case ECast(e, t): throw "not implemented";
-	// 		case EDisplay(e, displayKind): throw "not implemented";
-	// 		case EDisplayNew(t): throw "not implemented";
-	// 		case ETernary(econd, eif, eelse): throw "not implemented";
-	// 		case ECheckType(e, t): throw "not implemented";
-	// 		case EMeta(s, e): throw "not implemented";
-	// 		case EIs(e, t): throw "not implemented";
-	// 	}
-	// }
-
-	public static function transformChild(?expr:Expr):Expr {
-		if (expr == null) {
-			return null;
-		}
-		// trace(Context.typeExpr(expr));
-		// Context
-		// trace(getTypeOfExpr(expr));
-		return switch expr.expr {
-			case EConst(c):
-				switch c {
-					case CIdent(s):
-						// trace(Context.typeExpr(expr));
-						expr;
-					case _:
-						makeECall(makeCIdent("createText", expr.pos), [expr], expr.pos);
-				}
-			case EArray(e1, e2): throw "not implemented";
-			case EBinop(op, e1, e2):
-				makeECall(makeCIdent("createText", expr.pos), [expr], expr.pos);
-			case EField(e, field): throw "not implemented";
-			case EParenthesis(e): throw "not implemented";
-			case EObjectDecl(fields): throw "not implemented";
-			case EArrayDecl(values): throw "not implemented";
-			case ECall(e, params): expr;
-			case ENew(t, params): throw "not implemented";
-			case EUnop(op, postFix, e): throw "not implemented";
-			case EVars(vars): throw "not implemented";
-			case EFunction(kind, f): throw "not implemented";
-			case EBlock(exprs):
-				var lastExpr = exprs[exprs.length - 1];
-				if (lastExpr != null) {
-					var clonedExprs = exprs.slice(0, exprs.length - 1);
-					clonedExprs.push(transformChild(lastExpr));
-					return {
-						expr: EBlock(clonedExprs),
-						pos: expr.pos
-					}
-				} else {
-					throw "block must not be empty";
-				}
-			case EFor(it, expr): throw "not implemented";
-			case EIf(econd, eif, eelse): throw "not implemented";
-			case EWhile(econd, e, normalWhile): throw "not implemented";
-			case ESwitch(e, cases, edef): throw "not implemented";
-			case ETry(e, catches): throw "not implemented";
-			case EReturn(e): throw "not implemented";
-			case EBreak: throw "not implemented";
-			case EContinue: throw "not implemented";
-			case EUntyped(e): throw "not implemented";
-			case EThrow(e): throw "not implemented";
-			case ECast(e, t): throw "not implemented";
-			case EDisplay(e, displayKind): throw "not implemented";
-			case EDisplayNew(t): throw "not implemented";
-			case ETernary(econd, eif, eelse): {
-					expr: ETernary(econd, transformChild(eif), transformChild(eelse)),
-					pos: expr.pos
-				};
-			case ECheckType(e, t): throw "not implemented";
-			case EMeta(s, e): throw "not implemented";
-			case EIs(e, t): throw "not implemented";
-		}
 	}
 
 	static var elementIdentIndex = 0;
@@ -207,7 +89,7 @@ class Parser {
 		// add children
 		for (child in children) {
 			var ident_addChild = makeEField(exprIdent, "addChild", child.pos);
-			var ident_addChild_child_ = makeECall(ident_addChild, [transformChild(child)], child.pos);
+			var ident_addChild_child_ = makeECall(ident_addChild, [child], child.pos);
 			exprs.push(ident_addChild_child_);
 		}
 
