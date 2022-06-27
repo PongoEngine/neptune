@@ -20,6 +20,8 @@ package neptune.compiler.dom;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import haxe.macro.Type;
+import haxe.macro.Printer;
 #if macro
 import neptune.compiler.macro.NeptuneMacro;
 import neptune.compiler.dom.Token;
@@ -29,6 +31,18 @@ import neptune.util.NExprUtil.*;
 
 using neptune.compiler.dom.Scanner.ScannerTools;
 
+// class ParserContext {
+// 	public var parent(default, null):ParserContext;
+// 	public var root(default, null):Expr;
+// 	public function new(parent:ParserContext, root:Expr):Void {
+// 		this.parent = parent;
+// 		this.root = root;
+// 	}
+// 	public function typeOf(expr :Expr) : Type {
+// 		try {
+// 		}
+// 	}
+// }
 class Parser {
 	public static function parse(scanner:Scanner):Expr {
 		var nodes = parseNodes(scanner);
@@ -39,9 +53,9 @@ class Parser {
 	static function parseNode(scanner:Scanner):Expr {
 		return switch scanner.peekToken() {
 			case ELEMENT_OPENED:
-				parseElement(scanner);
+				parseElementNode(scanner);
 			case _:
-				parseText(scanner);
+				parseTextNode(scanner);
 		}
 	}
 
@@ -53,49 +67,90 @@ class Parser {
 		return nodes;
 	}
 
-	static var fragmentIdentIndex = 0;
+	// public static function getTypeOfExpr(expr:Expr):Type {
+	// 	return switch expr.expr {
+	// 		case EConst(c): switch c {
+	// 				case CIdent(s):
+	// 					trace(s);
+	// 					throw "not implemented";
+	// 				case _: throw "not implemented";
+	// 			}
+	// 		case EArray(e1, e2): throw "not implemented";
+	// 		case EBinop(op, e1, e2): throw "not implemented";
+	// 		case EField(e, field): throw "not implemented";
+	// 		case EParenthesis(e): throw "not implemented";
+	// 		case EObjectDecl(fields): throw "not implemented";
+	// 		case EArrayDecl(values): throw "not implemented";
+	// 		case ECall(e, params): Context.typeof(expr);
+	// 		case ENew(t, params): throw "not implemented";
+	// 		case EUnop(op, postFix, e): throw "not implemented";
+	// 		case EVars(vars): throw "not implemented";
+	// 		case EFunction(kind, f): throw "not implemented";
+	// 		case EBlock(exprs): switch exprs.length {
+	// 				case 0: throw "Block cannot be empty";
+	// 				case _: getTypeOfExpr(exprs[exprs.length - 1]);
+	// 			}
+	// 		case EFor(it, expr): throw "not implemented";
+	// 		case EIf(econd, eif, eelse): throw "not implemented";
+	// 		case EWhile(econd, e, normalWhile): throw "not implemented";
+	// 		case ESwitch(e, cases, edef): throw "not implemented";
+	// 		case ETry(e, catches): throw "not implemented";
+	// 		case EReturn(e): throw "not implemented";
+	// 		case EBreak: throw "not implemented";
+	// 		case EContinue: throw "not implemented";
+	// 		case EUntyped(e): throw "not implemented";
+	// 		case EThrow(e): throw "not implemented";
+	// 		case ECast(e, t): throw "not implemented";
+	// 		case EDisplay(e, displayKind): throw "not implemented";
+	// 		case EDisplayNew(t): throw "not implemented";
+	// 		case ETernary(econd, eif, eelse): throw "not implemented";
+	// 		case ECheckType(e, t): throw "not implemented";
+	// 		case EMeta(s, e): throw "not implemented";
+	// 		case EIs(e, t): throw "not implemented";
+	// 	}
+	// }
 
-	static function transformExpr(root:Expr):Expr {
-		return switch root.expr {
-			case EConst(c): switch c {
-					case CInt(v): throw "not implemented";
-					case CFloat(f): throw "not implemented";
-					case CString(s, kind): throw "not implemented";
+	public static function transformChild(?expr:Expr):Expr {
+		if (expr == null) {
+			return null;
+		}
+		// trace(Context.typeExpr(expr));
+		// Context
+		// trace(getTypeOfExpr(expr));
+		return switch expr.expr {
+			case EConst(c):
+				switch c {
 					case CIdent(s):
-						makeECall(makeCIdent("createText", root.pos), [makeCIdent(s, root.pos)], root.pos);
-					case CRegexp(r, opt): throw "not implemented";
-				};
+						// trace(Context.typeExpr(expr));
+						expr;
+					case _:
+						makeECall(makeCIdent("createText", expr.pos), [expr], expr.pos);
+				}
 			case EArray(e1, e2): throw "not implemented";
-			case EBinop(op, e1, e2): throw "not implemented";
+			case EBinop(op, e1, e2):
+				makeECall(makeCIdent("createText", expr.pos), [expr], expr.pos);
 			case EField(e, field): throw "not implemented";
 			case EParenthesis(e): throw "not implemented";
 			case EObjectDecl(fields): throw "not implemented";
 			case EArrayDecl(values): throw "not implemented";
-			case ECall(e, params): throw "not implemented";
+			case ECall(e, params): expr;
 			case ENew(t, params): throw "not implemented";
 			case EUnop(op, postFix, e): throw "not implemented";
-			case EVars(vars): root;
+			case EVars(vars): throw "not implemented";
 			case EFunction(kind, f): throw "not implemented";
-			case EBlock(exprs): {
-					expr: EBlock(exprs.map(transformExpr)),
-					pos: root.pos
-				};
-			case EFor(it, e): {
-					var newFragment = makeENew(["neptune", "html"], "HtmlFragment", [], root.pos);
-					var fragmentID = 'fragment_${fragmentIdentIndex++}';
-					var exprs:Array<Expr> = [];
-					exprs.push(makeEVars([makeVar(fragmentID, newFragment)], root.pos));
-					var exprIdent = makeCIdent(fragmentID, root.pos);
-
-					var field = makeEField(exprIdent, "addChild", root.pos);
-
-					var itAddChild = makeECall(field, [e], root.pos);
-					exprs.push(makeEFor(it, itAddChild, root.pos));
-
-					exprs.push(exprIdent);
-
-					makeEBlock(exprs, root.pos);
+			case EBlock(exprs):
+				var lastExpr = exprs[exprs.length - 1];
+				if (lastExpr != null) {
+					var clonedExprs = exprs.slice(0, exprs.length - 1);
+					clonedExprs.push(transformChild(lastExpr));
+					return {
+						expr: EBlock(clonedExprs),
+						pos: expr.pos
+					}
+				} else {
+					throw "block must not be empty";
 				}
+			case EFor(it, expr): throw "not implemented";
 			case EIf(econd, eif, eelse): throw "not implemented";
 			case EWhile(econd, e, normalWhile): throw "not implemented";
 			case ESwitch(e, cases, edef): throw "not implemented";
@@ -108,7 +163,10 @@ class Parser {
 			case ECast(e, t): throw "not implemented";
 			case EDisplay(e, displayKind): throw "not implemented";
 			case EDisplayNew(t): throw "not implemented";
-			case ETernary(econd, eif, eelse): throw "not implemented";
+			case ETernary(econd, eif, eelse): {
+					expr: ETernary(econd, transformChild(eif), transformChild(eelse)),
+					pos: expr.pos
+				};
 			case ECheckType(e, t): throw "not implemented";
 			case EMeta(s, e): throw "not implemented";
 			case EIs(e, t): throw "not implemented";
@@ -117,7 +175,9 @@ class Parser {
 
 	static var elementIdentIndex = 0;
 
-	static function parseElement(scanner:Scanner):Expr {
+	static function parseElementNode(scanner:Scanner):Expr {
+		// create element
+		var elementID = 'element_${elementIdentIndex++}';
 		var min = scanner.curIndex;
 		assertToken(scanner.next(), Token.ELEMENT_OPENED);
 		scanner.consumeWhile(ScannerTools.isWhitespace);
@@ -132,8 +192,6 @@ class Parser {
 		var max = scanner.curIndex;
 		var pos = scanner.makePosition(min, max);
 
-		// create element
-		var elementID = 'element_${elementIdentIndex++}';
 		var newHtmlElement = makeENew(["neptune", "html"], "HtmlElement", [makeCString(tagname, pos)], pos);
 		var exprs:Array<Expr> = [];
 		exprs.push(makeEVars([makeVar(elementID, newHtmlElement)], pos));
@@ -149,7 +207,7 @@ class Parser {
 		// add children
 		for (child in children) {
 			var ident_addChild = makeEField(exprIdent, "addChild", child.pos);
-			var ident_addChild_child_ = makeECall(ident_addChild, [child], child.pos);
+			var ident_addChild_child_ = makeECall(ident_addChild, [transformChild(child)], child.pos);
 			exprs.push(ident_addChild_child_);
 		}
 
@@ -157,10 +215,10 @@ class Parser {
 		return makeEBlock(exprs, pos);
 	}
 
-	static function parseText(scanner:Scanner):Expr {
+	static function parseTextNode(scanner:Scanner):Expr {
 		return switch scanner.peekToken() {
 			case Token.CURLY_BRACE_OPENED:
-				getExpr(scanner, false);
+				getHaxeExpr(scanner, false);
 			case _:
 				{
 					var min = scanner.curIndex;
@@ -190,17 +248,16 @@ class Parser {
 		var min = scanner.curIndex;
 		var name = getTagname(scanner);
 		assertToken(scanner.next(), Token.EQUALS);
-		var attr = getAttributeValueExpr(scanner);
+		var attr = getExpr(scanner);
 		var max = scanner.curIndex;
 		var pos = scanner.makePosition(min, max);
 		return makeENew(["neptune", "html"], "HtmlAttribute", [makeCString(name, pos), attr], pos);
 	}
 
-	static function getAttributeValueExpr(scanner:Scanner):Expr {
-		var token:Token = scanner.peek();
-		return switch token {
+	static function getExpr(scanner:Scanner):Expr {
+		return switch scanner.peekToken() {
 			case Token.DBL_QUOTE: getStringExpr(scanner);
-			case Token.CURLY_BRACE_OPENED: getExpr(scanner, true);
+			case Token.CURLY_BRACE_OPENED: getHaxeExpr(scanner, true);
 			case _: assertThat(false);
 		}
 	}
@@ -223,7 +280,7 @@ class Parser {
 	 * @param isAttribute 
 	 * @return Expr
 	 */
-	static function getExpr(scanner:Scanner, isAttribute:Bool):Expr {
+	static function getHaxeExpr(scanner:Scanner, isAttribute:Bool):Expr {
 		var min = scanner.curIndex;
 		assertToken(scanner.next(), Token.CURLY_BRACE_OPENED);
 		var curlys = 1;
@@ -244,7 +301,7 @@ class Parser {
 			return Context.parse(exprStr, pos);
 		} else {
 			var expr = Context.parse('{${exprStr}}', pos);
-			return transformExpr(NeptuneMacro.transformExpr(expr));
+			return NeptuneMacro.transformExpr(expr);
 		}
 	}
 

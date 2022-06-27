@@ -29,7 +29,7 @@ using neptune.compiler.dom.Scanner.ScannerTools;
 
 class Scanner {
 	public var content (default, null):String;
-	public var curIndex (default, null):Int;
+	public var curIndex (get, null):Int;
 
 	/**
 	 * [Description]
@@ -39,7 +39,7 @@ class Scanner {
 	public function new(position :{min:Int, max:Int, file:String}, content:String):Void {
 		this._position = position;
 		this.content = content;
-		this.curIndex = 0;
+		this._curIndex = 0;
 	}
 
 	/**
@@ -47,7 +47,7 @@ class Scanner {
 	 * @return Bool
 	 */
 	public function hasNext():Bool {
-		return this.curIndex < this.content.length;
+		return this._curIndex < this.content.length;
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Scanner {
 	 * @return String
 	 */
 	public function next():String {
-		return this.content.charAt(this.curIndex++);
+		return this.content.charAt(this._curIndex++);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Scanner {
 	 * @return String
 	 */
 	public function peek():String {
-		return this.content.charAt(this.curIndex);
+		return this.content.charAt(this._curIndex);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Scanner {
 	 * @return String
 	 */
 	public function peekDouble():String {
-		return this.content.charAt(this.curIndex + 1);
+		return this.content.charAt(this._curIndex + 1);
 	}
 
 	/**
@@ -127,14 +127,15 @@ class Scanner {
 	 * @return Position
 	 */
 	public function makePosition(min :Int, max :Int) : Position {
-		var min = this._position.min;
-		// if(max + min > this._position.max) {
-		// 	trace(max + min, this._position.max);
-		// }
-		return Context.makePosition({file: this._position.file, min: min + min, max: max + min});
+		return Context.makePosition({file: this._position.file, min: min, max: max});
+	}
+
+	private function get_curIndex() : Int {
+		return this._curIndex + this._position.min;
 	}
 
 	private var _position :{min:Int, max:Int, file:String};
+	private var _curIndex :Int;
 }
 
 class ScannerTools {

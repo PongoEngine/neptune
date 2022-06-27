@@ -35,7 +35,7 @@ abstract HtmlElement(Element) from Element to Element {
 	}
 
 	public static inline function createText(text:Dynamic):Text {
-		return document.createTextNode(text);
+		return document.createTextNode(text + "");
 	}
 
 	public inline function addAttr(attr:HtmlAttribute):HtmlElement {

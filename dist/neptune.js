@@ -9,33 +9,25 @@ Expressions.prototype = {
 			x += 1;
 			console.log("src/Expressions.hx:42:",x);
 		};
-		var element_3 = window.document.createElement("div");
-		element_3.appendChild(window.document.createTextNode("\n                "));
-		var element_0 = window.document.createElement("button");
-		element_0.setAttribute("id","hello");
-		element_0.addEventListener("click",onClick);
-		element_0.appendChild(window.document.createTextNode("Increment"));
-		element_3.appendChild(element_0);
-		element_3.appendChild(window.document.createTextNode("\n                "));
-		var isFlipped = true;
-		var fragment_0 = new DocumentFragment();
-		var _g = 0;
-		var _g1 = x;
-		while(_g < _g1) {
-			isFlipped = !isFlipped;
-			var element_1 = window.document.createElement("h1");
-			element_1.appendChild(window.document.createTextNode("I of X: "));
-			element_1.appendChild(window.document.createTextNode(_g++ + 99 + (isFlipped ? 1 : 2)));
-			fragment_0.appendChild(element_1);
+		var element_0 = window.document.createElement("div");
+		element_0.appendChild(window.document.createTextNode("\n                "));
+		var element_1 = window.document.createElement("button");
+		element_1.setAttribute("id","hello");
+		element_1.addEventListener("click",onClick);
+		element_1.appendChild(window.document.createTextNode("Increment"));
+		element_0.appendChild(element_1);
+		element_0.appendChild(window.document.createTextNode("\n                "));
+		var child;
+		if(x == 3) {
+			var element_2 = window.document.createElement("h3");
+			element_2.appendChild(window.document.createTextNode("31"));
+			child = element_2;
+		} else {
+			child = window.document.createTextNode("9");
 		}
-		element_3.appendChild(fragment_0);
-		element_3.appendChild(window.document.createTextNode("\n                "));
-		var element_2 = window.document.createElement("h2");
-		element_2.appendChild(window.document.createTextNode("Length - "));
-		element_2.appendChild(window.document.createTextNode(x));
-		element_3.appendChild(element_2);
-		element_3.appendChild(window.document.createTextNode("\n            "));
-		return element_3;
+		element_0.appendChild(child);
+		element_0.appendChild(window.document.createTextNode("\n            "));
+		return element_0;
 	}
 };
 var Main = function() { };
