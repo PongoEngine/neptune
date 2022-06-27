@@ -1,4 +1,4 @@
-package ;
+package neptune.html;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -20,42 +20,41 @@ package ;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
+import js.Browser.document;
+import js.html.Element;
+import js.html.Text;
 import js.html.Node;
-import neptune.html.HtmlElement;
-import neptune.html.HtmlElement.*;
-import neptune.Neptune;
 
-class Expressions implements Neptune 
-{
-    
-    public function new() : Void
-    {
-    }
+abstract HtmlElement(Element) from Element to Element {
+	public inline function new(tag :String) : Void {
+		this = HtmlElement.createElement(tag);
+	}
 
-    public function template() : Node
-    {
-        var x = 3;
+	public static inline function createElement(tagname:String):Element {
+		return document.createElement(tagname);
+	}
 
-        function onClick() {
-            x += 1;
-            trace(x);
-        }
+	public static inline function createText(text:Dynamic):Text {
+		return document.createTextNode(text);
+	}
 
-        return 
-            <div>
-                <button id="hello" @click={onClick}>Increment</button>
-                {
-                    var isFlipped = true;
-                    
-                    for(i in 0...x) {
-                        isFlipped = !isFlipped;
-                        var z = isFlipped ? 1 : 2;
-                        var l = i + 99 + z;
-                        <h1>I of X: {l;}</h1>
-                    }
-                }
-                <h2>Length - {x;}</h2>
-            </div>;
-    }
+	public inline function addAttr(attr:HtmlAttribute):HtmlElement {
+		if(attr.name() == "@click") {
+			this.addEventListener('click', attr.value());
+		}
+		else {
+			this.setAttribute(attr.name(), attr.value());
+		}
+		return this;
+	}
+
+	private inline function addEventListener(attr:HtmlAttribute):HtmlElement {
+		this.setAttribute(attr.name(), attr.value());
+		return this;
+	}
+
+	public inline function addChild(child:Node):HtmlElement {
+		this.appendChild(child);
+		return this;
+	}
 }

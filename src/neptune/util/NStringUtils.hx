@@ -1,7 +1,7 @@
 package neptune.util;
 
 /*
- * Copyright (c) 2020 Jeremy Meltingtallow
+ * Copyright (c) 2022 Jeremy Meltingtallow
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,18 +20,14 @@ package neptune.util;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+class NStringUtils {
+	public static function cleanWhitespace(str:String):String {
+		var reg = ~/\s\s+/g;
+		return reg.replace(str, " ");
+	}
 
-class NStringUtils
-{
-    public static function cleanWhitespace(str :String) : String
-    {
-        var reg = ~/\s\s+/g;
-        return reg.replace(str, " ");
-    }
-
-    public static function cleanWhitespaceCompletely(str :String) : String
-    {
-        var reg = ~/\s+/g;
-        return reg.replace(str, "");
-    }
+	public static function cleanWhitespaceCompletely(str:String):String {
+		var reg = ~/\s+/g;
+		return reg.replace(str, "");
+	}
 }

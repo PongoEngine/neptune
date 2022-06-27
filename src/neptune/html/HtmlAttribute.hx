@@ -1,4 +1,4 @@
-package ;
+package neptune.html;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -21,41 +21,16 @@ package ;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import js.html.Node;
-import neptune.html.HtmlElement;
-import neptune.html.HtmlElement.*;
-import neptune.Neptune;
+abstract HtmlAttribute({name:String, value :Dynamic}) {
+	public inline function new(name :String, value :Dynamic) : Void {
+        this = {name:name, value: value};
+	}
 
-class Expressions implements Neptune 
-{
-    
-    public function new() : Void
-    {
+    public inline function name() : String {
+        return this.name;
     }
 
-    public function template() : Node
-    {
-        var x = 3;
-
-        function onClick() {
-            x += 1;
-            trace(x);
-        }
-
-        return 
-            <div>
-                <button id="hello" @click={onClick}>Increment</button>
-                {
-                    var isFlipped = true;
-                    
-                    for(i in 0...x) {
-                        isFlipped = !isFlipped;
-                        var z = isFlipped ? 1 : 2;
-                        var l = i + 99 + z;
-                        <h1>I of X: {l;}</h1>
-                    }
-                }
-                <h2>Length - {x;}</h2>
-            </div>;
+    public inline function value() : Dynamic {
+        return this.value;
     }
 }

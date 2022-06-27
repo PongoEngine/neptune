@@ -1,7 +1,7 @@
 package neptune.compiler.dom;
 
 /*
- * Copyright (c) 2020 Jeremy Meltingtallow
+ * Copyright (c) 2022 Jeremy Meltingtallow
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,18 +20,15 @@ package neptune.compiler.dom;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-enum abstract Token(String) from String
-{
-    var TAB = "\t";
-    var SPACE = " ";
-    var LINE = "\n";
-
-    var DBL_QUOTE = '"';
-    var CURLY_BRACE_OPENED = '{';
-    var CURLY_BRACE_CLOSED = '}';
-    var ELEMENT_OPENED = "<";
-    var ELEMENT_CLOSED = ">";
-    var FORWARD_SLASH = "/";
-    var EQUALS = "=";
+enum abstract Token(String) from String {
+	var TAB = "\t";
+	var SPACE = " ";
+	var LINE = "\n";
+	var DBL_QUOTE = '"';
+	var CURLY_BRACE_OPENED = '{';
+	var CURLY_BRACE_CLOSED = '}';
+	var ELEMENT_OPENED = "<";
+	var ELEMENT_CLOSED = ">";
+	var FORWARD_SLASH = "/";
+	var EQUALS = "=";
 }

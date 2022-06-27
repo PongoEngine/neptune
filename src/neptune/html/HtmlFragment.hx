@@ -1,7 +1,7 @@
-package neptune.util;
+package neptune.html;
 
 /*
- * Copyright (c) 2020 Jeremy Meltingtallow
+ * Copyright (c) 2022 Jeremy Meltingtallow
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,42 +20,16 @@ package neptune.util;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import js.html.DocumentFragment;
+import js.html.Node;
 
-class Set<T:{}>
-{
-    public var length :Int;
+abstract HtmlFragment(DocumentFragment) from DocumentFragment to DocumentFragment {
+	public inline function new():Void {
+		this = new DocumentFragment();
+	}
 
-    public function new() : Void
-    {
-        _map = new Map<T, Bool>();
-        this.length = 0;
-    }
-
-    public function iterator() : Iterator<T>
-    {
-        return _map.keys();
-    }
-
-    public function set(item :T) : Void
-    {
-        if(!_map.exists(item)) {
-            this.length++;
-        }
-        _map.set(item, true);
-    }
-
-    public function remove(item :T) : Void
-    {
-        if(_map.exists(item)) {
-            this.length--;
-        }
-        _map.remove(item);
-    }
-
-    public function exists(item :T) : Bool
-    {
-        return _map.exists(item);
-    }
-
-    private var _map :Map<T, Bool>;
+	public inline function addChild(child:Node):DocumentFragment {
+		this.appendChild(child);
+		return this;
+	}
 }

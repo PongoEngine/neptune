@@ -1,7 +1,7 @@
 package neptune.compiler.dom;
 
 /*
- * Copyright (c) 2020 Jeremy Meltingtallow
+ * Copyright (c) 2022 Jeremy Meltingtallow
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,186 +20,260 @@ package neptune.compiler.dom;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
+#if macro
+import neptune.compiler.macro.NeptuneMacro;
 import neptune.compiler.dom.Token;
 import haxe.macro.Context;
+import haxe.macro.Expr;
+import neptune.util.NExprUtil.*;
+
 using neptune.compiler.dom.Scanner.ScannerTools;
 
-#if macro
-class Parser
-{
-    public static function parse(scanner :Scanner) : DomAST
-    {
-        var nodes = parseNodes(scanner);
-        assertThat(nodes.length == 1);
-        return nodes[0];
-    }
+class Parser {
+	public static function parse(scanner:Scanner):Expr {
+		var nodes = parseNodes(scanner);
+		assertThat(nodes.length == 1);
+		return nodes[0];
+	}
 
-    public static function parseNode(scanner :Scanner) : DomAST
-    {
-        var token :Token = scanner.peek();
-        return switch token {
-            case ELEMENT_OPENED: 
-                parseElement(scanner);
-            case _:
-                parseText(scanner);
-        }
-    }
+	static function parseNode(scanner:Scanner):Expr {
+		return switch scanner.peekToken() {
+			case ELEMENT_OPENED:
+				parseElement(scanner);
+			case _:
+				parseText(scanner);
+		}
+	}
 
-    static function parseNodes(scanner :Scanner) : Array<DomAST>
-    {
-        var nodes = [];
-        while(scanner.hasNext() && !isClosing(scanner)) {
-            nodes.push(parseNode(scanner));
-        }
-        return nodes;
-    }
+	static function parseNodes(scanner:Scanner):Array<Expr> {
+		var nodes = [];
+		while (scanner.hasNext() && !isClosing(scanner)) {
+			nodes.push(parseNode(scanner));
+		}
+		return nodes;
+	}
 
-    static function isClosing(scanner :Scanner) :Bool 
-    {
-        var end = scanner.peek() + scanner.peekDouble();
-        return end == "</";
-    }
+	static var fragmentIdentIndex = 0;
 
-    static function parseElement(scanner :Scanner) : DomAST
-    {
-        assertToken(scanner.next(), Token.ELEMENT_OPENED);
-        scanner.consumeWhile(ScannerTools.isWhitespace);
-        var tagname = parseTagname(scanner);
-        var attrs = parseAttrs(scanner);
-        assertToken(scanner.next(), Token.ELEMENT_CLOSED);
-        var children = parseNodes(scanner);
-        assertToken(scanner.next(), Token.ELEMENT_OPENED);
-        assertToken(scanner.next(), Token.FORWARD_SLASH);
-        assertThat(parseTagname(scanner) == tagname);
-        assertToken(scanner.next(), Token.ELEMENT_CLOSED);
-        return DomElement(tagname,attrs,children);
-    }
+	static function transformExpr(root:Expr):Expr {
+		return switch root.expr {
+			case EConst(c): switch c {
+					case CInt(v): throw "not implemented";
+					case CFloat(f): throw "not implemented";
+					case CString(s, kind): throw "not implemented";
+					case CIdent(s):
+						makeECall(makeCIdent("createText", root.pos), [makeCIdent(s, root.pos)], root.pos);
+					case CRegexp(r, opt): throw "not implemented";
+				};
+			case EArray(e1, e2): throw "not implemented";
+			case EBinop(op, e1, e2): throw "not implemented";
+			case EField(e, field): throw "not implemented";
+			case EParenthesis(e): throw "not implemented";
+			case EObjectDecl(fields): throw "not implemented";
+			case EArrayDecl(values): throw "not implemented";
+			case ECall(e, params): throw "not implemented";
+			case ENew(t, params): throw "not implemented";
+			case EUnop(op, postFix, e): throw "not implemented";
+			case EVars(vars): root;
+			case EFunction(kind, f): throw "not implemented";
+			case EBlock(exprs): {
+					expr: EBlock(exprs.map(transformExpr)),
+					pos: root.pos
+				};
+			case EFor(it, e): {
+					var newFragment = makeENew(["neptune", "html"], "HtmlFragment", [], root.pos);
+					var fragmentID = 'fragment_${fragmentIdentIndex++}';
+					var exprs:Array<Expr> = [];
+					exprs.push(makeEVars([makeVar(fragmentID, newFragment)], root.pos));
+					var exprIdent = makeCIdent(fragmentID, root.pos);
 
-    static function parseText(scanner :Scanner) : DomAST
-    {
-        while(scanner.hasNext() && scanner.peek() != Token.ELEMENT_OPENED) {
-            var t :Token = scanner.peek();
-            switch t {
-                case Token.CURLY_BRACE_OPENED: {
-                    assertToken(scanner.next(), Token.CURLY_BRACE_OPENED);
-                    var min = scanner.curIndex + scanner.startingIndex;
-                    var exprStr = parseExpr(scanner);
-                    var max = scanner.curIndex + scanner.startingIndex;
-                    var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
-                    var expr = Context.parse('{${exprStr}}', pos);
-                    assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
-                    return DomExpr(expr);
-                }
-                case _: {
-                    return DomText(scanner.consumeWhile((str) -> {
-                        scanner.hasNext() && str != Token.ELEMENT_OPENED && str != Token.CURLY_BRACE_OPENED;
-                    }));
-                }
-            }
-        }
+					var field = makeEField(exprIdent, "addChild", root.pos);
 
-        throw "err";
-    }
+					var itAddChild = makeECall(field, [e], root.pos);
+					exprs.push(makeEFor(it, itAddChild, root.pos));
 
-    static function parseExpr(scanner :Scanner) : String
-    {
-        var start = scanner.peek();
-        var curlys = 1;
-        var exprStr = scanner.consumeWhile((str) -> {
-            if(str == Token.CURLY_BRACE_OPENED) {
-                curlys++;
-            }
-            else if(str == Token.CURLY_BRACE_CLOSED) {
-                curlys--;
-            }
-            var curlyLogic = curlys == 0 ? str != Token.CURLY_BRACE_CLOSED : true;
-            return scanner.hasNext() && curlyLogic;
-        });
+					exprs.push(exprIdent);
 
-        return exprStr;
-    }
+					makeEBlock(exprs, root.pos);
+				}
+			case EIf(econd, eif, eelse): throw "not implemented";
+			case EWhile(econd, e, normalWhile): throw "not implemented";
+			case ESwitch(e, cases, edef): throw "not implemented";
+			case ETry(e, catches): throw "not implemented";
+			case EReturn(e): throw "not implemented";
+			case EBreak: throw "not implemented";
+			case EContinue: throw "not implemented";
+			case EUntyped(e): throw "not implemented";
+			case EThrow(e): throw "not implemented";
+			case ECast(e, t): throw "not implemented";
+			case EDisplay(e, displayKind): throw "not implemented";
+			case EDisplayNew(t): throw "not implemented";
+			case ETernary(econd, eif, eelse): throw "not implemented";
+			case ECheckType(e, t): throw "not implemented";
+			case EMeta(s, e): throw "not implemented";
+			case EIs(e, t): throw "not implemented";
+		}
+	}
 
-    static function parseTagname(scanner :Scanner) : String
-    {
-        return scanner.consumeWhile((str) -> {
-            return scanner.hasNext() && str.isAlphaNumeric();
-        });
-    }
+	static var elementIdentIndex = 0;
 
-    static function parseAttrs(scanner :Scanner) : Array<Attr>
-    {
-        var attrs = [];
-        while(scanner.hasNext() && scanner.peek() != Token.ELEMENT_CLOSED) {
-            scanner.consumeWhile(ScannerTools.isWhitespace);
-            attrs.push(parseAttr(scanner));
-        }
-        return attrs;
-    }
+	static function parseElement(scanner:Scanner):Expr {
+		var min = scanner.curIndex;
+		assertToken(scanner.next(), Token.ELEMENT_OPENED);
+		scanner.consumeWhile(ScannerTools.isWhitespace);
+		var tagname = getTagname(scanner);
+		var attrs = getAttributeExprs(scanner);
+		assertToken(scanner.next(), Token.ELEMENT_CLOSED);
+		var children = parseNodes(scanner);
+		assertToken(scanner.next(), Token.ELEMENT_OPENED);
+		assertToken(scanner.next(), Token.FORWARD_SLASH);
+		assertThat(getTagname(scanner) == tagname);
+		assertToken(scanner.next(), Token.ELEMENT_CLOSED);
+		var max = scanner.curIndex;
+		var pos = scanner.makePosition(min, max);
 
-    static function parseAttr(scanner :Scanner) : Attr
-    {
-        var name = parseTagname(scanner);
-        assertToken(scanner.next(), Token.EQUALS);
-        var value = parseAttrValue(scanner);
-        return {name:name,value:value};
-    }
+		// create element
+		var elementID = 'element_${elementIdentIndex++}';
+		var newHtmlElement = makeENew(["neptune", "html"], "HtmlElement", [makeCString(tagname, pos)], pos);
+		var exprs:Array<Expr> = [];
+		exprs.push(makeEVars([makeVar(elementID, newHtmlElement)], pos));
+		var exprIdent = makeCIdent(elementID, pos);
 
-    static function parseAttrValue(scanner :Scanner) : DomAttr
-    {
-        var token :Token = scanner.peek();
-        return switch token {
-            case Token.DBL_QUOTE: parseAttrValueString(scanner);
-            case Token.CURLY_BRACE_OPENED: parseAttrValueLogic(scanner);
-            case _: assertThat(false);
-        }
-    }
+		// add attributes
+		for (attr in attrs) {
+			var ident_addAttr = makeEField(exprIdent, "addAttr", attr.pos);
+			var ident_addAttr_attr_ = makeECall(ident_addAttr, [attr], attr.pos);
+			exprs.push(ident_addAttr_attr_);
+		}
 
-    static function parseAttrValueString(scanner :Scanner) : DomAttr
-    {
-        assertToken(scanner.next(), Token.DBL_QUOTE);
-        var attrValue = scanner.consumeWhile((str) -> {
-            return scanner.hasNext() && !(str == '"' || str == "}");
-        });
-        assertToken(scanner.next(), Token.DBL_QUOTE);
-        return AttrText(attrValue);
-    }
+		// add children
+		for (child in children) {
+			var ident_addChild = makeEField(exprIdent, "addChild", child.pos);
+			var ident_addChild_child_ = makeECall(ident_addChild, [child], child.pos);
+			exprs.push(ident_addChild_child_);
+		}
 
-    static function parseAttrValueLogic(scanner :Scanner) : DomAttr
-    {
-        assertToken(scanner.next(), Token.CURLY_BRACE_OPENED);
-        var min = scanner.curIndex + scanner.startingIndex;
-        var attrValue = scanner.consumeWhile((str) -> {
-            return scanner.hasNext() && !(str == '"' || str == "}");
-        });
-        var max = scanner.curIndex + scanner.startingIndex;
-        assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
-        var pos = Context.makePosition({file: scanner.filename, min:min, max:max});
-        var expr = Context.parse(attrValue, pos);
-        return AttrExpr(expr);
-    }
+		exprs.push(exprIdent);
+		return makeEBlock(exprs, pos);
+	}
 
-    static function assertToken(value :String, token :Token) : Dynamic
-    {
-        return value == token ? null : (throw '${value} is not in ${token}');
-    }
+	static function parseText(scanner:Scanner):Expr {
+		return switch scanner.peekToken() {
+			case Token.CURLY_BRACE_OPENED:
+				getExpr(scanner, false);
+			case _:
+				{
+					var min = scanner.curIndex;
+					var text = scanner.consumeWhile((str) -> {
+						str != Token.ELEMENT_OPENED
+						&& str != Token.CURLY_BRACE_OPENED;
+					});
+					var max = scanner.curIndex;
+					var pos = scanner.makePosition(min, max);
 
-    static function assertThat(value :Bool) : Dynamic
-        return value ? null : throw "err";
+					var textExpr = makeCString(text, pos);
+					makeECall(makeCIdent("createText", textExpr.pos), [textExpr], textExpr.pos);
+				}
+		}
+	}
+
+	static function getAttributeExprs(scanner:Scanner):Array<Expr> {
+		var attrs = [];
+		while (scanner.hasNext() && scanner.peek() != Token.ELEMENT_CLOSED) {
+			scanner.consumeWhile(ScannerTools.isWhitespace);
+			attrs.push(getAttributeExpr(scanner));
+		}
+		return attrs;
+	}
+
+	static function getAttributeExpr(scanner:Scanner):Expr {
+		var min = scanner.curIndex;
+		var name = getTagname(scanner);
+		assertToken(scanner.next(), Token.EQUALS);
+		var attr = getAttributeValueExpr(scanner);
+		var max = scanner.curIndex;
+		var pos = scanner.makePosition(min, max);
+		return makeENew(["neptune", "html"], "HtmlAttribute", [makeCString(name, pos), attr], pos);
+	}
+
+	static function getAttributeValueExpr(scanner:Scanner):Expr {
+		var token:Token = scanner.peek();
+		return switch token {
+			case Token.DBL_QUOTE: getStringExpr(scanner);
+			case Token.CURLY_BRACE_OPENED: getExpr(scanner, true);
+			case _: assertThat(false);
+		}
+	}
+
+	static function getStringExpr(scanner:Scanner):Expr {
+		var min = scanner.curIndex;
+		assertToken(scanner.next(), Token.DBL_QUOTE);
+		var attrValue = scanner.consumeWhile((str) -> {
+			return !(str == '"' || str == "}");
+		});
+		assertToken(scanner.next(), Token.DBL_QUOTE);
+		var max = scanner.curIndex;
+		var pos = scanner.makePosition(min, max);
+		return makeCString(attrValue, pos);
+	}
+
+	/**
+	 * [Description]
+	 * @param scanner 
+	 * @param isAttribute 
+	 * @return Expr
+	 */
+	static function getExpr(scanner:Scanner, isAttribute:Bool):Expr {
+		var min = scanner.curIndex;
+		assertToken(scanner.next(), Token.CURLY_BRACE_OPENED);
+		var curlys = 1;
+		var exprStr = scanner.consumeWhile((str) -> {
+			if (str == Token.CURLY_BRACE_OPENED) {
+				curlys++;
+			} else if (str == Token.CURLY_BRACE_CLOSED) {
+				curlys--;
+			}
+			var curlyLogic = curlys == 0 ? str != Token.CURLY_BRACE_CLOSED : true;
+			return curlyLogic;
+		});
+		assertToken(scanner.next(), Token.CURLY_BRACE_CLOSED);
+		var max = scanner.curIndex;
+		var pos = scanner.makePosition(min, max);
+
+		if (isAttribute) {
+			return Context.parse(exprStr, pos);
+		} else {
+			var expr = Context.parse('{${exprStr}}', pos);
+			return transformExpr(NeptuneMacro.transformExpr(expr));
+		}
+	}
+
+	/**
+	 * Gets a tagname from opening or closing elements.
+	 * @param scanner 
+	 * @return String
+	 */
+	static function getTagname(scanner:Scanner):String {
+		return scanner.consumeWhile((str) -> {
+			return str == "@" || str.isAlphaNumeric();
+		});
+	}
+
+	/**
+	 * Checks if an element is closing. E.g. </div>
+	 * @param scanner 
+	 * @return Bool
+	 */
+	static function isClosing(scanner:Scanner):Bool {
+		var end = scanner.peek() + scanner.peekDouble();
+		return end == "</";
+	}
+
+	static function assertToken(value:String, token:Token):Dynamic {
+		return value == token ? null : (throw '${value} is not in ${token}');
+	}
+
+	static function assertThat(value:Bool):Dynamic
+		return value ? null : throw "err";
 }
 #end
-
-enum DomAttr
-{
-    AttrText(string :String);
-    AttrExpr(expr :haxe.macro.Expr);
-}
-
-typedef Attr = {name :String, value :DomAttr};
-
-enum DomAST
-{
-    DomText(string :String);
-    DomExpr(expr :haxe.macro.Expr);
-    DomElement(tag:String, attrs:Array<Attr>, children :Array<DomAST>);
-}
