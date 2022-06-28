@@ -5,6 +5,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Expr.Var;
 import haxe.macro.Expr.Field;
+import neptune.compiler.MakeExpr.*;
 
 using Lambda;
 
@@ -13,11 +14,21 @@ enum EnvironmentItem {
 	EVar(v:Var);
 }
 
+typedef EnvRef = {
+	ref :Environment
+}
+
 class Environment {
+	private static var ENV_NUM = 0;
+	public static var ROOT :Environment = null;
 	public var name(default, null):String;
 
 	public function new():Void {
 		this._items = new Map();
+		this.name = 'Env_${ENV_NUM++}';
+		if(Environment.ROOT == null) {
+			Environment.ROOT = this;
+		}
 	}
 
 	public function addField(field:Field):Field {
@@ -43,10 +54,42 @@ class Environment {
 		return e;
 	}
 
-	public function getType(expr:Null<Expr>):haxe.macro.Type {
-		if (expr == null) {
-			throw "getType: invalid expression";
+	/**
+	 * Used for debugging
+	 * @return Expr
+	 */
+	public function makeVarBlock() : Expr {
+		var curPos = Context.currentPos();
+		var exprs :Array<Expr> = [];
+		for(item in this._items) {
+			switch item {
+				case EField(field): switch field.kind {
+					case FVar(t, e): throw "not implemented";
+					case FFun(f): exprs.push(makeCIdent(field.name, f.expr.pos));
+					case FProp(get, set, t, e): throw "not implemented";
+				}
+				case EVar(v): exprs.push(makeCIdent(v.name, v.expr.pos));
+			}
 		}
+		return makeEBlock(exprs, Context.currentPos());
+	}
+
+	/**
+	 * Used for debugging
+	 * @return Expr
+	 */
+	public function makeChildrenTree() : Expr {
+		var childrenBlock = [];
+		for(child in this._children) {
+			childrenBlock.push(child.makeChildrenTree());
+		}
+		var childrenBlock = makeEBlock(childrenBlock, Context.currentPos());
+		var content = makeVar(this.name + "_content", this.makeVarBlock());
+		var children = makeVar(this.name + "_children", childrenBlock);
+		return makeEVars([content, children], Context.currentPos());
+	}
+
+	public function getType(expr:Expr):haxe.macro.Type {
 		try {
 			return Context.typeof(expr);
 		} catch (_) {
@@ -105,7 +148,7 @@ class Environment {
 		} else if (this._parent != null) {
 			return this._parent.getEnvironmentItem(name);
 		}
-		return null;
+		return throw '${name} not found!';
 	}
 
 	private var _parent:Null<Environment> = null;

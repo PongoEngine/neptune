@@ -24,7 +24,23 @@ package neptune.compiler;
 import neptune.compiler.Environment;
 import haxe.macro.Expr;
 
+using Lambda;
+
 class MakeExpr {
+	public static function makeStaticCall(fields:Array<String>, fnName:String, params:Array<Expr>, pos:Position):Expr {
+		if (fields.length > 0) {
+			var root = makeCIdent(fields[0], pos);
+			for (field in fields.slice(1)) {
+				root = makeEField(root, field, pos);
+			}
+			root = makeEField(root, fnName, pos);
+			return makeECall(root, params, pos);
+		} else {
+			var root = makeCIdent(fnName, pos);
+			return makeECall(root, params, pos);
+		}
+	}
+
 	public static function makeENew(pack:Array<String>, name:String, params:Array<Expr>, pos:Position):Expr {
 		return {
 			expr: ENew({
@@ -45,12 +61,12 @@ class MakeExpr {
 		return {expr: EConst(CString(str)), pos: pos}
 	}
 
-	public static function makeEFor(it:Expr, expr:Expr, pos:Position):Expr {
-		return {expr: EFor(it, expr), pos: pos}
+	public static function makeEField(e:Expr, field:String, pos:Position):Expr {
+		return {expr: EField(e, field), pos: pos}
 	}
 
-	public static function makeEField(e:Expr, field:String, pos:Position):Expr {
-		return {expr: EField(e, field), pos: pos};
+	public static function makeEFor(it:Expr, expr:Expr, pos:Position):Expr {
+		return {expr: EFor(it, expr), pos: pos}
 	}
 
 	public static function makeECall(e:Expr, params:Array<Expr>, pos:Position):Expr {
@@ -74,11 +90,20 @@ class MakeExpr {
 		}
 	}
 
-	public static function makeVar(env:Environment, name:String, expr:Expr):Var {
-		return env.addVar({
-			name: name,
-			expr: expr
-		});
+	public static function makeVar(name:String, expr:Expr, ?env:EnvRef):Var {
+		if(env != null) {
+			return env.ref.addVar({
+				name: name,
+				expr: expr
+			});
+		}
+		else {
+			return {
+				name: name,
+				expr: expr
+			};
+		}
+		
 	}
 }
 #end

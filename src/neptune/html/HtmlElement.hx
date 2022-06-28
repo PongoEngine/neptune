@@ -28,11 +28,7 @@ import js.html.Node;
 @:native('_NepEl')
 abstract HtmlElement(Element) from Element to Element {
 	public inline function new(tag:String):Void {
-		this = HtmlElement.createElement(tag);
-	}
-
-	public static inline function createElement(tagname:String):Element {
-		return document.createElement(tagname);
+		this = document.createElement(tag);
 	}
 
 	public static inline function createText(text:String):Text {

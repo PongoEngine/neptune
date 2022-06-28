@@ -20,14 +20,20 @@ package neptune.compiler;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+using StringTools;
+
 class NStringUtils {
-	public static function cleanWhitespace(str:String):String {
-		var reg = ~/\s\s+/g;
-		return reg.replace(str, " ");
+	public static function onlySpaces(str:String):Bool {
+		return str.trim().length == 0;
 	}
 
-	public static function cleanWhitespaceCompletely(str:String):String {
-		var reg = ~/\s+/g;
-		return reg.replace(str, "");
-	}
+	// public static function cleanWhitespace(str:String):String {
+	// 	var reg = ~/\s\s+/g;
+	// 	return reg.replace(str, " ");
+	// }
+
+	// public static function cleanWhitespaceCompletely(str:String):String {
+	// 	var reg = ~/\s+/g;
+	// 	return reg.replace(str, "");
+	// }
 }

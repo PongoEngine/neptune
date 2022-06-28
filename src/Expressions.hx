@@ -22,20 +22,24 @@ package ;
  */
 
 import js.html.Node;
-import neptune.html.HtmlElement;
-import neptune.html.HtmlElement.*;
 import neptune.Neptune;
 
-class Expressions implements Neptune 
+class Expressions implements Neptune
 {
     
     public function new() : Void
     {
     }
 
+    public function garbage() : Node
+    {
+        return
+            <div>Hello</div>;        
+    }
+
     public function template() : Node
     {
-        var x = 3;
+        var x = 12033;
 
         function onClick() {
             x += 1;
@@ -44,12 +48,12 @@ class Expressions implements Neptune
 
         return 
             <div>
-                <button id="hello" @click={onClick}>Increment</button>
+                <button id="hello" @click={onClick;}>Increment</button>
                 {
                     var q = x + 22;
-                    <h2>{22;<h1>{99999999999;}</h1>}</h2>
+                    {<div>HelloYouPerson + 22 {x + q;}</div>}
                 }
-                <h2>Length - {x;}</h2>
+                <h2>Length - {x + 45;}</h2>
             </div>;
     }
 }
