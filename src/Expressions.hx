@@ -46,9 +46,10 @@ class Expressions implements Neptune
             <div>
                 <button id="hello" @click={onClick}>Increment</button>
                 {
-                    x == 4 ? <h3>{9 + 22;}</h3> : 9;
-                    x;
+                    var q = x + 22;
+                    <h2>{22;<h1>{99999999999;}</h1>}</h2>
                 }
+                <h2>Length - {x;}</h2>
             </div>;
     }
 }

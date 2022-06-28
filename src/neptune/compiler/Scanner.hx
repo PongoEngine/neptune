@@ -1,4 +1,4 @@
-package neptune.compiler.dom;
+package neptune.compiler;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -22,10 +22,10 @@ package neptune.compiler.dom;
  */
 #if macro
 import haxe.macro.Expr.Position;
-import neptune.compiler.dom.Token;
+import neptune.compiler.Token;
 import haxe.macro.Context;
 
-using neptune.compiler.dom.Scanner.ScannerTools;
+using neptune.compiler.Scanner.ScannerTools;
 
 class Scanner {
 	public var content (default, null):String;

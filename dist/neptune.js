@@ -10,18 +10,24 @@ Expressions.prototype = {
 			console.log("src/Expressions.hx:42:",x);
 		};
 		var element_0 = window.document.createElement("div");
-		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n                "));
+		_$NepEl.addChild(element_0,window.document.createTextNode("\n                "));
 		var element_1 = window.document.createElement("button");
 		element_1.setAttribute("id","hello");
 		element_1.addEventListener("click",onClick);
-		neptune_html_HtmlElement.addChild(element_1,window.document.createTextNode("Increment"));
-		neptune_html_HtmlElement.addChild(element_0,element_1);
-		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n                "));
-		if(x == 4) {
-			neptune_html_HtmlElement.addChild(window.document.createElement("h3"),31);
-		}
-		neptune_html_HtmlElement.addChild(element_0,x);
-		neptune_html_HtmlElement.addChild(element_0,window.document.createTextNode("\n            "));
+		_$NepEl.addChild(element_1,window.document.createTextNode("Increment"));
+		_$NepEl.addChild(element_0,element_1);
+		_$NepEl.addChild(element_0,window.document.createTextNode("\n                "));
+		var element_2 = window.document.createElement("h2");
+		var element_3 = window.document.createElement("h1");
+		_$NepEl.addChild(element_3,window.document.createTextNode(99999999999 + ""));
+		_$NepEl.addChild(element_2,element_3);
+		_$NepEl.addChild(element_0,element_2);
+		_$NepEl.addChild(element_0,window.document.createTextNode("\n                "));
+		var element_4 = window.document.createElement("h2");
+		_$NepEl.addChild(element_4,window.document.createTextNode("Length - "));
+		_$NepEl.addChild(element_4,window.document.createTextNode(x + ""));
+		_$NepEl.addChild(element_0,element_4);
+		_$NepEl.addChild(element_0,window.document.createTextNode("\n            "));
 		return element_0;
 	}
 };
@@ -42,39 +48,10 @@ haxe_iterators_ArrayIterator.prototype = {
 		return this.array[this.current++];
 	}
 };
-var neptune_html_HtmlElement = {};
-neptune_html_HtmlElement.addChild = function(this1,child) {
-	if(child != null) {
-		var childType = typeof(child);
-		switch(childType) {
-		case "bigint":case "function":case "symbol":case "undefined":
-			console.warn(("Invalid child type: " + childType));
-			break;
-		case "object":
-			if(neptune_html_HtmlElement.getType(child) == "Node") {
-				this1.appendChild(child);
-			} else {
-				console.warn(("Invalid child type: " + childType));
-			}
-			break;
-		case "boolean":case "number":case "string":
-			var text = child.toString();
-			this1.appendChild(window.document.createTextNode(text));
-			break;
-		}
-	}
+var _$NepEl = {};
+_$NepEl.addChild = function(this1,child) {
+	this1.appendChild(child);
 	return this1;
-};
-neptune_html_HtmlElement.getType = function(child) {
-	while(true) {
-		var proto = Object.getPrototypeOf(child);
-		if(proto != null && proto.constructor.name != "EventTarget") {
-			child = proto;
-			continue;
-		} else {
-			return child.constructor.name;
-		}
-	}
 };
 Main.main();
 })({});

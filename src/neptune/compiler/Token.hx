@@ -1,4 +1,4 @@
-package neptune.util;
+package neptune.compiler;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -20,14 +20,15 @@ package neptune.util;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-class NStringUtils {
-	public static function cleanWhitespace(str:String):String {
-		var reg = ~/\s\s+/g;
-		return reg.replace(str, " ");
-	}
-
-	public static function cleanWhitespaceCompletely(str:String):String {
-		var reg = ~/\s+/g;
-		return reg.replace(str, "");
-	}
+enum abstract Token(String) from String {
+	var TAB = "\t";
+	var SPACE = " ";
+	var LINE = "\n";
+	var DBL_QUOTE = '"';
+	var CURLY_BRACE_OPENED = '{';
+	var CURLY_BRACE_CLOSED = '}';
+	var ELEMENT_OPENED = "<";
+	var ELEMENT_CLOSED = ">";
+	var FORWARD_SLASH = "/";
+	var EQUALS = "=";
 }

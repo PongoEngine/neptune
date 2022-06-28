@@ -1,4 +1,4 @@
-package neptune.compiler.macro;
+package neptune.compiler;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -21,8 +21,8 @@ package neptune.compiler.macro;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #if macro
-import neptune.compiler.dom.Scanner;
-import neptune.compiler.dom.Parser;
+import neptune.compiler.Scanner;
+import neptune.compiler.Parser;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
@@ -35,7 +35,8 @@ class NeptuneMacro {
 	 */
 	macro static public function fromInterface():Array<Field> {
 		var fields = Context.getBuildFields();
-		return fields.map(transformField).filter(field -> field != null);
+		var env = new Environment();
+		return fields.map(transformField.bind(env)).filter(field -> field != null);
 	}
 
 	/**
@@ -43,14 +44,14 @@ class NeptuneMacro {
 	 * @param v 
 	 * @return Var
 	 */
-	static function transformVar(v:Var):Var {
-		return {
+	static function transformVar(env:Environment, v:Var):Var {
+		return env.addVar({
 			name: v.name,
 			type: v.type,
-			expr: transformExpr(v.expr),
+			expr: transformExpr(env, v.expr),
 			isFinal: v.isFinal,
 			meta: v.meta,
-		}
+		});
 	}
 
 	/**
@@ -58,14 +59,14 @@ class NeptuneMacro {
 	 * @param expr 
 	 * @return Expr
 	 */
-	static function transformMarkup(expr:Expr):Expr {
+	static function transformMarkup(env:Environment, expr:Expr):Expr {
 		return switch expr.expr {
 			case EConst(c):
 				switch c {
 					case CString(s, kind):
 						var posInfo = Context.getPosInfos(expr.pos);
 						var scanner = new Scanner(posInfo, s);
-						return Parser.parse(scanner);
+						return Parser.parse(env, scanner);
 					case _: throw 'Invalid Markup';
 				}
 			case _: throw 'Invalid Markup';
@@ -77,49 +78,51 @@ class NeptuneMacro {
 	 * @param expr 
 	 * @return Expr
 	 */
-	public static function transformExpr(?expr:Expr):Expr {
+	public static function transformExpr(env:Environment, expr:Null<Expr>):Expr {
 		if (expr == null) {
 			return null;
 		}
 		var def:ExprDef = switch expr.expr {
 			case EConst(c): EConst(c);
-			case EArray(e1, e2): EArray(transformExpr(e1), transformExpr(e2));
-			case EBinop(op, e1, e2): EBinop(op, transformExpr(e1), transformExpr(e2));
-			case EField(e, field): EField(transformExpr(e), field);
-			case EParenthesis(e): EParenthesis(transformExpr(e));
+			case EArray(e1, e2): EArray(transformExpr(env, e1), transformExpr(env, e2));
+			case EBinop(op, e1, e2): EBinop(op, transformExpr(env, e1), transformExpr(env, e2));
+			case EField(e, field): EField(transformExpr(env, e), field);
+			case EParenthesis(e): EParenthesis(transformExpr(env, e));
 			case EObjectDecl(fields): EObjectDecl(fields.map(f -> {
 					field: f.field,
-					expr: transformExpr(f.expr),
+					expr: transformExpr(env, f.expr),
 					quotes: f.quotes,
 				}));
-			case EArrayDecl(values): EArrayDecl(values.map(transformExpr));
-			case ECall(e, params): ECall(transformExpr(e), params.map(transformExpr));
-			case ENew(t, params): ENew(t, params.map(transformExpr));
-			case EUnop(op, postFix, e): EUnop(op, postFix, transformExpr(e));
-			case EVars(vars): EVars(vars.map(transformVar));
-			case EFunction(kind, f): EFunction(kind, transformFunction(f));
-			case EBlock(exprs): EBlock(exprs.map(transformExpr));
-			case EFor(it, expr): EFor(transformExpr(it), transformExpr(expr));
-			case EIf(econd, eif, eelse): EIf(transformExpr(econd), transformExpr(eif), transformExpr(eelse));
-			case EWhile(econd, e, normalWhile): EWhile(transformExpr(econd), transformExpr(e), normalWhile);
+			case EArrayDecl(values): EArrayDecl(values.map(transformExpr.bind(env)));
+			case ECall(e, params): ECall(transformExpr(env, e), params.map(transformExpr.bind(env)));
+			case ENew(t, params): ENew(t, params.map(transformExpr.bind(env)));
+			case EUnop(op, postFix, e): EUnop(op, postFix, transformExpr(env, e));
+			case EVars(vars): EVars(vars.map(transformVar.bind(env)));
+			case EFunction(kind, f): EFunction(kind, transformFunction(env, f));
+			case EBlock(exprs):
+				var envChild = env.makeChild();
+				EBlock(exprs.map(transformExpr.bind(envChild)));
+			case EFor(it, expr): EFor(transformExpr(env, it), transformExpr(env, expr));
+			case EIf(econd, eif, eelse): EIf(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse));
+			case EWhile(econd, e, normalWhile): EWhile(transformExpr(env, econd), transformExpr(env, e), normalWhile);
 			case ESwitch(e, cases, edef): throw 'Not implemented';
 			case ETry(e, catches): throw 'Not implemented';
-			case EReturn(e): EReturn(transformExpr(e));
+			case EReturn(e): EReturn(transformExpr(env, e));
 			case EBreak: EBreak;
 			case EContinue: EContinue;
-			case EUntyped(e): EUntyped(transformExpr(e));
-			case EThrow(e): EThrow(transformExpr(e));
-			case ECast(e, t): ECast(transformExpr(e), t);
-			case EDisplay(e, displayKind): EDisplay(transformExpr(e), displayKind);
+			case EUntyped(e): EUntyped(transformExpr(env, e));
+			case EThrow(e): EThrow(transformExpr(env, e));
+			case ECast(e, t): ECast(transformExpr(env, e), t);
+			case EDisplay(e, displayKind): EDisplay(transformExpr(env, e), displayKind);
 			case EDisplayNew(t): EDisplayNew(t);
-			case ETernary(econd, eif, eelse): ETernary(transformExpr(econd), transformExpr(eif), transformExpr(eelse));
-			case ECheckType(e, t): ECheckType(transformExpr(e), t);
+			case ETernary(econd, eif, eelse): ETernary(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse));
+			case ECheckType(e, t): ECheckType(transformExpr(env, e), t);
 			case EMeta(s, e):
 				switch s.name {
-					case ":markup": return transformMarkup(e);
+					case ":markup": return transformMarkup(env.makeChild(), e);
 					case _: EMeta(s, e);
 				}
-			case EIs(e, t): EIs(transformExpr(e), t);
+			case EIs(e, t): EIs(transformExpr(env, e), t);
 		}
 		return {
 			pos: expr.pos,
@@ -132,11 +135,11 @@ class NeptuneMacro {
 	 * @param f 
 	 * @return Function
 	 */
-	static function transformFunction(f:Function):Function {
+	static function transformFunction(env:Environment, f:Function):Function {
 		return {
 			args: f.args,
 			ret: f.ret,
-			expr: transformExpr(f.expr),
+			expr: transformExpr(env, f.expr),
 			params: f.params,
 		};
 	}
@@ -146,7 +149,7 @@ class NeptuneMacro {
 	 * @param field 
 	 * @return Field
 	 */
-	static function transformField(field:Field):Field {
+	static function transformField(env:Environment, field:Field):Field {
 		var kind:FieldType = switch field.kind {
 			case FVar(t, e):
 				switch t {
@@ -162,19 +165,19 @@ class NeptuneMacro {
 			case FFun(f):
 				switch field.name {
 					case "new": field.kind;
-					case _: FFun(transformFunction(f));
+					case _: FFun(transformFunction(env.makeChild(), f));
 				}
 			case FProp(get, set, t, e): throw "not implemented";
 		}
 
-		return {
+		return env.addField({
 			name: field.name,
 			doc: field.doc,
 			access: field.access,
 			kind: kind,
 			pos: field.pos,
 			meta: field.meta,
-		};
+		});
 	}
 }
 #end

@@ -20,9 +20,5 @@ package neptune;
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-@:autoBuild(neptune.compiler.macro.NeptuneMacro.fromInterface())
-interface Neptune
-{
-}
-
+@:autoBuild(neptune.compiler.NeptuneMacro.fromInterface())
+interface Neptune {}

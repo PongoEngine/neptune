@@ -1,4 +1,4 @@
-package neptune.util;
+package neptune.compiler;
 
 /*
  * Copyright (c) 2022 Jeremy Meltingtallow
@@ -21,9 +21,10 @@ package neptune.util;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #if macro
+import neptune.compiler.Environment;
 import haxe.macro.Expr;
 
-class NExprUtil {
+class MakeExpr {
 	public static function makeENew(pack:Array<String>, name:String, params:Array<Expr>, pos:Position):Expr {
 		return {
 			expr: ENew({
@@ -73,11 +74,11 @@ class NExprUtil {
 		}
 	}
 
-	public static function makeVar(name:String, expr:Expr):Var {
-		return {
+	public static function makeVar(env:Environment, name:String, expr:Expr):Var {
+		return env.addVar({
 			name: name,
 			expr: expr
-		}
+		});
 	}
 }
 #end

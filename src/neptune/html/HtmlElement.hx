@@ -25,6 +25,7 @@ import js.html.Element;
 import js.html.Text;
 import js.html.Node;
 
+@:native('_NepEl')
 abstract HtmlElement(Element) from Element to Element {
 	public inline function new(tag:String):Void {
 		this = HtmlElement.createElement(tag);
@@ -36,6 +37,10 @@ abstract HtmlElement(Element) from Element to Element {
 
 	public static inline function createText(text:String):Text {
 		return document.createTextNode(text);
+	}
+
+	public static inline function createTextFromNumber(text:Float):Text {
+		return document.createTextNode(text + "");
 	}
 
 	public inline function addAttr(attr:HtmlAttribute):HtmlElement {
@@ -52,31 +57,8 @@ abstract HtmlElement(Element) from Element to Element {
 		return this;
 	}
 
-	public function addChild(child:Dynamic):HtmlElement {
-		if (child != null) {
-			var childType = js.Lib.typeof(child);
-			switch childType {
-				case "symbol", "function", "undefined", "bigint":
-					js.Syntax.code("console.warn({0})", 'Invalid child type: ${childType}');
-				case "object":
-					switch HtmlElement.getType(child) {
-						case 'Node': this.appendChild(child);
-						case _: js.Syntax.code("console.warn({0})", 'Invalid child type: ${childType}');
-					}
-				case "boolean", "number", "string":
-					var text = js.Syntax.code("{0}.toString()", child);
-					this.appendChild(createText(text));
-			}
-		}
+	public function addChild(child:Node):HtmlElement {
+		this.appendChild(child);
 		return this;
-	}
-
-	private static function getType(child:Dynamic):String {
-		var proto = js.Syntax.code("Object.getPrototypeOf({0})", child);
-		if (proto != null && proto.constructor.name != 'EventTarget') {
-			return getType(proto);
-		} else {
-			return child.constructor.name;
-		}
 	}
 }
