@@ -1,32 +1,53 @@
 package neptune.compiler;
 
+/*
+ * Copyright (c) 2022 Jeremy Meltingtallow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 #if macro
+import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Expr.Var;
 import haxe.macro.Expr.Field;
-import neptune.compiler.MakeExpr.*;
 
 using Lambda;
 
 enum EnvironmentItem {
 	EField(f:Field);
-	EVar(v:Var);
+	EExpr(e:Expr);
+	EArg(arg:FunctionArg);
 }
 
 typedef EnvRef = {
-	ref :Environment
+	ref:Environment
 }
 
 class Environment {
 	private static var ENV_NUM = 0;
-	public static var ROOT :Environment = null;
+	public static var ROOT:Environment = null;
+
 	public var name(default, null):String;
 
 	public function new():Void {
 		this._items = new Map();
 		this.name = 'Env_${ENV_NUM++}';
-		if(Environment.ROOT == null) {
+		if (Environment.ROOT == null) {
 			Environment.ROOT = this;
 		}
 	}
@@ -39,12 +60,45 @@ class Environment {
 		return field;
 	}
 
-	public function addVar(var_:Var):Var {
-		if (this._items.exists(var_.name)) {
-			throw 'Item already exists: ${var_.name}';
+	private function addExpr_(name:String, expr:Expr):Void {
+		if (this._items.exists(name)) {
+			throw 'Item already exists: ${name}';
 		}
-		this._items.set(var_.name, EVar(var_));
-		return var_;
+		this._items.set(name, EExpr(expr));
+	}
+
+	public function addExpr(root:Expr):Expr {
+		switch root.expr {
+			case EConst(_), EBinop(_), EBlock(_), EReturn(_), ECall(_):
+			case EFunction(k, f):
+				switch k {
+					case FNamed(name, inlined): {
+							addExpr_(name, root);
+						}
+					case _:
+				}
+			case EVars(vars):
+				for (v in vars) {
+					addExpr_(v.name, v.expr);
+				}
+			case _:
+				throw 'not supported: ${root.expr.getName()}';
+		}
+
+		return root;
+	}
+
+	public function addMarkup(markup:Expr):Expr {
+		this._markup.push(markup);
+		return markup;
+	}
+
+	public function addArg(arg:FunctionArg):FunctionArg {
+		if (this._items.exists(arg.name)) {
+			throw 'Item already exists: ${arg.name}';
+		}
+		this._items.set(arg.name, EArg(arg));
+		return arg;
 	}
 
 	public function makeChild():Environment {
@@ -54,41 +108,6 @@ class Environment {
 		return e;
 	}
 
-	/**
-	 * Used for debugging
-	 * @return Expr
-	 */
-	public function makeVarBlock() : Expr {
-		var curPos = Context.currentPos();
-		var exprs :Array<Expr> = [];
-		for(item in this._items) {
-			switch item {
-				case EField(field): switch field.kind {
-					case FVar(t, e): throw "not implemented";
-					case FFun(f): exprs.push(makeCIdent(field.name, f.expr.pos));
-					case FProp(get, set, t, e): throw "not implemented";
-				}
-				case EVar(v): exprs.push(makeCIdent(v.name, v.expr.pos));
-			}
-		}
-		return makeEBlock(exprs, Context.currentPos());
-	}
-
-	/**
-	 * Used for debugging
-	 * @return Expr
-	 */
-	public function makeChildrenTree() : Expr {
-		var childrenBlock = [];
-		for(child in this._children) {
-			childrenBlock.push(child.makeChildrenTree());
-		}
-		var childrenBlock = makeEBlock(childrenBlock, Context.currentPos());
-		var content = makeVar(this.name + "_content", this.makeVarBlock());
-		var children = makeVar(this.name + "_children", childrenBlock);
-		return makeEVars([content, children], Context.currentPos());
-	}
-
 	public function getType(expr:Expr):haxe.macro.Type {
 		try {
 			return Context.typeof(expr);
@@ -96,7 +115,16 @@ class Environment {
 			return switch expr.expr {
 				case EConst(c):
 					switch c {
-						case CIdent(s): getType(getEnvironmentItem(s));
+						case CIdent(s):
+							switch getEnvironmentItem(s) {
+								case EField(field): switch field.kind {
+										case FVar(t, e): throw "not implemented";
+										case FFun(f): getType(f.expr);
+										case FProp(get, set, t, e): throw "not implemented";
+									}
+								case EExpr(e): getType(e);
+								case EArg(arg): Context.resolveType(arg.type, Context.currentPos());
+							}
 						case _: throw "not implemented";
 					}
 				case EBlock(exprs): switch exprs.length {
@@ -127,6 +155,12 @@ class Environment {
 					} else {
 						throw "not implemented";
 					}
+				case EReturn(e):
+					getType(e);
+				case ECall(e, params):
+					getType(e);
+				case EFunction(_, f):
+					getType(f.expr);
 				case _:
 					trace(expr.expr.getName());
 					throw "not implemented";
@@ -134,25 +168,25 @@ class Environment {
 		}
 	}
 
-	private function getEnvironmentItem(name:String):Null<Expr> {
+	public function handleMarkup():Void {
+	}
+
+	private function getEnvironmentItem(name:String):Null<EnvironmentItem> {
+		// trace('Looking for ${name} in ${this.name}');
+		// trace(new haxe.macro.Printer().printExpr(this.makeChildrenTree()));
+
 		var item = this._items.get(name);
 		if (item != null) {
-			return switch item {
-				case EField(f): switch f.kind {
-						case FVar(t, e): throw "not implemented";
-						case FFun(f): throw "not implemented";
-						case FProp(get, set, t, e): throw "not implemented";
-					}
-				case EVar(v): v.expr;
-			}
+			return item;
 		} else if (this._parent != null) {
 			return this._parent.getEnvironmentItem(name);
 		}
 		return throw '${name} not found!';
 	}
 
-	private var _parent:Null<Environment> = null;
-	private var _children:Array<Environment> = [];
-	private var _items:Map<String, EnvironmentItem>;
+	@:allow(neptune.compiler.EnvironmentUtil) private var _parent:Null<Environment> = null;
+	@:allow(neptune.compiler.EnvironmentUtil) private var _children:Array<Environment> = [];
+	@:allow(neptune.compiler.EnvironmentUtil) private var _items:Map<String, EnvironmentItem>;
+	private var _markup:Array<Expr> = [];
 }
 #end

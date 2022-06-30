@@ -21,4 +21,6 @@ package neptune;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 @:autoBuild(neptune.compiler.NeptuneMacro.fromInterface())
-interface Neptune {}
+interface Neptune {
+	function template():js.html.Node;
+}

@@ -4,27 +4,15 @@ var Expressions = function() {
 };
 Expressions.prototype = {
 	template: function() {
-		var x = 12033;
+		var x = 1337;
 		var onClick = function() {
 			x += 1;
-			console.log("src/Expressions.hx:46:",x);
 		};
-		var element_1 = window.document.createElement("div");
-		var element_2 = window.document.createElement("button");
-		element_2.setAttribute("id","hello");
-		element_2.addEventListener("click",onClick);
-		_$NepEl.addChild(element_2,window.document.createTextNode("Increment"));
-		_$NepEl.addChild(element_1,element_2);
-		var q = x + 22;
-		var element_3 = window.document.createElement("div");
-		_$NepEl.addChild(element_3,window.document.createTextNode("HelloYouPerson + 22 "));
-		_$NepEl.addChild(element_3,window.document.createTextNode(x + q + ""));
-		_$NepEl.addChild(element_1,element_3);
-		var element_4 = window.document.createElement("h2");
-		_$NepEl.addChild(element_4,window.document.createTextNode("Length - "));
-		_$NepEl.addChild(element_4,window.document.createTextNode(x + 45 + ""));
-		_$NepEl.addChild(element_1,element_4);
-		return element_1;
+		var element_0 = window.document.createElement("button");
+		element_0.setAttribute("id","hello");
+		element_0.addEventListener("click",onClick);
+		_$NepEl.addChild(element_0,window.document.createTextNode(x + ""));
+		return element_0;
 	}
 };
 var Main = function() { };

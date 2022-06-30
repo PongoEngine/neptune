@@ -24,13 +24,11 @@ package neptune.compiler;
 import neptune.compiler.Environment.EnvRef;
 import haxe.macro.Type.AbstractType;
 import haxe.macro.Type.ClassType;
-import neptune.compiler.NeptuneMacro;
 import neptune.compiler.Token;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import neptune.compiler.MakeExpr.*;
-import neptune.compiler.NStringUtils;
 
+using StringTools;
 using neptune.compiler.Scanner.ScannerTools;
 
 class Parser {
@@ -53,16 +51,79 @@ class Parser {
 
 	static var elementIdentIndex = 0;
 
-	static function addExprText(ident_addChild:Expr, child:Expr, exprs:Array<Expr>, isNumber:Bool):Void {
+	static function addExprText(env:EnvRef, ident_addChild:Expr, child:Expr, isNumber:Bool):Expr {
 		var fnName = isNumber ? "createTextFromNumber" : "createText";
-		var childText = makeStaticCall(["neptune", "html", "HtmlElement"], fnName, [child], child.pos);
-		var ident_addChild_child_ = makeECall(ident_addChild, [childText], childText.pos);
-		exprs.push(ident_addChild_child_);
+		var childText = EnvironmentUtil.makeStaticCall(["neptune", "html", "HtmlElement"], fnName, [child], child.pos);
+		var ident_addChild_child_ = EnvironmentUtil.makeECall(ident_addChild, [childText], childText.pos);
+		return ident_addChild_child_;
 	}
 
-	static function addExprNode(ident_addChild:Expr, child:Expr, exprs:Array<Expr>):Void {
-		var ident_addChild_child_ = makeECall(ident_addChild, [child], child.pos);
-		exprs.push(ident_addChild_child_);
+	static function addExprNode(env:EnvRef, ident_addChild:Expr, child:Expr):Expr {
+		var ident_addChild_child_ = EnvironmentUtil.makeECall(ident_addChild, [child], child.pos);
+		return ident_addChild_child_;
+	}
+
+	static var fragmentIdentIndex = 0;
+
+	static function transformVoidExpr(env:EnvRef, child:Expr):Expr {
+		return switch child.expr {
+			case EBlock(blockExprs): if (blockExprs.length > 0) {
+					var copy = blockExprs.slice(0);
+					copy[blockExprs.length - 1] = transformVoidExpr(env, copy[blockExprs.length - 1]);
+				} else {
+					throw "Invalid Void Expr";
+				}
+			case EFor(it, expr):
+				var fragmentID = 'fragment_${fragmentIdentIndex++}';
+				var exprs:Array<Expr> = [];
+				var newFragment = EnvironmentUtil.makeENew(["neptune", "html"], "HtmlFragment", [], child.pos);
+				exprs.push(EnvironmentUtil.makeEVar(makeVar(fragmentID, newFragment), child.pos));
+				var exprIdent = EnvironmentUtil.makeCIdent(fragmentID, child.pos);
+				var exprFor = EnvironmentUtil.makeEFor(it, addChild(env, exprIdent, expr), child.pos);
+				exprs.push(exprFor);
+				exprs.push(exprIdent);
+				EnvironmentUtil.makeEBlock(exprs, child.pos);
+			case _: throw 'Invalid Void Expr: ${child.expr.getName()}';
+		}
+	}
+
+	static function addChild(env:EnvRef, exprIdent:Expr, child:Expr):Expr {
+		var ident_addChild = EnvironmentUtil.makeEField(exprIdent, "addChild", child.pos);
+		var childType = env.ref.getType(child);
+		return switch env.ref.getType(child) {
+			case TMono(_), TEnum(_), TType(_), TFun(_), TAnonymous(_), TDynamic(_), TLazy(_):
+				throw 'invalid child type: ${childType}';
+			case TInst(t, params):
+				var name = classTypeName(t.get());
+				switch name {
+					case "js.html.Text":
+						addExprNode(env, ident_addChild, child);
+					case "String":
+						addExprText(env, ident_addChild, child, false);
+					case _:
+						throw name;
+				}
+			case TAbstract(t, params):
+				var name = abstractTypeName(t.get());
+				switch name {
+					case "Int", "Float":
+						addExprText(env, ident_addChild, child, true);
+					case "neptune.html.HtmlElement":
+						addExprNode(env, ident_addChild, child);
+					case "Void":
+						child = transformVoidExpr(env, child);
+						addExprNode(env, ident_addChild, child);
+					case _:
+						throw 'Invalid Abstract: ${name}';
+				}
+		}
+	}
+
+	public static function makeVar(name:String, expr:Expr):Var {
+		return {
+			name: name,
+			expr: expr
+		};
 	}
 
 	static function parseElementNode(env:EnvRef, scanner:Scanner):Expr {
@@ -82,49 +143,25 @@ class Parser {
 		var max = scanner.curIndex;
 		var pos = scanner.makePosition(min, max);
 
-		var newHtmlElement = makeENew(["neptune", "html"], "HtmlElement", [makeCString(tagname, pos)], pos);
+		var newHtmlElement = EnvironmentUtil.makeENew(["neptune", "html"], "HtmlElement", [EnvironmentUtil.makeCString(tagname, pos)], pos);
 		var exprs:Array<Expr> = [];
-		exprs.push(makeEVars([makeVar(elementID, newHtmlElement, env)], pos));
-		var exprIdent = makeCIdent(elementID, pos);
+		exprs.push(EnvironmentUtil.makeEVar(makeVar(elementID, newHtmlElement), pos));
+		var exprIdent = EnvironmentUtil.makeCIdent(elementID, pos);
 
 		// add attributes
 		for (attr in attrs) {
-			var ident_addAttr = makeEField(exprIdent, "addAttr", attr.pos);
-			var ident_addAttr_attr_ = makeECall(ident_addAttr, [attr], attr.pos);
+			var ident_addAttr = EnvironmentUtil.makeEField(exprIdent, "addAttr", attr.pos);
+			var ident_addAttr_attr_ = EnvironmentUtil.makeECall(ident_addAttr, [attr], attr.pos);
 			exprs.push(ident_addAttr_attr_);
 		}
 
 		// add children
 		for (child in children) {
-			var ident_addChild = makeEField(exprIdent, "addChild", child.pos);
-			switch env.ref.getType(child) {
-				case TMono(_), TEnum(_), TType(_), TFun(_), TAnonymous(_), TDynamic(_), TLazy(_):
-					throw "invalid child";
-				case TInst(t, params):
-					var name = classTypeName(t.get());
-					switch name {
-						case "js.html.Text":
-							addExprNode(ident_addChild, child, exprs);
-						case "String":
-							addExprText(ident_addChild, child, exprs, false);
-						case _:
-							throw name;
-					}
-				case TAbstract(t, params):
-					var name = abstractTypeName(t.get());
-					switch name {
-						case "Int", "Float":
-							addExprText(ident_addChild, child, exprs, true);
-						case "neptune.html.HtmlElement":
-							addExprNode(ident_addChild, child, exprs);
-						case _:
-							throw name;
-					}
-			}
+			exprs.push(addChild(env, exprIdent, child));
 		}
 
 		exprs.push(exprIdent);
-		return makeEBlock(exprs, pos);
+		return EnvironmentUtil.makeEBlock(exprs, pos);
 	}
 
 	static function parseTextNode(env:EnvRef, scanner:Scanner):Null<Expr> {
@@ -139,13 +176,13 @@ class Parser {
 						&& str != Token.CURLY_BRACE_OPENED;
 					});
 
-					if (NStringUtils.onlySpaces(text)) {
+					if (onlySpaces(text)) {
 						null;
 					} else {
 						var max = scanner.curIndex;
 						var pos = scanner.makePosition(min, max);
-						var textExpr = makeCString(text, pos);
-						makeStaticCall(["neptune", "html", "HtmlElement"], "createText", [textExpr], textExpr.pos);
+						var textExpr = EnvironmentUtil.makeCString(text, pos);
+						EnvironmentUtil.makeStaticCall(["neptune", "html", "HtmlElement"], "createText", [textExpr], textExpr.pos);
 					}
 				}
 		}
@@ -167,18 +204,18 @@ class Parser {
 		var attr = getExpr(env, scanner);
 		var max = scanner.curIndex;
 		var pos = scanner.makePosition(min, max);
-		return makeENew(["neptune", "html"], "HtmlAttribute", [makeCString(name, pos), attr], pos);
+		return EnvironmentUtil.makeENew(["neptune", "html"], "HtmlAttribute", [EnvironmentUtil.makeCString(name, pos), attr], pos);
 	}
 
 	static function getExpr(env:EnvRef, scanner:Scanner):Expr {
 		return switch scanner.peekToken() {
-			case Token.DBL_QUOTE: getStringExpr(scanner);
+			case Token.DBL_QUOTE: getStringExpr(env, scanner);
 			case Token.CURLY_BRACE_OPENED: getHaxeExpr(env, scanner);
 			case _: assertThat(false);
 		}
 	}
 
-	static function getStringExpr(scanner:Scanner):Expr {
+	static function getStringExpr(env:EnvRef, scanner:Scanner):Expr {
 		var min = scanner.curIndex;
 		assertToken(scanner.next(), Token.DBL_QUOTE);
 		var attrValue = scanner.consumeWhile((str) -> {
@@ -187,7 +224,7 @@ class Parser {
 		assertToken(scanner.next(), Token.DBL_QUOTE);
 		var max = scanner.curIndex;
 		var pos = scanner.makePosition(min, max);
-		return makeCString(attrValue, pos);
+		return EnvironmentUtil.makeCString(attrValue, pos);
 	}
 
 	/**
@@ -214,7 +251,7 @@ class Parser {
 		var pos = scanner.makePosition(min, max);
 
 		var expr = Context.parse('{${exprStr}}', pos);
-		return NeptuneMacro.transformExpr(env, expr);
+		return Transform.transformExpr(env, expr);
 	}
 
 	/**
@@ -258,6 +295,10 @@ class Parser {
 	static function isClosing(scanner:Scanner):Bool {
 		var end = scanner.peek() + scanner.peekDouble();
 		return end == "</";
+	}
+
+	public static function onlySpaces(str:String):Bool {
+		return str.trim().length == 0;
 	}
 
 	static function assertToken(value:String, token:Token):Dynamic {

@@ -26,34 +26,19 @@ import neptune.Neptune;
 
 class Expressions implements Neptune
 {
-    
     public function new() : Void
     {
     }
 
-    public function garbage() : Node
-    {
-        return
-            <div>Hello</div>;        
-    }
-
     public function template() : Node
     {
-        var x = 12033;
+        var x = 1337;
 
         function onClick() {
             x += 1;
-            trace(x);
         }
 
         return 
-            <div>
-                <button id="hello" @click={onClick;}>Increment</button>
-                {
-                    var q = x + 22;
-                    {<div>HelloYouPerson + 22 {x + q;}</div>}
-                }
-                <h2>Length - {x + 45;}</h2>
-            </div>;
+            <button id="hello" @click={onClick;}>{x;}</button>;
     }
 }
