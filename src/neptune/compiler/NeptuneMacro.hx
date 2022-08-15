@@ -35,42 +35,13 @@ class NeptuneMacro {
 	macro static public function fromInterface():Array<Field> {
 		var fields = Context.getBuildFields();
 		var ctx = new Environment();
-		var fields = fields.map(transformField.bind({ref: ctx}));
-		// trace(new haxe.macro.Printer().printExpr(EnvironmentUtil.makeChildrenTree(Environment.ROOT)));
-		Environment.ROOT.handleMarkup();
-		return fields;
-	}
-
-	static function transformField(env:EnvRef, field:Field):Field {
-		var kind:FieldType = switch field.kind {
-			case FVar(t, e):
-				switch t {
-					case TPath(p): throw "not implemented";
-					case TFunction(args, ret): throw "not implemented";
-					case TAnonymous(fields): throw "not implemented";
-					case TParent(t): throw "not implemented";
-					case TExtend(p, fields): throw "not implemented";
-					case TOptional(t): throw "not implemented";
-					case TNamed(n, t): throw "not implemented";
-					case TIntersection(tl): throw "not implemented";
-				}
-			case FFun(f):
-				switch field.name {
-					case "new": field.kind;
-					case _: FFun(Transform.transformFunction(env, f));
-				}
-			case FProp(get, set, t, e): throw "not implemented";
-		}
+		var fields = fields.map(Transform.transformField.bind({ref: ctx}));
+		Environment.ROOT.handleDeps();
 
 		#if debugFields
-		trace(new haxe.macro.Printer().printField({
-			name: field.name,
-			doc: field.doc,
-			access: field.access,
-			kind: kind,
-			pos: field.pos,
-			meta: field.meta,
-		}));
+		for (field in fields) {
+			trace(new haxe.macro.Printer().printField(field));
+		}
 		#end
 
 		#if debugEnv
@@ -78,15 +49,8 @@ class NeptuneMacro {
 			trace(new haxe.macro.Printer().printExpr(Environment.ROOT.makeChildrenTree()));
 		}
 		#end
-
-		return env.ref.addField({
-			name: field.name,
-			doc: field.doc,
-			access: field.access,
-			kind: kind,
-			pos: field.pos,
-			meta: field.meta,
-		});
+		// trace(new haxe.macro.Printer().printExpr(EnvironmentUtil.makeChildrenTree(Environment.ROOT)));
+		return fields;
 	}
 }
 #end

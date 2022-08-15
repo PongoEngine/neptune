@@ -77,7 +77,7 @@ class Parser {
 				var fragmentID = 'fragment_${fragmentIdentIndex++}';
 				var exprs:Array<Expr> = [];
 				var newFragment = EnvironmentUtil.makeENew(["neptune", "html"], "HtmlFragment", [], child.pos);
-				exprs.push(EnvironmentUtil.makeEVar(makeVar(fragmentID, newFragment), child.pos));
+				exprs.push(EnvironmentUtil.makeEVar(EnvironmentUtil.makeVar(fragmentID, newFragment), child.pos));
 				var exprIdent = EnvironmentUtil.makeCIdent(fragmentID, child.pos);
 				var exprFor = EnvironmentUtil.makeEFor(it, addChild(env, exprIdent, expr), child.pos);
 				exprs.push(exprFor);
@@ -119,13 +119,6 @@ class Parser {
 		}
 	}
 
-	public static function makeVar(name:String, expr:Expr):Var {
-		return {
-			name: name,
-			expr: expr
-		};
-	}
-
 	static function parseElementNode(env:EnvRef, scanner:Scanner):Expr {
 		// create element
 		var elementID = 'element_${elementIdentIndex++}';
@@ -145,7 +138,7 @@ class Parser {
 
 		var newHtmlElement = EnvironmentUtil.makeENew(["neptune", "html"], "HtmlElement", [EnvironmentUtil.makeCString(tagname, pos)], pos);
 		var exprs:Array<Expr> = [];
-		exprs.push(EnvironmentUtil.makeEVar(makeVar(elementID, newHtmlElement), pos));
+		exprs.push(EnvironmentUtil.makeEVar(EnvironmentUtil.makeVar(elementID, newHtmlElement), pos));
 		var exprIdent = EnvironmentUtil.makeCIdent(elementID, pos);
 
 		// add attributes

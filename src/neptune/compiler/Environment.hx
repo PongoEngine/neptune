@@ -28,11 +28,12 @@ import haxe.macro.Expr.Field;
 
 using Lambda;
 
-enum EnvironmentItem {
-	EField(f:Field);
-	EExpr(e:Expr);
-	EArg(arg:FunctionArg);
-}
+// enum EnvironmentItem {
+// 	EField(f:Field);
+// 	EVar(name:String, e:Expr);
+// 	EFunc(name:String, e:Expr);
+// 	EArg(arg:FunctionArg);
+// }
 
 typedef EnvRef = {
 	ref:Environment
@@ -45,60 +46,16 @@ class Environment {
 	public var name(default, null):String;
 
 	public function new():Void {
-		this._items = new Map();
+		this._items = [];
 		this.name = 'Env_${ENV_NUM++}';
 		if (Environment.ROOT == null) {
 			Environment.ROOT = this;
 		}
 	}
 
-	public function addField(field:Field):Field {
-		if (this._items.exists(field.name)) {
-			throw 'Item already exists: ${field.name}';
-		}
-		this._items.set(field.name, EField(field));
-		return field;
-	}
-
-	private function addExpr_(name:String, expr:Expr):Void {
-		if (this._items.exists(name)) {
-			throw 'Item already exists: ${name}';
-		}
-		this._items.set(name, EExpr(expr));
-	}
-
-	public function addExpr(root:Expr):Expr {
-		switch root.expr {
-			case EConst(_), EBinop(_), EBlock(_), EReturn(_), ECall(_):
-			case EFunction(k, f):
-				switch k {
-					case FNamed(name, inlined): {
-							addExpr_(name, root);
-						}
-					case _:
-				}
-			case EVars(vars):
-				for (v in vars) {
-					addExpr_(v.name, v.expr);
-				}
-			case _:
-				throw 'not supported: ${root.expr.getName()}';
-		}
-
-		return root;
-	}
-
-	public function addMarkup(markup:Expr):Expr {
-		this._markup.push(markup);
-		return markup;
-	}
-
-	public function addArg(arg:FunctionArg):FunctionArg {
-		if (this._items.exists(arg.name)) {
-			throw 'Item already exists: ${arg.name}';
-		}
-		this._items.set(arg.name, EArg(arg));
-		return arg;
+	public function addExpr(expr:Expr):Expr {
+		this._items.push(expr);
+		return expr;
 	}
 
 	public function makeChild():Environment {
@@ -108,6 +65,17 @@ class Environment {
 		return e;
 	}
 
+	public function handleDeps():Void {
+		var items = this._items;
+		for (c in this._children) {
+			c.handleDeps();
+		}
+		var p = new Printer();
+		for (item in this._items) {
+			trace(p.printExpr(item));
+		}
+	}
+
 	public function getType(expr:Expr):haxe.macro.Type {
 		try {
 			return Context.typeof(expr);
@@ -115,16 +83,7 @@ class Environment {
 			return switch expr.expr {
 				case EConst(c):
 					switch c {
-						case CIdent(s):
-							switch getEnvironmentItem(s) {
-								case EField(field): switch field.kind {
-										case FVar(t, e): throw "not implemented";
-										case FFun(f): getType(f.expr);
-										case FProp(get, set, t, e): throw "not implemented";
-									}
-								case EExpr(e): getType(e);
-								case EArg(arg): Context.resolveType(arg.type, Context.currentPos());
-							}
+						case CIdent(s): getType(getEnvironmentItem(s));
 						case _: throw "not implemented";
 					}
 				case EBlock(exprs): switch exprs.length {
@@ -168,14 +127,11 @@ class Environment {
 		}
 	}
 
-	public function handleMarkup():Void {
-	}
-
-	private function getEnvironmentItem(name:String):Null<EnvironmentItem> {
+	private function getEnvironmentItem(name:String):Null<Expr> {
 		// trace('Looking for ${name} in ${this.name}');
 		// trace(new haxe.macro.Printer().printExpr(this.makeChildrenTree()));
 
-		var item = this._items.get(name);
+		var item = this.getItem(name);
 		if (item != null) {
 			return item;
 		} else if (this._parent != null) {
@@ -184,9 +140,29 @@ class Environment {
 		return throw '${name} not found!';
 	}
 
+	private function getItem(name:String):Null<Expr> {
+		for (item in this._items) {
+			switch item.expr {
+				case EVars(vars):
+					{
+						for (var_ in vars) {
+							if (name == var_.name) {
+								return var_.expr;
+							}
+						}
+					}
+				case _:
+			}
+		}
+		return null;
+	}
+
+	private function itemExists(name:String):Bool {
+		return this.getItem(name) != null;
+	}
+
 	@:allow(neptune.compiler.EnvironmentUtil) private var _parent:Null<Environment> = null;
 	@:allow(neptune.compiler.EnvironmentUtil) private var _children:Array<Environment> = [];
-	@:allow(neptune.compiler.EnvironmentUtil) private var _items:Map<String, EnvironmentItem>;
-	private var _markup:Array<Expr> = [];
+	@:allow(neptune.compiler.EnvironmentUtil) private var _items:Array<Expr>;
 }
 #end

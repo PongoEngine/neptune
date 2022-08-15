@@ -21,7 +21,6 @@ package ;
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import js.html.Node;
 import neptune.Neptune;
 
 class Expressions implements Neptune
@@ -30,15 +29,22 @@ class Expressions implements Neptune
     {
     }
 
-    public function template() : Node
+    public function template()
     {
-        var x = 1337;
+        var x = 1333747;
+        x = 309228345;
+        var y = 39;
+        var q = x + y;
 
         function onClick() {
             x += 1;
+            q = q + x;
         }
 
-        return 
-            <button id="hello" @click={onClick;}>{x;}</button>;
+        var l = 
+            <button id="hello" @click={onClick;}>{q;}</button>;
+
+
+        return l;
     }
 }

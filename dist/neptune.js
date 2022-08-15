@@ -4,14 +4,17 @@ var Expressions = function() {
 };
 Expressions.prototype = {
 	template: function() {
-		var x = 1337;
+		var x = 1333747;
+		x = 309228345;
+		var q = x + 39;
 		var onClick = function() {
 			x += 1;
+			q += x;
 		};
 		var element_0 = window.document.createElement("button");
 		element_0.setAttribute("id","hello");
 		element_0.addEventListener("click",onClick);
-		_$NepEl.addChild(element_0,window.document.createTextNode(x + ""));
+		_$NepEl.addChild(element_0,window.document.createTextNode(q + ""));
 		return element_0;
 	}
 };

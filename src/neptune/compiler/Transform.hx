@@ -66,66 +66,153 @@ class Transform {
 
 	/**
 	 * [Description]
+	 * @param env 
+	 * @param graph 
 	 * @param expr 
 	 * @return Expr
 	 */
-	public static function transformExpr(env:EnvRef, expr:Null<Expr>):Expr {
-		return env.ref.addExpr(transformExpr_(env, expr));
-	}
-
-	
-	private static function transformExpr_(env:EnvRef, expr:Null<Expr>):Expr {
+	 public static function transformExpr(env:EnvRef, expr:Null<Expr>):Expr {
 		if (expr == null) {
 			return null;
 		}
-		var def:ExprDef = switch expr.expr {
-			case EConst(_), EDisplayNew(_), EBreak, EContinue: expr.expr;
-			case EArray(e1, e2): EArray(transformExpr(env, e1), transformExpr(env, e2));
-			case EBinop(op, e1, e2): EBinop(op, transformExpr(env, e1), transformExpr(env, e2));
-			case EField(e, field): EField(transformExpr(env, e), field);
-			case EParenthesis(e): EParenthesis(transformExpr(env, e));
-			case EObjectDecl(fields): EObjectDecl(fields.map(f -> {
-					field: f.field,
-					expr: transformExpr(env, f.expr),
-					quotes: f.quotes,
-				}));
-			case EArrayDecl(values): EArrayDecl(values.map(transformExpr.bind(env)));
-			case ECall(e, params):
-				ECall(transformExpr(env, e), params.map(transformExpr.bind(env)));
-			case ENew(t, params): ENew(t, params.map(transformExpr.bind(env)));
-			case EUnop(op, postFix, e): EUnop(op, postFix, transformExpr(env, e));
-			case EVars(vars): EVars(vars.map(transformVar.bind(env)));
-			case EFunction(kind, f):
-				for (arg in f.args) {
-					env.ref.addArg(arg);
+		return switch expr.expr {
+			case EConst(_), EDisplayNew(_), EBreak, EContinue:
+				expr;
+			case EArray(e1, e2):
+				{
+					expr: EArray(transformExpr(env, e1), transformExpr(env, e2)),
+					pos: expr.pos
+				};
+			case EBinop(op, e1, e2):
+				var expr = {
+					expr: EBinop(op, transformExpr(env, e1), transformExpr(env, e2)),
+					pos: expr.pos
+				};
+				switch op {
+					case OpAssign: env.ref.addExpr(expr);
+					case OpAssignOp(op): env.ref.addExpr(expr);
+					case _: expr;
 				}
-				EFunction(kind, transformFunction(env, f));
+			case EField(e, field):
+				{
+					expr: EField(transformExpr(env, e), field),
+					pos: expr.pos
+				};
+			case EParenthesis(e):
+				{
+					expr: EParenthesis(transformExpr(env, e)),
+					pos: expr.pos
+				};
+			case EObjectDecl(fields):
+				{
+					expr: EObjectDecl(fields.map(f -> {
+						field: f.field,
+						expr: transformExpr(env, f.expr),
+						quotes: f.quotes,
+					})),
+					pos: expr.pos
+				};
+			case EArrayDecl(values):
+				{
+					expr: EArrayDecl(values.map(transformExpr.bind(env))),
+					pos: expr.pos
+				};
+			case ECall(e, params):
+				{
+					expr: ECall(transformExpr(env, e), params.map(transformExpr.bind(env))),
+					pos: expr.pos
+				};
+			case ENew(t, params):
+				{
+					expr: ENew(t, params.map(transformExpr.bind(env))),
+					pos: expr.pos
+				};
+			case EUnop(op, postFix, e):
+				{
+					expr: EUnop(op, postFix, transformExpr(env, e)),
+					pos: expr.pos
+				};
+			case EVars(vars):
+				env.ref.addExpr({
+					expr: EVars(vars.map(transformVar.bind(env))),
+					pos: expr.pos
+				});
+			case EFunction(kind, f):
+				{
+					expr: EFunction(kind, transformFunction(env, f)),
+					pos: expr.pos
+				};
 			case EBlock(exprs):
 				// change the Parser env reference so that it matches transformExpr
 				env.ref = env.ref.makeChild();
-				EBlock(exprs.map(transformExpr.bind(env)));
-			case EFor(it, expr): EFor(transformExpr(env, it), transformExpr(env, expr));
-			case EIf(econd, eif, eelse): EIf(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse));
-			case EWhile(econd, e, normalWhile): EWhile(transformExpr(env, econd), transformExpr(env, e), normalWhile);
-			case ESwitch(e, cases, edef): throw 'Not implemented';
-			case ETry(e, catches): throw 'Not implemented';
-			case EReturn(e): EReturn(transformExpr(env, e));
-			case EUntyped(e): EUntyped(transformExpr(env, e));
-			case EThrow(e): EThrow(transformExpr(env, e));
-			case ECast(e, t): ECast(transformExpr(env, e), t);
-			case EDisplay(e, displayKind): EDisplay(transformExpr(env, e), displayKind);
-			case ETernary(econd, eif, eelse): ETernary(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse));
-			case ECheckType(e, t): ECheckType(transformExpr(env, e), t);
+				{
+					expr: EBlock(exprs.map(transformExpr.bind(env))),
+					pos: expr.pos
+				};
+			case EFor(it, expr):
+				{
+					expr: EFor(transformExpr(env, it), transformExpr(env, expr)),
+					pos: expr.pos
+				};
+			case EIf(econd, eif, eelse):
+				{
+					expr: EIf(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse)),
+					pos: expr.pos
+				};
+			case EWhile(econd, e, normalWhile):
+				{
+					expr: EWhile(transformExpr(env, econd), transformExpr(env, e), normalWhile),
+					pos: expr.pos
+				};
+			case ESwitch(e, cases, edef):
+				throw 'Not implemented';
+			case ETry(e, catches):
+				throw 'Not implemented';
+			case EReturn(e):
+				{
+					expr: EReturn(transformExpr(env, e)),
+					pos: expr.pos
+				};
+			case EUntyped(e):
+				{
+					expr: EUntyped(transformExpr(env, e)),
+					pos: expr.pos
+				};
+			case EThrow(e):
+				{
+					expr: EThrow(transformExpr(env, e)),
+					pos: expr.pos
+				};
+			case ECast(e, t):
+				{
+					expr: ECast(transformExpr(env, e), t),
+					pos: expr.pos
+				};
+			case EDisplay(e, displayKind):
+				{
+					expr: EDisplay(transformExpr(env, e), displayKind),
+					pos: expr.pos
+				};
+			case ETernary(econd, eif, eelse):
+				{
+					expr: ETernary(transformExpr(env, econd), transformExpr(env, eif), transformExpr(env, eelse)),
+					pos: expr.pos
+				};
+			case ECheckType(e, t):
+				{
+					expr: ECheckType(transformExpr(env, e), t),
+					pos: expr.pos
+				};
 			case EMeta(s, e):
 				switch s.name {
-					case ":markup": return env.ref.addMarkup(transformMarkup(env, e));
-					case _: expr.expr;
-				}
-			case EIs(e, t): EIs(transformExpr(env, e), t);
-		}
-		return {
-			pos: expr.pos,
-			expr: def,
+					case ":markup": transformMarkup(env, e);
+					case _: expr;
+				};
+			case EIs(e, t):
+				{
+					expr: EIs(transformExpr(env, e), t),
+					pos: expr.pos
+				};
 		}
 	}
 
@@ -135,14 +222,49 @@ class Transform {
 	 * @return Function
 	 */
 	public static function transformFunction(env:EnvRef, f:Function):Function {
-		for (arg in f.args) {
-			env.ref.addArg(arg);
-		}
+		// for (arg in f.args) {
+		// 	env.ref.addArg(arg);
+		// }
 		return {
 			args: f.args,
 			ret: f.ret,
 			expr: transformExpr(env, f.expr),
 			params: f.params,
+		};
+	}
+
+	/**
+	 * [Description]
+	 * @param env 
+	 * @param field 
+	 * @return Field
+	 */
+	public static function transformField(env:EnvRef, field:Field):Field {
+		return {
+			name: field.name,
+			doc: field.doc,
+			access: field.access,
+			kind: switch field.kind {
+				case FVar(t, e):
+					switch t {
+						case TPath(p): throw "not implemented";
+						case TFunction(args, ret): throw "not implemented";
+						case TAnonymous(fields): throw "not implemented";
+						case TParent(t): throw "not implemented";
+						case TExtend(p, fields): throw "not implemented";
+						case TOptional(t): throw "not implemented";
+						case TNamed(n, t): throw "not implemented";
+						case TIntersection(tl): throw "not implemented";
+					}
+				case FFun(f):
+					switch field.name {
+						case "new": field.kind;
+						case _: FFun(transformFunction(env, f));
+					}
+				case FProp(get, set, t, e): throw "not implemented";
+			},
+			pos: field.pos,
+			meta: field.meta,
 		};
 	}
 }

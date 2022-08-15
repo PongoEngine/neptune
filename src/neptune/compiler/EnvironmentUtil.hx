@@ -26,49 +26,51 @@ import haxe.macro.Expr;
 import haxe.macro.Expr.Var;
 
 class EnvironmentUtil {
-	/**
-	 * Used for debugging
-	 * @return Expr
-	 */
-	public static function makeVarBlock(env :Environment):Expr {
-		var curPos = Context.currentPos();
-		var exprs:Array<Expr> = [];
-		for (item in env._items) {
-			switch item {
-				case EField(field):
-					switch field.kind {
-						case FVar(t, e): throw "not implemented";
-						case FFun(f): exprs.push(makeCIdent(field.name, f.expr.pos));
-						case FProp(get, set, t, e): throw "not implemented";
-					}
-				case EExpr(e):
-					exprs.push(e);
-				case EArg(arg):
-					exprs.push(makeCIdent(arg.name, Context.currentPos()));
-			}
-		}
-		return makeEBlock(exprs, Context.currentPos());
-	}
+	// /**
+	//  * Used for debugging
+	//  * @return Expr
+	//  */
+	// public static function makeVarBlock(env:Environment):Expr {
+	// 	var curPos = Context.currentPos();
+	// 	var exprs:Array<Expr> = [];
+	// 	for (item in env._items) {
+	// 		switch item {
+	// 			case EField(field):
+	// 				switch field.kind {
+	// 					case FVar(t, e): throw "not implemented";
+	// 					case FFun(f): exprs.push(makeCIdent(field.name, f.expr.pos));
+	// 					case FProp(get, set, t, e): throw "not implemented";
+	// 				}
+	// 			case EVar(name, e):
+	// 				exprs.push(makeCIdent(name, e.pos));
+	// 			case EFunc(name, e):
+	// 				exprs.push(makeCIdent(name, e.pos));
+	// 			case EArg(arg):
+	// 				exprs.push(makeCIdent(arg.name, Context.currentPos()));
+	// 		}
+	// 	}
+	// 	return makeEBlock(exprs, Context.currentPos());
+	// }
 
-	/**
-	 * Used for debugging
-	 * @return Expr
-	 */
-	public static function makeChildrenTree(env :Environment):Expr {
-		var childrenBlock = [];
-		for (child in env._children) {
-			childrenBlock.push(makeChildrenTree(child));
-		}
-		var childrenBlock = makeEBlock(childrenBlock, Context.currentPos());
-		var content = makeVar(env.name + "_content", makeVarBlock(env));
-		var children = makeVar(env.name + "_children", childrenBlock);
-		return makeEBlock([
-			makeEVar(content, Context.currentPos()),
-			makeEVar(children, Context.currentPos())
-		], Context.currentPos());
-	}
+	// /**
+	//  * Used for debugging
+	//  * @return Expr
+	//  */
+	// public static function makeChildrenTree(env:Environment):Expr {
+	// 	var childrenBlock = [];
+	// 	for (child in env._children) {
+	// 		childrenBlock.push(makeChildrenTree(child));
+	// 	}
+	// 	var childrenBlock = makeEBlock(childrenBlock, Context.currentPos());
+	// 	var content = makeVar(env.name + "_content", makeVarBlock(env));
+	// 	var children = makeVar(env.name + "_children", childrenBlock);
+	// 	return makeEBlock([
+	// 		makeEVar(content, Context.currentPos()),
+	// 		makeEVar(children, Context.currentPos())
+	// 	], Context.currentPos());
+	// }
 
-    public static function makeVar(name:String, expr:Expr):Var {
+	public static function makeVar(name:String, expr:Expr):Var {
 		return {
 			name: name,
 			expr: expr
@@ -131,7 +133,7 @@ class EnvironmentUtil {
 		}
 	}
 
-    public static function makeEVar(var_:Var, pos:Position):Expr {
+	public static function makeEVar(var_:Var, pos:Position):Expr {
 		return {
 			expr: EVars([var_]),
 			pos: pos
